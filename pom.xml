@@ -90,6 +90,11 @@
   </organization>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <db>mysql</db>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <dcm4che.version>3.3.7-SNAPSHOT</dcm4che.version>
+    <dcm4chee-arc.version>4.4.0-SNAPSHOT</dcm4chee-arc.version>
+    <dcm4chee-storage.version>2.0.0-SNAPSHOT</dcm4chee-storage.version>
   </properties>
   <build>
     <extensions>
@@ -114,6 +119,8 @@
   </build>
   <modules>
     <module>dcm4che-test</module>
+    <module>dcm4che-test-clean</module>
+    <module>dcm4che-test-clean-war</module>
   </modules>
   <distributionManagement>
     <repository>
@@ -156,6 +163,12 @@
         <artifactId>javax.json</artifactId>
         <version>1.0.4</version>
       </dependency>
+      <dependency>
+            <groupId>org.jboss.spec</groupId>
+            <artifactId>jboss-javaee-6.0</artifactId>
+            <version>3.0.2.Final</version>
+            <type>pom</type>
+        </dependency>
       <dependency>
         <groupId>junit</groupId>
         <artifactId>junit</artifactId>

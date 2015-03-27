@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?><project-modules id="moduleCoreId" project-version="1.5.0">
+    <wb-module deploy-name="dcm4chee-arc-war">
+        <wb-resource deploy-path="/" source-path="/target/m2e-wtp/web-resources"/>
+        <wb-resource deploy-path="/" source-path="/src/main/webapp" tag="defaultRootSource"/>
+        <wb-resource deploy-path="/WEB-INF/classes" source-path="/src/main/java"/>
+        <dependent-module archiveName="dcm4che-test-clean-3.3.7-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dcm4che-test-clean/dcm4che-test-clean">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dcm4chee-arc-entity-4.4.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dcm4chee-arc-entity/dcm4chee-arc-entity">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dcm4chee-storage-conf-2.0.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dcm4chee-storage-conf/dcm4chee-storage-conf">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dcm4chee-arc-conf-4.4.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dcm4chee-arc-conf/dcm4chee-arc-conf">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <dependent-module archiveName="dcm4chee-arc-entity-ext-4.4.0-SNAPSHOT.jar" deploy-path="/WEB-INF/lib" handle="module:/resource/dcm4chee-arc-entity-ext/dcm4chee-arc-entity-ext">
+            <dependency-type>uses</dependency-type>
+        </dependent-module>
+        <property name="java-output-path" value="/dcm4chee-arc-war/target/classes"/>
+        <property name="context-root" value="dcm4che-test-clean-war"/>
+    </wb-module>
+</project-modules>
