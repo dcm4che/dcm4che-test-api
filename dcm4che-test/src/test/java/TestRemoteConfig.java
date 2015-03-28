@@ -1,10 +1,15 @@
 import org.dcm4che.test.utils.RemoteDicomConfigFactory;
-import org.dcm4che3.conf.api.ConfigurationException;
+import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.net.Device;
+import org.dcm4chee.archive.conf.ArchiveDeviceExtension;
+import org.dcm4chee.archive.conf.Entity;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
+
+import java.io.IOException;
 
 /**
  * @author Roman K
@@ -24,6 +29,5 @@ public class TestRemoteConfig {
         remoteDicomConfiguration.merge(device);
 
     }
-
 
 }

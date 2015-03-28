@@ -21,7 +21,7 @@ import org.dcm4che.test.annotations.RemoteConnectionParameters;
 import org.dcm4che.test.common.BasicTest;
 import org.dcm4che3.conf.api.AttributeCoercion;
 import org.dcm4che3.conf.api.AttributeCoercions;
-import org.dcm4che3.conf.api.ConfigurationException;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.ItemPointer;

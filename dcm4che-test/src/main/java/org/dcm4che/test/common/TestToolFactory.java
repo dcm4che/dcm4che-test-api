@@ -46,8 +46,9 @@ import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.*;
-import org.dcm4che3.conf.api.ConfigurationException;
+
 import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device; 

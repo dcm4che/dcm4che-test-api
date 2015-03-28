@@ -1,9 +1,9 @@
 package org.dcm4che.test.utils;
 
-import org.dcm4che3.conf.api.ConfigurationException;
 import org.dcm4che3.conf.api.DicomConfiguration;
-import org.dcm4che3.conf.core.BeanVitalizer;
-import org.dcm4che3.conf.core.Configuration;
+import org.dcm4che3.conf.core.DefaultBeanVitalizer;
+import org.dcm4che3.conf.core.api.Configuration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.core.util.ConfigNodeUtil;
 import org.dcm4che3.conf.core.util.PathPattern;
 import org.dcm4che3.conf.dicom.CommonDicomConfiguration;
@@ -123,7 +123,7 @@ public class RemoteDicomConfigFactory {
                 Map<String, Object> deviceConfig = remoteEndpoint.getDeviceConfig(deviceName);
 
                 // make dummy config tree with this one device
-                Map<String, Object> dummyRoot = new BeanVitalizer().createConfigNodeFromInstance(new CommonDicomConfiguration.DicomConfigurationRootNode());
+                Map<String, Object> dummyRoot = new DefaultBeanVitalizer().createConfigNodeFromInstance(new CommonDicomConfiguration.DicomConfigurationRootNode());
                 ConfigNodeUtil.replaceNode(dummyRoot, DicomPath.DeviceByName.set("deviceName", deviceName).path(), deviceConfig);
 
                 // get connection from dummy
