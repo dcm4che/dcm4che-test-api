@@ -48,6 +48,10 @@ public @interface StoreSCPParameters {
 
     public static String DEFAULT_STORAGE_DIR = "./";
 
+    /**
+     * RELATIVE (to base) storage directory
+     * @return
+     */
     public String storageDirectory() default DEFAULT_STORAGE_DIR;
     public String sourceDevice() default "storescp";
     public String sourceAETitle() default "STORESCP";

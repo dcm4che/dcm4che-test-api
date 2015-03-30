@@ -48,9 +48,5 @@ import java.lang.annotation.RetentionPolicy;
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface RemoteConnectionParameters {
-
-    public String hostName() default "localhost";
     public int port() default 11112;
-    public String baseURL() default "http://localhost:8080";
-    public String webContext() default "dcm4chee-arc";
 }

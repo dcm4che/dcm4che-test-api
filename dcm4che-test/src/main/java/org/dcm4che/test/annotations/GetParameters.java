@@ -48,9 +48,13 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface GetParameters {
     public String aeTitle() default "NULL";
-    
-    public String retrieveDir() default "NULL";
-    
+
+    /**
+     * RELATIVE path to the retrieve dir specified in parameters
+     * @return
+     */
+    public String retrieveDir() default "";
+
     public String retrieveLevel() default "STUDY";
     
     public String retrieveInformationModel() default "StudyRoot";

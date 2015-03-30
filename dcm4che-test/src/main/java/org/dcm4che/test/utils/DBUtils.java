@@ -54,9 +54,8 @@ public class DBUtils {
     public static boolean cleanDB(BasicTest test) {
         RemoteConnectionParameters remoteParams = 
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");
-        String baseURL =  remoteParams==null?
-                test.getDefaultProperties().getProperty("remoteConn.url")
-                :remoteParams.baseURL();
+
+        String baseURL =  test.getDefaultProperties().getProperty("remoteConn.url");
         Client client = ClientBuilder.newBuilder().build();
         WebTarget target = client.target(baseURL+"/dcm4chee-arc-test/clean");
         ResteasyWebTarget rtarget = (ResteasyWebTarget) target;

@@ -51,7 +51,7 @@ import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.net.Connection;
-import org.dcm4che3.net.Device; 
+import org.dcm4che3.net.Device;
 import org.dcm4che3.tool.common.test.TestTool;
 import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
 import org.dcm4che3.tool.findscu.test.QueryTool;
@@ -90,7 +90,7 @@ public class TestToolFactory {
         DcmGenTool
     }
     private static DicomConfiguration config;
-    
+
     public static TestTool createToolForTest(TestToolType type, BasicTest test) throws MissingArgumentException {
         TestTool tool = null;
         String aeTitle = null
@@ -118,7 +118,7 @@ public class TestToolFactory {
             , columns
             , frameNumber
             , imageQuality;
-            
+
             Device device = null;
             Connection conn = null;
             File baseDir = null;
@@ -130,38 +130,37 @@ public class TestToolFactory {
 
             config = getDicomConfiguration(test);
             //get remote connection parameters
-            RemoteConnectionParameters remoteParams = 
+            RemoteConnectionParameters remoteParams =
                     (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");
-            String host = remoteParams==null?
-                    defaultParams.getProperty("remoteConn.hostname"):remoteParams.hostName();
+            String host = defaultParams.getProperty("remoteConn.hostname");
+
             int port = remoteParams==null?
                     Integer.valueOf(defaultParams.getProperty("remoteConn.port"))
                     :Integer.valueOf(remoteParams.port());
-            String baseURL =  remoteParams==null?
-                    defaultParams.getProperty("remoteConn.url")
-                    :remoteParams.baseURL();
-            String webContext = remoteParams==null?
-                    defaultParams.getProperty("remoteConn.webcontext")
-                    :remoteParams.webContext();
+
+            String baseURL =  defaultParams.getProperty("remoteConn.url");
+            String webContext = defaultParams.getProperty("remoteConn.webcontext");
+
+            if (host == null || baseURL == null || webContext == null) throw new RuntimeException("Not all the properties are set");
 
         switch (type) {
 
         case StoreTool:
 
                 StoreParameters storeParams = (StoreParameters) test.getParams().get("StoreParameters");
-                
+
                 aeTitle = storeParams!=null && !storeParams.aeTitle()
-                        .equalsIgnoreCase("NULL")? storeParams.aeTitle() 
+                        .equalsIgnoreCase("NULL")? storeParams.aeTitle()
                         :(defaultParams.getProperty("store.aetitle")!=null
                         ?defaultParams.getProperty("store.aetitle"):null);
-                        
+
                 baseDir = storeParams!=null && !storeParams.baseDirectory()
                         .equalsIgnoreCase("NULL")? new File(storeParams.baseDirectory())
                         :(defaultParams.getProperty("store.directory")!=null
                         ?new File(defaultParams.getProperty("store.directory")):null);
-                        
+
                 sourceDevice = storeParams!=null?storeParams.sourceDevice():"storescu";
-                
+
                 sourceAETitle = storeParams!=null?storeParams.sourceAETitle():"STORESCU";
 
                 try {
@@ -180,28 +179,28 @@ public class TestToolFactory {
         case QueryTool:
 
                 QueryParameters queryParams = (QueryParameters) test.getParams().get("QueryParameters");
-                
+
                 aeTitle = queryParams!=null && !queryParams.aeTitle()
-                        .equalsIgnoreCase("NULL")? queryParams.aeTitle() 
+                        .equalsIgnoreCase("NULL")? queryParams.aeTitle()
                         :(defaultParams.getProperty("query.aetitle")!=null
                         ?defaultParams.getProperty("query.aetitle"):null);
-                        
-                queryLevel = queryParams!=null ? queryParams.queryLevel() 
+
+                queryLevel = queryParams!=null ? queryParams.queryLevel()
                         :(defaultParams.getProperty("query.level")!=null
                         ?defaultParams.getProperty("query.level"):null);
-                        
-                queryInformationModel = queryParams!=null ? queryParams.queryInformationModel() 
+
+                queryInformationModel = queryParams!=null ? queryParams.queryInformationModel()
                         :(defaultParams.getProperty("query.informationmodel")!=null
                         ?defaultParams.getProperty("query.informationmodel"):null);
                 relational = queryParams!=null ? queryParams.relational()
                         :(defaultParams.getProperty("query.relational")!=null
                         ?Boolean.valueOf(defaultParams.getProperty("query.relational")):null);
-                        
+
                 sourceDevice = queryParams!=null?queryParams.sourceDevice():"findscu";
-                
+
                 sourceAETitle = queryParams!=null?queryParams.sourceAETitle():"FINDSCU";
-                
-                        
+
+
                 device = null;
                 try {
                     device = getDicomConfiguration(test).findDevice(sourceDevice);
@@ -209,8 +208,7 @@ public class TestToolFactory {
                             (String) (queryParams != null && queryParams.connection() != null?
                                     queryParams.connection():defaultParams.get("query.connection")), ""));
                 } catch (ConfigurationException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    throw new RuntimeException(e);
                 }
                 tool = new QueryTool(host, port, aeTitle, queryLevel
                         , queryInformationModel, relational, device, sourceAETitle, conn);
@@ -219,16 +217,16 @@ public class TestToolFactory {
         case MppsTool:
 
             MppsParameters mppsParams = (MppsParameters) test.getParams().get("MppsParameters");
-            
+
             aeTitle = mppsParams!=null && !mppsParams.aeTitle()
-                    .equalsIgnoreCase("NULL")? mppsParams.aeTitle() 
+                    .equalsIgnoreCase("NULL")? mppsParams.aeTitle()
                     :(defaultParams.getProperty("mpps.aetitle")!=null
                     ?defaultParams.getProperty("mpps.aetitle"):null);
-            baseDir = mppsParams!=null && !mppsParams.baseDirectory()
-                    .equalsIgnoreCase("NULL")? new File(mppsParams.baseDirectory())
-                    :(defaultParams.getProperty("mpps.directory")!=null
-                    ?new File(defaultParams.getProperty("mpps.directory")):null);
-                    
+
+            String mppsDir = defaultParams.getProperty("mpps.directory");
+            if (mppsDir == null) throw new RuntimeException("mpps.directory not set in properties!");
+            baseDir = new File(mppsDir);
+
             sourceDevice = mppsParams != null?mppsParams.sourceDevice():"mppsscu";
             sourceAETitle = mppsParams != null?mppsParams.sourceAETitle():"MPPSSCU";
             device = null;
@@ -238,36 +236,37 @@ public class TestToolFactory {
                         (String) (mppsParams != null && mppsParams.connection() != null?
                                 mppsParams.connection():defaultParams.get("mpps.connection")), ""));
             } catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             tool = new MppsTool(host, port, aeTitle, baseDir, device, sourceAETitle, conn);
             break;
-            
+
         case GetTool:
 
             GetParameters getParams = (GetParameters) test.getParams().get("GetParameters");
-            
+
             aeTitle = getParams!=null && !getParams.aeTitle()
-                    .equalsIgnoreCase("NULL")? getParams.aeTitle() 
+                    .equalsIgnoreCase("NULL")? getParams.aeTitle()
                     :(defaultParams.getProperty("retrieve.aetitle")!=null
                     ?defaultParams.getProperty("retrieve.aetitle"):null);
-                    
+
             retrieveLevel = getParams != null && getParams.retrieveLevel()!=null? getParams.retrieveLevel()
                     : defaultParams.getProperty("retrieve.level");
-            
-            queryInformationModel = getParams!=null ? getParams.retrieveInformationModel() 
+
+            queryInformationModel = getParams!=null ? getParams.retrieveInformationModel()
                     :(defaultParams.getProperty("retrieve.informationmodel")!=null
                     ?defaultParams.getProperty("retrieve.informationmodel"):null);
-            
+
             relational = getParams!=null ? getParams.relational()
                     :(defaultParams.getProperty("retrieve.relational")!=null
-                    ?Boolean.valueOf(defaultParams.getProperty("retrieve.relational")):null);
-            
-            retrieveDir = getParams!=null && !getParams.retrieveDir()
-                    .equalsIgnoreCase("NULL")? new File(getParams.retrieveDir())
-                    :(defaultParams.getProperty("retrieve.directory")!=null
-                    ?new File(defaultParams.getProperty("retrieve.directory")):null);
+                    ?Boolean.valueOf(defaultParams.getProperty("retrieve.relational")) : null);
+
+            String retrieveDirPath = defaultParams.getProperty("retrieve.directory");
+
+            if (getParams!=null)
+                retrieveDirPath += "/" + getParams.retrieveDir();
+
+            retrieveDir = new File(retrieveDirPath);
 
             sourceDevice = getParams != null?getParams.sourceDevice():"getscu";
             sourceAETitle = getParams != null?getParams.sourceAETitle():"GETSCU";
@@ -278,43 +277,42 @@ public class TestToolFactory {
                         (String) (getParams != null && getParams.connection() != null?
                                 getParams.connection():defaultParams.get("retrieve.connection")), ""));
             } catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
             tool = new RetrieveTool(host, port, aeTitle, retrieveDir, device
                     , sourceAETitle, retrieveLevel, queryInformationModel, relational, conn);
             break;
-            
+
         case DcmGenTool:
 
             DcmGenParameters genParams = (DcmGenParameters) test.getParams().get("DcmGenParameters");
-            
+
             File seedFile = new File(genParams.seedFile());
             File outputDir = new File(genParams.outputDir());
             int instanceCnt = genParams.instanceCount();
             int seriesCnt = genParams.seriesCount();
             tool = new DcmGenTool(instanceCnt, seriesCnt, outputDir, seedFile);
             break;
-            
+
         case StorageCommitmentTool:
 
             StgCmtParameters stgcmtParams = (StgCmtParameters) test.getParams().get("StgCmtParameters");
-            
+
             aeTitle = stgcmtParams!=null && !stgcmtParams.aeTitle()
-                    .equalsIgnoreCase("NULL")? stgcmtParams.aeTitle() 
+                    .equalsIgnoreCase("NULL")? stgcmtParams.aeTitle()
                     :(defaultParams.getProperty("stgcmt.aetitle")!=null
                     ?defaultParams.getProperty("stgcmt.aetitle"):null);
-                    
+
             baseDir = stgcmtParams!=null && !stgcmtParams.baseDirectory()
                     .equalsIgnoreCase("NULL")? new File(stgcmtParams.baseDirectory())
                     :(defaultParams.getProperty("stgcmt.directory")!=null
                     ?new File(defaultParams.getProperty("stgcmt.directory")):null);
-                    
+
             stgCmtStorageDirectory =  stgcmtParams!=null && !stgcmtParams.storageDirectory()
                     .equalsIgnoreCase("NULL")? new File(stgcmtParams.storageDirectory())
                     :(defaultParams.getProperty("stgcmt.storedirectory")!=null
                     ?new File(defaultParams.getProperty("stgcmt.storedirectory")):null);
-                    
+
             sourceDevice = stgcmtParams != null? stgcmtParams.sourceDevice():"stgcmtscu";
             sourceAETitle = stgcmtParams != null? stgcmtParams.sourceAETitle():"STGCMTSCU";
             device = null;
@@ -324,40 +322,39 @@ public class TestToolFactory {
                         (String) (stgcmtParams != null && stgcmtParams.connection() != null?
                                 stgcmtParams.connection():defaultParams.get("stgcmt.connection")), ""));
             } catch (ConfigurationException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+                throw new RuntimeException(e);
             }
-            
+
             tool = new StgCmtTool(host,port,aeTitle,baseDir,stgCmtStorageDirectory,device,sourceAETitle, conn);
             break;
 
         case MoveTool:
 
             MoveParameters moveParams = (MoveParameters) test.getParams().get("MoveParameters");
-            
+
             aeTitle = moveParams!=null && !moveParams.aeTitle()
-                    .equalsIgnoreCase("NULL")? moveParams.aeTitle() 
+                    .equalsIgnoreCase("NULL")? moveParams.aeTitle()
                     :(defaultParams.getProperty("move.aetitle")!=null
                     ?defaultParams.getProperty("move.aetitle"):null);
-                    
+
             retrieveLevel = moveParams!=null && !moveParams.retrieveLevel()
-                    .equalsIgnoreCase("NULL")? moveParams.retrieveLevel() 
+                    .equalsIgnoreCase("NULL")? moveParams.retrieveLevel()
                     :(defaultParams.getProperty("move.level")!=null
                     ?defaultParams.getProperty("move.level"):null);
-            
-            queryInformationModel = moveParams!=null ? moveParams.retrieveInformationModel() 
+
+            queryInformationModel = moveParams!=null ? moveParams.retrieveInformationModel()
                     :(defaultParams.getProperty("move.informationmodel")!=null
                     ?defaultParams.getProperty("move.informationmodel"):null);
-            
+
             relational = moveParams!=null ? moveParams.relational()
                     :(defaultParams.getProperty("move.relational")!=null
                     ?Boolean.valueOf(defaultParams.getProperty("move.relational")):null);
-                    
+
             destAEtitle = moveParams!=null && !moveParams.destAEtitle()
                     .equalsIgnoreCase("NULL")? moveParams.destAEtitle()
                     :(defaultParams.getProperty("move.destaetitle")!=null
                     ?defaultParams.getProperty("move.destaetitle"):null);
-            
+
             sourceDevice = moveParams != null? moveParams.sourceDevice():"movescu";
             sourceAETitle = moveParams != null? moveParams.sourceAETitle():"MOVESCU";
             device = null;
@@ -377,7 +374,7 @@ public class TestToolFactory {
         case StowTool:
 
             StowRSParameters stowParams = (StowRSParameters) test.getParams().get("StowRSParameters");
-            
+
             url = stowParams != null && stowParams.url() != null? stowParams.url()
                     :null;
             if(url == null)
@@ -389,7 +386,7 @@ public class TestToolFactory {
         case QidoTool:
 
             QidoRSParameters qidoParams = (QidoRSParameters) test.getParams().get("QidoRSParameters");
-            
+
             url = qidoParams != null && qidoParams.url() != null? qidoParams.url()
                     :null;
             if(url == null)
@@ -412,7 +409,7 @@ public class TestToolFactory {
         case WadoURITool:
 
             WadoURIParameters wadoUriParams = (WadoURIParameters) test.getParams().get("WadoURIParameters");
-            
+
             if(wadoUriParams == null)
                 throw new MissingArgumentException("WadoURIParameters annotation"
                         + " must be used to create a WadoURI tool");
@@ -440,7 +437,10 @@ public class TestToolFactory {
             columns = wadoUriParams.columns();
             frameNumber = wadoUriParams.frameNumber();
             imageQuality = wadoUriParams.imageQuality();
-            retrieveDir = new File(wadoUriParams.retrieveDir());
+
+            retrieveDir = new File(defaultParams.getProperty("wadoURI.directory")+wadoUriParams.retrieveDir());
+
+
             tool = new WadoURITool(baseURL + "/"+webContext+(url.startsWith("/")? url : "/"+url)
                     ,studyUID, seriesUID, objectUID
                     , contentType, charset, anonymize
@@ -453,7 +453,7 @@ public class TestToolFactory {
         case WadoRSTool:
 
             WadoRSParameters wadoRSParams = (WadoRSParameters) test.getParams().get("WadoRSParameters");
-            
+
             if(wadoRSParams == null)
                 throw new MissingArgumentException("WadoRSParameters annotation"
                         + " must be used to create a WadoRS tool");
@@ -468,22 +468,23 @@ public class TestToolFactory {
             StoreSCPParameters storeSCPParams = (StoreSCPParameters) test.getParams()
             .get("StoreSCPParameters");
 
-            // if custom dir is set by annotation, use it, otherwise fallback to property, if even the prop is not there, use constant
+            // storage dir
+            String storagePath = defaultParams.getProperty("storescp.storedirectory");
+            if (storagePath == null) throw new RuntimeException("Storage path not set!");
             if (storeSCPParams != null &&
                     !storeSCPParams.storageDirectory().equals(StoreSCPParameters.DEFAULT_STORAGE_DIR))
-                storeSCPStorageDirectory = new File(storeSCPParams.storageDirectory());
-            else
-                storeSCPStorageDirectory = new File(defaultParams.getProperty("storescp.storedirectory", StoreSCPParameters.DEFAULT_STORAGE_DIR));
+                storagePath += "/" + storeSCPParams.storageDirectory();
+            storeSCPStorageDirectory = new File(storagePath);
 
             sourceDevice = storeSCPParams != null
                     ? storeSCPParams.sourceDevice():"storescp";
-                    
+
             sourceAETitle = storeSCPParams != null
                     ? storeSCPParams.sourceAETitle():"STORESCP";
-                    
+
             boolean noStore = storeSCPParams != null
                     ? storeSCPParams.noStore():false;
-                    
+
             device = null;
             try {
                 device = getDicomConfiguration(test).findDevice(sourceDevice);
@@ -494,7 +495,7 @@ public class TestToolFactory {
                 // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-            
+
             tool = new StoreSCPTool(storeSCPStorageDirectory, device, sourceAETitle, conn, noStore);
             break;
 
@@ -505,8 +506,8 @@ public class TestToolFactory {
         return tool;
     }
 
-    
-    
+
+
     public static DicomConfiguration getDicomConfiguration(BasicTest test) {
         return config != null? config : test.getLocalConfig();
     }

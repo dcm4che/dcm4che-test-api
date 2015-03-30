@@ -51,8 +51,6 @@ public @interface MppsParameters {
 
     public String aeTitle() default "NULL";
 
-    public String baseDirectory() default "NULL";
-
     public String sourceDevice() default "mppsscu";
 
     public String sourceAETitle() default "MPPSSCU"; 

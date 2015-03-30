@@ -123,12 +123,9 @@ public class TestUtils {
         //get remote connection parameters
         RemoteConnectionParameters remoteParams = 
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");
-        String baseURL =  remoteParams==null?
-                defaultParams.getProperty("remoteConn.url")
-                :remoteParams.baseURL();
-        String webContext = remoteParams==null?
-                defaultParams.getProperty("remoteConn.webcontext")
-                :remoteParams.webContext();
+        String baseURL =  defaultParams.getProperty("remoteConn.url");
+
+        String webContext = defaultParams.getProperty("remoteConn.webcontext");
         baseURL+=webContext.endsWith("/")?webContext:"/"+webContext;
         HttpURLConnection connection = (HttpURLConnection) 
                 new URL(baseURL + (baseURL.endsWith("/")?"ctrl/reload":"/ctrl/reload"))

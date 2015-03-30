@@ -68,5 +68,9 @@ public @interface WadoURIParameters {
     public String presentationSeriesUID() default "NULL";
     public String presentationUID() default "NULL";
     public String transferSyntax() default "NULL";
-    public String retrieveDir();
+
+    /**
+     * RELATIVE retrieve dir
+     */
+    public String retrieveDir() default "";
 }
