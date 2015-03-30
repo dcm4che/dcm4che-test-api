@@ -48,6 +48,12 @@ import java.lang.annotation.RetentionPolicy;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface StoreParameters {
     public String aeTitle() default "NULL";
+
+    /**
+     * DO NOT USE until really necessary - it will destabilize the tests running on Jenkins
+     * @return
+     */
+    @Deprecated
     public String baseDirectory() default "NULL";
     public String sourceAETitle() default "STORESCU";
     public String sourceDevice() default "storescu";
