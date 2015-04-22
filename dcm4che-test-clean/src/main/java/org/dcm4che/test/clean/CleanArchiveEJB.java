@@ -63,6 +63,7 @@ public class CleanArchiveEJB implements CleanArchive{
         "DELETE FROM content_item", "DELETE FROM verify_observer",
         "DELETE FROM mpps", "DELETE FROM archiving_task",
         "DELETE FROM sps_station_aet", "DELETE FROM mwl_item",
+        "DELETE FROM ext_retrieve_location",
         "DELETE FROM instance", "DELETE FROM series_query_attrs",
         "DELETE FROM series_req", "DELETE FROM series",
         "DELETE FROM study_query_attrs", "DELETE FROM rel_study_pcode",
