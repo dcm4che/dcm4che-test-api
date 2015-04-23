@@ -74,12 +74,6 @@ public class TestParametersRule implements TestRule {
                         Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
                     return;
 
-                // Clean DB before each test
-                DBUtils.cleanDB(getInstance());
-
-                // Reset config
-                // TODO: re-instantiate default config with proprietary service
-
                 Method method = description.getTestClass().getMethod(description.getMethodName());
                 getInstance().clearParams();
                 for (Annotation anno : method.getAnnotations()) {
@@ -92,6 +86,13 @@ public class TestParametersRule implements TestRule {
                 getInstance().addParam("defaultParams", props);
 
                 getInstance().init((Class<? extends BasicTest>) description.getTestClass());
+
+
+                // Clean DB before each test
+                DBUtils.cleanDB(getInstance());
+
+                // Reset config
+                // TODO: re-instantiate default config with proprietary service
 
                 base.evaluate();
             }
