@@ -37,14 +37,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.dcm4che.test.common;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
+import org.dcm4che.test.annotations.markers.Heavy;
+import org.dcm4che.test.utils.AssertionUtils;
+import org.dcm4che.test.utils.DBUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -65,26 +68,31 @@ public class TestParametersRule implements TestRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
+
+                // Skip heavy tests if not explicilty specified by a property
+                if (description.getTestClass().getAnnotation(Heavy.class) != null &&
+                        Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
+                    return;
+
+                // Clean DB before each test
+                DBUtils.cleanDB(getInstance());
+
+                // Reset config
+                // TODO: re-instantiate default config with proprietary service
+
                 Method method = description.getTestClass().getMethod(description.getMethodName());
                 getInstance().clearParams();
-                for(Annotation anno: method.getAnnotations()) {
+                for (Annotation anno : method.getAnnotations()) {
                     Class annoType = anno.annotationType();
-                    getInstance().addParam(annoType.getSimpleName(),method.getAnnotation(annoType));
+                    getInstance().addParam(annoType.getSimpleName(), method.getAnnotation(annoType));
                 }
                 TestLocalConfig cnf = description.getTestClass().getAnnotation(TestLocalConfig.class);
-                getInstance().addParam("defaultLocalConfig",cnf);
+                getInstance().addParam("defaultLocalConfig", cnf);
                 TestParamDefaults props = description.getTestClass().getAnnotation(TestParamDefaults.class);
                 getInstance().addParam("defaultParams", props);
-                Method initMethod = null;
-                    Method[] methods = description.getTestClass().getMethods();
-                    for (Method m : methods) {
-                        // Test any other things about it beyond the name...
-                        if (m.getName().equals("init") ) {
-                            initMethod=m;
-                        }
-                    }
-                    getInstance().init((Class<? extends BasicTest>) description.getTestClass());
-                
+
+                getInstance().init((Class<? extends BasicTest>) description.getTestClass());
+
                 base.evaluate();
             }
         };
@@ -93,6 +101,6 @@ public class TestParametersRule implements TestRule {
     public BasicTest getInstance() {
         return this.parametrizedTest;
     }
-    
+
 }
 
