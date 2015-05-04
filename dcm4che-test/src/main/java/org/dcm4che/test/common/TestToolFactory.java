@@ -46,10 +46,10 @@ import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.*;
-
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
+import org.dcm4che3.data.Code;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
 import org.dcm4che3.tool.common.test.TestTool;
@@ -58,6 +58,9 @@ import org.dcm4che3.tool.findscu.test.QueryTool;
 import org.dcm4che3.tool.getscu.test.RetrieveTool;
 import org.dcm4che3.tool.movescu.test.MoveTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
+import org.dcm4che3.tool.qc.QC;
+import org.dcm4che3.tool.qc.QCOperation;
+import org.dcm4che3.tool.qc.test.QCTool;
 import org.dcm4che3.tool.qidors.test.QidoRSTool;
 import org.dcm4che3.tool.stgcmtscu.test.StgCmtTool;
 import org.dcm4che3.tool.storescp.test.StoreSCPTool;
@@ -87,7 +90,8 @@ public class TestToolFactory {
         WadoURITool,
         WadoRSTool,
         StoreSCPTool,
-        DcmGenTool
+        DcmGenTool,
+        QCTool
     }
     private static DicomConfiguration config;
 
@@ -463,6 +467,30 @@ public class TestToolFactory {
             tool = new WadoRSTool(baseURL + "/"+webContext+(url.startsWith("/")? url : "/"+url), retrieveDir);
             break;
 
+        case QCTool:
+            QCParameters qcParams = (QCParameters) test.getParams().get("QCParameters");
+            
+            if(qcParams == null)
+                throw new MissingArgumentException("QCParameters annotation"
+                        + "must be used to create QCTool");
+            url = qcParams.url();
+            QCOperation operation = qcParams.operation();
+            String targetStudy = qcParams.targetStudyUID();
+            String codeStr = qcParams.qcRejectionCodeString();
+            String[] codeComponents = codeStr.split(":");
+            Code code = null;
+            if(codeComponents.length < 3)
+                throw new IllegalArgumentException("Code specified must contain"
+                        + " at least value, scheme designator and meaning");
+            else
+                if(codeComponents.length == 3)
+                    code = new Code(codeComponents[0], codeComponents[2], null,codeComponents[1]);
+                else if(codeStr.split(":").length == 4)
+                    code = new Code(codeComponents[0], codeComponents[2]
+                            , codeComponents[3], codeComponents[1]);
+            
+            tool = new QCTool(url, operation, code, targetStudy);
+            break;
         case StoreSCPTool:
 
             StoreSCPParameters storeSCPParams = (StoreSCPParameters) test.getParams()

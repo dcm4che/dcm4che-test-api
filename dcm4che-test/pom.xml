@@ -21,6 +21,7 @@
    - the Initial Developer. All Rights Reserved.
    -
    - Contributor(s):
+     Hesham Elbadawi <bsdreko@gmail.com>
    - Roman K
    -
    - Alternatively, the contents of this file may be used under the terms of
@@ -133,6 +134,11 @@
         <dependency>
             <groupId>org.dcm4che.tool</groupId>
             <artifactId>dcm4che-tool-storescp</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.dcm4che.tool</groupId>
+            <artifactId>dcm4che-tool-qc</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>
