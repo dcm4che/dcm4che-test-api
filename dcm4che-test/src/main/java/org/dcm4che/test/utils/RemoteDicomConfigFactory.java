@@ -198,6 +198,11 @@ public class RemoteDicomConfigFactory {
             }
             return listOfDevices.iterator();
         }
+
+        @Override
+        public void lock() {
+            //noop
+        }
     }
 
 
