@@ -4,6 +4,11 @@
 target
 *.class
 
+# eclipse files
+.classpath
+.project
+.settings/
+
 # Package Files #
 *.jar
 *.war
