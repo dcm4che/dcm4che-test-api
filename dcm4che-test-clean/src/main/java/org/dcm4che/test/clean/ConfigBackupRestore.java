@@ -6,6 +6,8 @@ import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
 import org.dcm4che3.conf.core.api.Configuration;
@@ -14,7 +16,7 @@ import org.dcm4che3.conf.dicom.CommonDicomConfiguration.DicomConfigurationRootNo
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 
 /**
- * Web service which allows to restore the complete Configuration to a default
+ * Web service which allows to restore the complete Configuration to an initial
  * state.
  * 
  * @author Roman K
@@ -25,8 +27,8 @@ import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 public class ConfigBackupRestore {
 
     private DicomConfigurationManager configurationManager;
-    private Map<String, Object> defaultConfig;
 
+    private Map<String, Object> initialConfig;
 
     @PostConstruct
     public void init() throws ConfigurationException {
@@ -34,15 +36,17 @@ public class ConfigBackupRestore {
         configurationManager = DicomConfigurationBuilder.newConfigurationBuilder(System.getProperties()).build();
 
         Configuration configurationStorage = configurationManager.getConfigurationStorage();
-        defaultConfig = (Map<String, Object>) configurationStorage.getConfigurationNode("/", DicomConfigurationRootNode.class);
+        initialConfig = (Map<String, Object>) configurationStorage.getConfigurationNode("/", DicomConfigurationRootNode.class);
     }
 
 
     @GET
     @Path("/")
-    public void restoreConfig() throws ConfigurationException {
-        configurationManager.getConfigurationStorage().persistNode("/", defaultConfig, DicomConfigurationRootNode.class);
+    public Response restoreConfig() throws ConfigurationException {
+
+        configurationManager.getConfigurationStorage().persistNode("/", initialConfig, DicomConfigurationRootNode.class);
+
+        return Response.status(Status.OK).entity("Successfully restored configuration").build();
     }
 
 }
-

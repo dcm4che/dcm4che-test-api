@@ -53,6 +53,9 @@
         <artifactId>maven-jar-plugin</artifactId>
         <configuration>
           <archive>
+            <manifestEntries>
+              <Dependencies>org.dcm4che.conf.api, org.dcm4che.conf.dicom</Dependencies>
+            </manifestEntries>
           </archive>
         </configuration>
       </plugin>
