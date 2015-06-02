@@ -37,17 +37,17 @@
  * ***** END LICENSE BLOCK ***** */
 package org.dcm4che.test.common;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.annotations.markers.Heavy;
-import org.dcm4che.test.utils.AssertionUtils;
+import org.dcm4che.test.utils.ConfigUtils;
 import org.dcm4che.test.utils.DBUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
-
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -57,7 +57,7 @@ import java.lang.reflect.Method;
 public class TestParametersRule implements TestRule {
 
 
-    private BasicTest parametrizedTest;
+    private final BasicTest parametrizedTest;
 
     public TestParametersRule(BasicTest basicTest) {
         this.parametrizedTest = basicTest;
@@ -92,7 +92,7 @@ public class TestParametersRule implements TestRule {
                 DBUtils.cleanDB(getInstance());
 
                 // Reset config
-                // TODO: re-instantiate default config with proprietary service
+                ConfigUtils.restoreConfig(getInstance());
 
                 base.evaluate();
             }
