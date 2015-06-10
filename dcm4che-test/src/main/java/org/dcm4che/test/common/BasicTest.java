@@ -42,25 +42,21 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.security.GeneralSecurityException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
-import org.dcm4che.test.annotations.MppsParameters;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.common.TestToolFactory.TestToolType;
 import org.dcm4che.test.utils.LoadProperties;
 import org.dcm4che.test.utils.RemoteDicomConfigFactory;
-import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.data.Attributes;
-import org.dcm4che3.net.IncompatibleConnectionException;
 import org.dcm4che3.tool.common.test.TestResult;
 import org.dcm4che3.tool.dcmgen.test.DcmGenResult;
 import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
@@ -193,11 +189,11 @@ public abstract class BasicTest {
 
     private TestResult storeGenerated(String description, File file) throws MissingArgumentException {
         StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
-        
+
         try {
-                //get whole study
-                storeTool.store(description, file.getAbsolutePath());
-                deleteDirectory(file);
+            //get whole study
+            storeTool.store(description, file.getAbsolutePath());
+            deleteDirectory(file);
         } catch (Exception e) {
             throw new TestToolException(e);
         }
@@ -205,16 +201,16 @@ public abstract class BasicTest {
     }
 
     private void deleteDirectory(File file) {
-        
-        if(file.isDirectory()) {
-        for(int i=0; i<file.listFiles().length; i++) {
-             deleteDirectory(file.listFiles()[i]);
-           }
+
+        if (file.isDirectory()) {
+            for (int i = 0; i < file.listFiles().length; i++) {
+                deleteDirectory(file.listFiles()[i]);
+            }
         }
-           else {
-             file.delete();
-           }
-        
+        else {
+            file.delete();
+        }
+
     }
 
     public TestResult generateAndSend(String description, Attributes overrideAttributes) throws MissingArgumentException {

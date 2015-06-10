@@ -41,14 +41,25 @@ package org.dcm4che.test.common;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
-import org.dcm4che.test.annotations.*;
+import org.dcm4che.test.annotations.DcmGenParameters;
+import org.dcm4che.test.annotations.GetParameters;
+import org.dcm4che.test.annotations.MoveParameters;
+import org.dcm4che.test.annotations.MppsParameters;
+import org.dcm4che.test.annotations.QCParameters;
+import org.dcm4che.test.annotations.QidoRSParameters;
+import org.dcm4che.test.annotations.QueryParameters;
+import org.dcm4che.test.annotations.RemoteConnectionParameters;
+import org.dcm4che.test.annotations.StgCmtParameters;
+import org.dcm4che.test.annotations.StoreParameters;
+import org.dcm4che.test.annotations.StoreSCPParameters;
+import org.dcm4che.test.annotations.StowRSParameters;
+import org.dcm4che.test.annotations.WadoRSParameters;
+import org.dcm4che.test.annotations.WadoURIParameters;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
-import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.data.Code;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
@@ -58,7 +69,6 @@ import org.dcm4che3.tool.findscu.test.QueryTool;
 import org.dcm4che3.tool.getscu.test.RetrieveTool;
 import org.dcm4che3.tool.movescu.test.MoveTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
-import org.dcm4che3.tool.qc.QC;
 import org.dcm4che3.tool.qc.QCOperation;
 import org.dcm4che3.tool.qc.test.QCTool;
 import org.dcm4che3.tool.qidors.test.QidoRSTool;
@@ -66,11 +76,8 @@ import org.dcm4che3.tool.stgcmtscu.test.StgCmtTool;
 import org.dcm4che3.tool.storescp.test.StoreSCPTool;
 import org.dcm4che3.tool.storescu.test.StoreTool;
 import org.dcm4che3.tool.stowrs.test.StowRSTool;
-import org.dcm4che3.tool.wadors.WadoRS;
 import org.dcm4che3.tool.wadors.test.WadoRSTool;
 import org.dcm4che3.tool.wadouri.test.WadoURITool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -291,8 +298,23 @@ public class TestToolFactory {
 
             DcmGenParameters genParams = (DcmGenParameters) test.getParams().get("DcmGenParameters");
 
-            File seedFile = new File(genParams.seedFile());
-            File outputDir = new File(genParams.outputDir());
+            String testdataDirectory = defaultParams.getProperty("testdata.directory");
+
+            File seedFile = new File(testdataDirectory, genParams.seedFile());
+            File outputDir;
+            String outputDirString = genParams.outputDir();
+            if (outputDirString.isEmpty())
+            {
+                // create a temp directory
+                try {
+                    outputDir = Files.createTempDirectory("DCMGENTOOL").toFile();
+                } catch (IOException e) {
+                    // normally shouldn't happen unless the hard disk is full or something as severe
+                    throw new RuntimeException(e);
+                }
+            } else {
+                outputDir = new File(outputDirString);
+            }
             int instanceCnt = genParams.instanceCount();
             int seriesCnt = genParams.seriesCount();
             tool = new DcmGenTool(instanceCnt, seriesCnt, outputDir, seedFile);

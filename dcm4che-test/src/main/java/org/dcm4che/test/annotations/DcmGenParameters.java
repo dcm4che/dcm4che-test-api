@@ -48,6 +48,15 @@ import java.lang.annotation.RetentionPolicy;
 public @interface DcmGenParameters {
     public int instanceCount() default  1;
     public int seriesCount() default  1;
-    public String outputDir();
+
+    /**
+     * @return the empty default means that a temporary directory should be
+     *         automatically created
+     */
+    public String outputDir() default "";
+
+    /**
+     * @return path relative to testdata.directory
+     */
     public String seedFile();
 }
