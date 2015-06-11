@@ -40,13 +40,21 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.wadors.test.WadoRSTool;
+
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
 
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WadoRSParameters {
-    //no defaults
+
     public String url();
-    public String retrieveDir();
+
+    /**
+     * the empty default means that a temporary directory should be
+     * automatically created. Use {@link WadoRSTool#getRetrieveDir()} to access
+     * it.
+     */
+    public String retrieveDir() default "";
 }

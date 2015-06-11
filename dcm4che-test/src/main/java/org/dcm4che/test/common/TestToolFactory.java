@@ -41,6 +41,7 @@ package org.dcm4che.test.common;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
@@ -78,6 +79,8 @@ import org.dcm4che3.tool.storescu.test.StoreTool;
 import org.dcm4che3.tool.stowrs.test.StowRSTool;
 import org.dcm4che3.tool.wadors.test.WadoRSTool;
 import org.dcm4che3.tool.wadouri.test.WadoURITool;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory to create tools for testing.
@@ -85,6 +88,8 @@ import org.dcm4che3.tool.wadouri.test.WadoURITool;
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
 public class TestToolFactory {
+
+    private static Logger log = LoggerFactory.getLogger(TestToolFactory.class);
 
     public enum TestToolType {
         StoreTool,
@@ -250,22 +255,25 @@ public class TestToolFactory {
     }
 
     private static TestTool createWadoRSTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
-        TestTool tool;
-        File retrieveDir;
         WadoRSParameters wadoRSParams = (WadoRSParameters) test.getParams().get("WadoRSParameters");
 
         if (wadoRSParams == null)
             throw new MissingArgumentException("WadoRSParameters annotation"
                     + " must be used to create a WadoRS tool");
         String url = wadoRSParams.url() != null ? wadoRSParams.url() : null;
-        retrieveDir = new File(wadoRSParams.retrieveDir());
-        tool = new WadoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), retrieveDir);
-        return tool;
+
+        String retrieveDirString = wadoRSParams.retrieveDir();
+        File retrieveDir;
+        if (retrieveDirString.isEmpty()) {
+            retrieveDir = createTempDirectory(test, "WADORS");
+        } else {
+            retrieveDir = new File(retrieveDirString);
+        }
+
+        return new WadoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), retrieveDir);
     }
 
     private static TestTool createWadoURITool(BasicTest test, Properties defaultParams, String baseURL, String webContext) throws MissingArgumentException {
-        TestTool tool;
-        File retrieveDir;
         WadoURIParameters wadoUriParams = (WadoURIParameters) test.getParams().get("WadoURIParameters");
 
         if(wadoUriParams == null)
@@ -292,17 +300,20 @@ public class TestToolFactory {
         int frameNumber = wadoUriParams.frameNumber();
         int imageQuality = wadoUriParams.imageQuality();
 
-        retrieveDir = new File(defaultParams.getProperty("wadoURI.directory")+wadoUriParams.retrieveDir());
+        File retrieveDir;
+        if (wadoUriParams.retrieveDir().isEmpty()) {
+            retrieveDir = createTempDirectory(test, "WADOURI");
+        } else {
+            retrieveDir = new File(wadoUriParams.retrieveDir());
+        }
 
-
-        tool = new WadoURITool(baseURL + "/"+webContext+(url.startsWith("/")? url : "/"+url)
+        return new WadoURITool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url)
                 ,studyUID, seriesUID, objectUID
                 , contentType, charset, anonymize
                 , annotation, rows, columns
                 , regionCoordinates, windowCenter, windowWidth
                 , frameNumber, imageQuality, presentationSeriesUID
                 , presentationUID, transferSyntax, retrieveDir);
-        return tool;
     }
 
     private static TestTool createQidoTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
@@ -423,30 +434,21 @@ public class TestToolFactory {
     }
 
     private static TestTool createDcmGenTool(BasicTest test, Properties defaultParams) {
-        TestTool tool;
         DcmGenParameters genParams = (DcmGenParameters) test.getParams().get("DcmGenParameters");
 
-        String testdataDirectory = defaultParams.getProperty("testdata.directory");
+        Path testdataDir = test.getTestdataDirectory();
 
-        File seedFile = new File(testdataDirectory, genParams.seedFile());
+        File seedFile = new File(testdataDir.toFile(), genParams.seedFile());
         File outputDir;
         String outputDirString = genParams.outputDir();
-        if (outputDirString.isEmpty())
-        {
-            // create a temp directory
-            try {
-                outputDir = Files.createTempDirectory("DCMGENTOOL").toFile();
-            } catch (IOException e) {
-                // normally shouldn't happen unless the hard disk is full or something as severe
-                throw new RuntimeException(e);
-            }
+        if (outputDirString.isEmpty()) {
+            outputDir = createTempDirectory(test, "DCMGEN");
         } else {
             outputDir = new File(outputDirString);
         }
         int instanceCnt = genParams.instanceCount();
         int seriesCnt = genParams.seriesCount();
-        tool = new DcmGenTool(instanceCnt, seriesCnt, outputDir, seedFile);
-        return tool;
+        return new DcmGenTool(instanceCnt, seriesCnt, outputDir, seedFile);
     }
 
     private static TestTool createGetTool(BasicTest test, Properties defaultParams, String host, int port) {
@@ -597,5 +599,22 @@ public class TestToolFactory {
 
     public static DicomConfiguration getDicomConfiguration(BasicTest test) {
         return test.getLocalConfig();
+    }
+
+    private static File createTempDirectory(BasicTest test, String prefix) {
+
+        Path tmpDir = test.getBaseTemporaryDirectory();
+
+        File subTempDirectory;
+        try {
+            subTempDirectory = Files.createTempDirectory(tmpDir, prefix + "_" + test.getClass().getSimpleName()).toFile();
+        } catch (IOException e) {
+            // normally shouldn't happen unless the hard disk is full or something as severe
+            throw new RuntimeException(e);
+        }
+
+        log.info("Created temporary directory: {}", subTempDirectory.getAbsolutePath());
+
+        return subTempDirectory;
     }
 }

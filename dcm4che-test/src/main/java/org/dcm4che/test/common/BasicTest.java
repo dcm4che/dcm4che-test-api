@@ -42,6 +42,8 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
@@ -251,5 +253,30 @@ public abstract class BasicTest {
 
     public DicomConfiguration getLocalConfig() {
         return localConfig;
+    }
+
+    /**
+     * @return Directory containing test data (mesa).
+     */
+    public Path getTestdataDirectory()
+    {
+        return Paths.get(getDefaultProperties().getProperty("testdata.directory")).toAbsolutePath().normalize();
+    }
+
+    /**
+     * @return Directory which should be used to store temporary files created
+     *         within a test. Will be cleaned before every test.
+     */
+    public Path getBaseTemporaryDirectory()
+    {
+        Path tmpDir = Paths.get(getDefaultProperties().getProperty("base.tmp.directory")).toAbsolutePath().normalize();
+        if (!Files.isDirectory(tmpDir)) {
+            try {
+                Files.createDirectories(tmpDir);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return tmpDir;
     }
 }

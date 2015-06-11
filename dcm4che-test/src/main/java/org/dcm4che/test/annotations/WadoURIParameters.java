@@ -40,6 +40,8 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.wadouri.test.WadoURITool;
+
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
@@ -70,7 +72,9 @@ public @interface WadoURIParameters {
     public String transferSyntax() default "NULL";
 
     /**
-     * RELATIVE retrieve dir
+     * The empty default means that a temporary directory should be
+     * automatically created. Use {@link WadoURITool#getRetrieveDir()} to access
+     * it.
      */
     public String retrieveDir() default "";
 }

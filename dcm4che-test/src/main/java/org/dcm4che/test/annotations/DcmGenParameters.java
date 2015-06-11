@@ -41,6 +41,8 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
+
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
@@ -51,7 +53,8 @@ public @interface DcmGenParameters {
 
     /**
      * @return the empty default means that a temporary directory should be
-     *         automatically created
+     *         automatically created. Use {@link DcmGenTool#getOutputDir()} to
+     *         access it.
      */
     public String outputDir() default "";
 

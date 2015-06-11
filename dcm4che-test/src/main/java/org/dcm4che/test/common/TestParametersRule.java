@@ -39,7 +39,9 @@ package org.dcm4che.test.common;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.nio.file.Path;
 
+import org.apache.commons.io.FileUtils;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.annotations.markers.Heavy;
@@ -87,6 +89,9 @@ public class TestParametersRule implements TestRule {
 
                 getInstance().init((Class<? extends BasicTest>) description.getTestClass());
 
+                // clean the temporary directory before each test
+                Path tmpDir = getInstance().getBaseTemporaryDirectory();
+                FileUtils.cleanDirectory(tmpDir.toFile());
 
                 // Clean DB before each test
                 DBUtils.cleanDB(getInstance());
