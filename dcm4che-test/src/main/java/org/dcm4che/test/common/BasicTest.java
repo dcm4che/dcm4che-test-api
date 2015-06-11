@@ -71,7 +71,6 @@ import org.junit.Rule;
  * @author Hesham elbadawi <bsdreko@gmail.com>
  * @author Roman K
  */
-
 public abstract class BasicTest {
     @Rule
     public TestParametersRule rule = new TestParametersRule(this);
@@ -125,8 +124,7 @@ public abstract class BasicTest {
         } catch (IOException e) {
             throw new TestToolException(e);
         } catch (ConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new TestToolException(e);
         }
     }
 
