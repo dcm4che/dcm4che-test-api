@@ -40,14 +40,27 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.stgcmtscu.test.StgCmtTool;
+
 /**
  * @author Hesham Elbadawi <bsdreko@gmail.com>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface StgCmtParameters {
     public String aeTitle() default "NULL";
+
+    /**
+     * The default will automatically use the default test data directory
+     * (mesa).
+     */
     public String baseDirectory() default "NULL";
+
+    /**
+     * The default will automatically create a temporary directory. Use
+     * {@link StgCmtTool#getStorageDirectory()} to access it.
+     */
     public String storageDirectory() default "NULL";
+
     public String sourceDevice() default "stgcmtscu";
     public String sourceAETitle() default "STGCMTSCU";
     public String connection() default "dicom"; //bound connection

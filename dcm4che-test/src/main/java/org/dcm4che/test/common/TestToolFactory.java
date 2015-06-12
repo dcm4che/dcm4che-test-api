@@ -59,6 +59,7 @@ import org.dcm4che.test.annotations.StoreSCPParameters;
 import org.dcm4che.test.annotations.StowRSParameters;
 import org.dcm4che.test.annotations.WadoRSParameters;
 import org.dcm4che.test.annotations.WadoURIParameters;
+import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.data.Code;
@@ -398,7 +399,6 @@ public class TestToolFactory {
     }
 
     private static TestTool createStorageCommitmentTool(BasicTest test, Properties defaultParams, String host, int port) {
-        TestTool tool;
         StgCmtParameters stgcmtParams = (StgCmtParameters) test.getParams().get("StgCmtParameters");
 
         String aeTitle = stgcmtParams != null && !stgcmtParams.aeTitle()
@@ -406,31 +406,26 @@ public class TestToolFactory {
                 :(defaultParams.getProperty("stgcmt.aetitle")!=null
                 ?defaultParams.getProperty("stgcmt.aetitle"):null);
 
-        File baseDir = stgcmtParams != null && !stgcmtParams.baseDirectory()
-                .equalsIgnoreCase("NULL")? new File(stgcmtParams.baseDirectory())
-                :(defaultParams.getProperty("stgcmt.directory")!=null
-                ?new File(defaultParams.getProperty("stgcmt.directory")):null);
+        File baseDir = (stgcmtParams != null && !stgcmtParams.baseDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.baseDirectory()) : test.getTestdataDirectory().toFile();
 
-        File stgCmtStorageDirectory = stgcmtParams != null && !stgcmtParams.storageDirectory()
-                .equalsIgnoreCase("NULL")? new File(stgcmtParams.storageDirectory())
-                :(defaultParams.getProperty("stgcmt.storedirectory")!=null
-                ?new File(defaultParams.getProperty("stgcmt.storedirectory")):null);
+        File stgCmtStorageDirectory = (stgcmtParams != null && !stgcmtParams.storageDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.storageDirectory()) : createTempDirectory(test, "STGCMT");
 
         String sourceDevice = stgcmtParams != null ? stgcmtParams.sourceDevice() : "stgcmtscu";
         String sourceAETitle = stgcmtParams != null ? stgcmtParams.sourceAETitle() : "STGCMTSCU";
         Device device;
-        Connection conn;
         try {
             device = getDicomConfiguration(test).findDevice(sourceDevice);
-            conn = device.connectionWithEqualsRDN(new Connection(
-                    (String) (stgcmtParams != null && stgcmtParams.connection() != null?
-                            stgcmtParams.connection():defaultParams.get("stgcmt.connection")), ""));
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
 
-        tool = new StgCmtTool(host,port,aeTitle,baseDir,stgCmtStorageDirectory,device,sourceAETitle, conn);
-        return tool;
+        String connectionName = (String) (stgcmtParams != null && stgcmtParams.connection() != null ? stgcmtParams.connection() : defaultParams.get("stgcmt.connection"));
+        Connection conn = device.connectionWithEqualsRDN(new Connection(connectionName, ""));
+
+        // adjust the remote device so that it will use the correct connection (popped up when fixing DCMTEST-40)
+        TestUtils.adjustRemoteConfigurationForDestinationSCP(device.getDeviceName(), test, connectionName);
+
+        return new StgCmtTool(host, port, aeTitle, baseDir, stgCmtStorageDirectory, device, sourceAETitle, conn);
     }
 
     private static TestTool createDcmGenTool(BasicTest test, Properties defaultParams) {
