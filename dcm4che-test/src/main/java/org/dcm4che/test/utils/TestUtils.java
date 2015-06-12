@@ -1,28 +1,20 @@
 package org.dcm4che.test.utils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 import org.dcm4che.test.annotations.RemoteConnectionParameters;
 import org.dcm4che.test.common.BasicTest;
 import org.dcm4che3.conf.api.AttributeCoercion;
 import org.dcm4che3.conf.api.AttributeCoercions;
-import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.ItemPointer;
 import org.dcm4che3.data.Tag;
@@ -46,31 +38,7 @@ import org.slf4j.LoggerFactory;
 
 public class TestUtils {
 
-    private static List<Path> backedUpDevices = new ArrayList<Path>();
-
     private static final Logger LOG = LoggerFactory.getLogger(TestUtils.class);
-    
-    public static void backUpRemoteConfig(DicomConfiguration remoteConfig) throws ConfigurationException, IOException {
-        for(String devName : remoteConfig.listDeviceNames()) {
-        Device devBackUP = remoteConfig.findDevice(devName);
-        backupDevice(devBackUP);
-        }
-    }
-
-    public static void rollBackRemoteConfig(DicomConfiguration remoteConfig) throws ConfigurationException, ClassNotFoundException, IOException {
-        try{
-        for(Path devPath : backedUpDevices) {
-            Device backup = readDevice(devPath);
-            Device current = remoteConfig.findDevice(backup.getDeviceName());
-          remoteConfig.removeDevice(current.getDeviceName());
-          remoteConfig.persist(backup);
-        }
-        remoteConfig.sync();
-        }
-        catch(Exception e) {
-            //NOOP
-        }
-    }
 
     public static void addCoercionTemplate(AttributeCoercion ac, ApplicationEntity ae, DicomConfiguration remoteConfig) {
         ArchiveAEExtension aeExt = ae.getAEExtension(ArchiveAEExtension.class);
@@ -139,36 +107,6 @@ public class TestUtils {
         return responseCode;
     }
 
-    public static void backupDevice(Device d) throws IOException {
-        Path file = Files.createTempFile("temp"+d.getDeviceName()+"backup", ".dev");
-        FileOutputStream fileOut = new FileOutputStream(file.toFile());
-        ObjectOutputStream out = new ObjectOutputStream(fileOut);
-        try{
-        out.writeObject(d);
-        out.flush();
-        }
-        finally{
-            out.close();
-        }
-        backedUpDevices.add(file);
-    }
-
-    public static Device readDevice(Path devPath) throws ClassNotFoundException, IOException {
-        FileInputStream fileIn = new FileInputStream(devPath.toFile());
-        ObjectInputStream in = new ObjectInputStream(fileIn);
-        Device dev;
-        try{
-            dev = (Device) in.readObject();
-        }
-        finally {
-            in.close();
-        }
-        return dev;
-    }
-
-    public static List<Path> getBackedUpDevices() {
-        return backedUpDevices;
-    }
 
     public static void adjustRemoteConfigurationForDestinationSCP(String scpToAdjust, BasicTest test, String connectionToKeep) {
         DicomConfiguration remote = test.getRemoteConfig();
