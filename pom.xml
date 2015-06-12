@@ -92,9 +92,9 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <db>mysql</db>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <dcm4che.version>3.3.7-SNAPSHOT</dcm4che.version>
-    <dcm4chee-arc.version>4.4.0-SNAPSHOT</dcm4chee-arc.version>
-    <dcm4chee-storage.version>2.0.0-SNAPSHOT</dcm4chee-storage.version>
+    <dcm4che.version>3.3.8-SNAPSHOT</dcm4che.version>
+    <dcm4chee-arc.version>4.5.0-SNAPSHOT</dcm4chee-arc.version>
+    <dcm4chee-storage.version>2.1.0-SNAPSHOT</dcm4chee-storage.version>
   </properties>
   <build>
     <extensions>
