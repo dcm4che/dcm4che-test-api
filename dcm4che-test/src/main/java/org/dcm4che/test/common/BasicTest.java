@@ -77,6 +77,11 @@ public abstract class BasicTest {
     @Rule
     public TestParametersRule rule = new TestParametersRule(this);
 
+    /**
+     * Name of the currently executing method within the test
+     */
+    private String currentMethodName = "none";
+
     private Properties defaultProperties;
 
     private DicomConfiguration localConfig;
@@ -109,7 +114,11 @@ public abstract class BasicTest {
     protected void clearParams() {
         params.clear();
     }
-    public void init(Class<? extends BasicTest> clazz){
+
+    public void init(Class<? extends BasicTest> clazz, String currentMethod) {
+
+        this.currentMethodName = currentMethod;
+
         try {
             if(this.getParams().containsKey("defaultParams") 
                     && this.getParams().get("defaultParams") != null)
@@ -123,6 +132,7 @@ public abstract class BasicTest {
             this.setDefaultProperties(LoadProperties.load(clazz.getClass()));
 
             this.setLocalConfig(System.getProperty("defaultLocalConfig"));
+
         } catch (IOException e) {
             throw new TestToolException(e);
         } catch (ConfigurationException e) {
@@ -269,7 +279,7 @@ public abstract class BasicTest {
      */
     public Path getBaseTemporaryDirectory()
     {
-        Path tmpDir = Paths.get(getDefaultProperties().getProperty("base.tmp.directory")).toAbsolutePath().normalize();
+        Path tmpDir = Paths.get(getDefaultProperties().getProperty("base.tmp.directory"), this.getClass().getName(), currentMethodName).toAbsolutePath().normalize();
         if (!Files.isDirectory(tmpDir)) {
             try {
                 Files.createDirectories(tmpDir);

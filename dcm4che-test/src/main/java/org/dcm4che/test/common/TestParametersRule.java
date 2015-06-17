@@ -45,6 +45,7 @@ import org.apache.commons.io.FileUtils;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.annotations.markers.Heavy;
+import org.dcm4che.test.image.ImageAssert;
 import org.dcm4che.test.utils.ConfigUtils;
 import org.dcm4che.test.utils.DBUtils;
 import org.junit.rules.TestRule;
@@ -87,7 +88,9 @@ public class TestParametersRule implements TestRule {
                 TestParamDefaults props = description.getTestClass().getAnnotation(TestParamDefaults.class);
                 getInstance().addParam("defaultParams", props);
 
-                getInstance().init((Class<? extends BasicTest>) description.getTestClass());
+                getInstance().init((Class<? extends BasicTest>) description.getTestClass(), description.getMethodName());
+
+                ImageAssert.setFailureFilePath(getInstance().getBaseTemporaryDirectory().resolve("failureFiles"));
 
                 // clean the temporary directory before each test
                 Path tmpDir = getInstance().getBaseTemporaryDirectory();

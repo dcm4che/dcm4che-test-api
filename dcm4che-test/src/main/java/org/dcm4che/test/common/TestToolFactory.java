@@ -602,7 +602,7 @@ public class TestToolFactory {
 
         File subTempDirectory;
         try {
-            subTempDirectory = Files.createTempDirectory(tmpDir, prefix + "_" + test.getClass().getSimpleName()).toFile();
+            subTempDirectory = Files.createTempDirectory(tmpDir, prefix + "_").toFile();
         } catch (IOException e) {
             // normally shouldn't happen unless the hard disk is full or something as severe
             throw new RuntimeException(e);
