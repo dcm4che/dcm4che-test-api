@@ -40,19 +40,20 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.storescp.test.StoreSCPTool;
+
 /**
  * @author Hesham Elbadawi <bsdreko@gmail.com>
  */
 @Retention(RetentionPolicy.RUNTIME)
 public @interface StoreSCPParameters {
 
-    public static String DEFAULT_STORAGE_DIR = "./";
-
     /**
-     * RELATIVE (to base) storage directory
-     * @return
+     * The default will automatically create a temporary directory. Use
+     * {@link StoreSCPTool#getStorageDirectory()} to access it.
      */
-    public String storageDirectory() default DEFAULT_STORAGE_DIR;
+    public String storageDirectory() default "";
+
     public String sourceDevice() default "storescp";
     public String sourceAETitle() default "STORESCP";
     public String connection() default "dicom"; //bound connection

@@ -188,30 +188,21 @@ public class TestToolFactory {
     }
 
     private static TestTool createStoreSCPTool(BasicTest test, Properties defaultParams) {
-        TestTool tool;
-        String sourceDevice;
-        String sourceAETitle;
-        File storeSCPStorageDirectory;
-        StoreSCPParameters storeSCPParams = (StoreSCPParameters) test.getParams()
-        .get("StoreSCPParameters");
 
-        // storage dir
-        String storagePath = defaultParams.getProperty("storescp.storedirectory");
-        if (storagePath == null)
-            throw new IllegalArgumentException("Storage path not set!");
-        if (storeSCPParams != null &&
-                !storeSCPParams.storageDirectory().equals(StoreSCPParameters.DEFAULT_STORAGE_DIR))
-            storagePath += "/" + storeSCPParams.storageDirectory();
-        storeSCPStorageDirectory = new File(storagePath);
+        StoreSCPParameters storeSCPParams = (StoreSCPParameters) test.getParams().get("StoreSCPParameters");
 
-        sourceDevice = storeSCPParams != null
-                ? storeSCPParams.sourceDevice():"storescp";
+        File storeDir;
+        if (storeSCPParams == null || storeSCPParams.storageDirectory().isEmpty()) {
+            storeDir = createTempDirectory(test, "StoreSCP");
+        } else {
+            storeDir = new File(storeSCPParams.storageDirectory());
+        }
 
-        sourceAETitle = storeSCPParams != null
-                ? storeSCPParams.sourceAETitle():"STORESCP";
+        String sourceDevice = storeSCPParams != null ? storeSCPParams.sourceDevice() : "storescp";
 
-        boolean noStore = storeSCPParams != null
-                ? storeSCPParams.noStore():false;
+        String sourceAETitle = storeSCPParams != null ? storeSCPParams.sourceAETitle() : "STORESCP";
+
+        boolean noStore = storeSCPParams != null ? storeSCPParams.noStore() : false;
 
         Device device;
         Connection conn;
@@ -224,8 +215,7 @@ public class TestToolFactory {
             throw new RuntimeException(e);
         }
 
-        tool = new StoreSCPTool(storeSCPStorageDirectory, device, sourceAETitle, conn, noStore);
-        return tool;
+        return new StoreSCPTool(storeDir, device, sourceAETitle, conn, noStore);
     }
 
     private static TestTool createQCTool(BasicTest test) throws MissingArgumentException {
@@ -447,7 +437,6 @@ public class TestToolFactory {
     }
 
     private static TestTool createGetTool(BasicTest test, Properties defaultParams, String host, int port) {
-        TestTool tool;
         GetParameters getParams = (GetParameters) test.getParams().get("GetParameters");
 
         String aeTitle = getParams != null && !getParams.aeTitle()
@@ -466,12 +455,12 @@ public class TestToolFactory {
                 :(defaultParams.getProperty("retrieve.relational")!=null
                 ?Boolean.valueOf(defaultParams.getProperty("retrieve.relational")) : null);
 
-        String retrieveDirPath = defaultParams.getProperty("retrieve.directory");
-
-        if (getParams!=null)
-            retrieveDirPath += "/" + getParams.retrieveDir();
-
-        File retrieveDir = new File(retrieveDirPath);
+        File retrieveDir;
+        if (getParams == null || getParams.retrieveDir().isEmpty()) {
+            retrieveDir = createTempDirectory(test, "RETRIEVE");
+        } else {
+            retrieveDir = new File(getParams.retrieveDir());
+        }
 
         String sourceDevice = getParams != null ? getParams.sourceDevice() : "getscu";
         String sourceAETitle = getParams != null ? getParams.sourceAETitle() : "GETSCU";
@@ -485,9 +474,7 @@ public class TestToolFactory {
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
-        tool = new RetrieveTool(host, port, aeTitle, retrieveDir, device
-                , sourceAETitle, retrieveLevel, queryInformationModel, relational, conn);
-        return tool;
+        return new RetrieveTool(host, port, aeTitle, retrieveDir, device, sourceAETitle, retrieveLevel, queryInformationModel, relational, conn);
     }
 
     private static TestTool createMPPSTool(BasicTest test, Properties defaultParams, String host, int port) {

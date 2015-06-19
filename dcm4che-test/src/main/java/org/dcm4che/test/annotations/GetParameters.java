@@ -41,6 +41,8 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.getscu.test.RetrieveTool;
+
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
@@ -50,8 +52,8 @@ public @interface GetParameters {
     public String aeTitle() default "NULL";
 
     /**
-     * RELATIVE path to the retrieve dir specified in parameters
-     * @return
+     * The default will automatically create a temporary directory. Use
+     * {@link RetrieveTool#getRetrieveDir()} to access it.
      */
     public String retrieveDir() default "";
 

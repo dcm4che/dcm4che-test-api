@@ -50,8 +50,8 @@ public @interface StoreParameters {
     public String aeTitle() default "NULL";
 
     /**
-     * DO NOT USE until really necessary - it will destabilize the tests running on Jenkins
-     * @return
+     * DO NOT USE until really necessary - it will destabilize the tests running
+     * on Jenkins
      */
     @Deprecated
     public String baseDirectory() default "NULL";
