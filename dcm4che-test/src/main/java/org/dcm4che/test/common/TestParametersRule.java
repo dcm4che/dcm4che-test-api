@@ -51,6 +51,8 @@ import org.dcm4che.test.utils.DBUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -59,6 +61,7 @@ import org.junit.runners.model.Statement;
 
 public class TestParametersRule implements TestRule {
 
+    private static final Logger log = LoggerFactory.getLogger(TestParametersRule.class);
 
     private final BasicTest parametrizedTest;
 
@@ -75,7 +78,12 @@ public class TestParametersRule implements TestRule {
                 // Skip heavy tests if not explicilty specified by a property
                 if (description.getTestClass().getAnnotation(Heavy.class) != null &&
                         Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
+                {
+                    log.info("Skipping Heavy Test {}", description.getTestClass().getName());
                     return;
+                }
+
+                log.info("Running {} {}", description.getTestClass().getName(), description.getMethodName());
 
                 Method method = description.getTestClass().getMethod(description.getMethodName());
                 getInstance().clearParams();
