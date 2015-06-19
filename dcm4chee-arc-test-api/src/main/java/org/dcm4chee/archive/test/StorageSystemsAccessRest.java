@@ -51,8 +51,6 @@ import javax.ws.rs.QueryParam;
 @Path("/storageSystems")
 public interface StorageSystemsAccessRest {
 
-    @GET
-    @Path("isGroupEmpty")
     /**
      * Check whether the storage system group is empty, i.e. no storage system
      * within the group contains objects.
@@ -61,10 +59,10 @@ public interface StorageSystemsAccessRest {
      *            id of storage system group
      * @return true if the storage system group is empty, false otherwise
      */
+    @GET
+    @Path("isGroupEmpty")
     public boolean isStorageSystemGroupEmpty(@QueryParam("group") String storageSystemGroupID);
 
-    @GET
-    @Path("isSystemEmpty")
     /**
      * Check whether the storage system is empty, i.e. it does not contain any
      * objects.
@@ -75,6 +73,8 @@ public interface StorageSystemsAccessRest {
      *            id if storage system within the storage system group
      * @return true if the storage system is empty, false otherwise
      */
+    @GET
+    @Path("isSystemEmpty")
     public boolean isStorageSystemEmpty(@QueryParam("group") String storageSystemGroupID, @QueryParam("id") String storageSystemID);
 
 }
