@@ -201,6 +201,12 @@
             <type>pom</type>
         </dependency>
 
+        <dependency>
+          <groupId>org.dcm4che</groupId>
+          <artifactId>dcm4chee-arc-test-api</artifactId>
+          <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
     <build>
         <resources>

@@ -119,6 +119,7 @@
   </build>
   <modules>
     <module>dcm4che-test</module>
+	<module>dcm4chee-arc-test-api</module>
     <module>dcm4che-test-clean</module>
     <module>dcm4che-test-clean-war</module>
   </modules>

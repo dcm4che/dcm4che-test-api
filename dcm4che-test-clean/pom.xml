@@ -12,6 +12,11 @@
   <dependencies>
     <dependency>
       <groupId>org.dcm4che</groupId>
+      <artifactId>dcm4chee-arc-test-api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-ws-rs</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -26,6 +31,12 @@
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-conf-dicom</artifactId>
       <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.dcm4che.dcm4chee-arc</groupId>
+      <artifactId>dcm4chee-arc-api</artifactId>
+      <version>${dcm4chee-arc.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -54,7 +65,7 @@
         <configuration>
           <archive>
             <manifestEntries>
-              <Dependencies>org.dcm4che.conf.api, org.dcm4che.conf.dicom</Dependencies>
+              <Dependencies>org.dcm4che.conf.api, org.dcm4che.conf.dicom, org.dcm4chee.archive.api</Dependencies>
             </manifestEntries>
           </archive>
         </configuration>
