@@ -167,6 +167,9 @@ public class DicomAssert {
      */
     public static void assertAllContain(List<Attributes> datasets, Attributes referenceDataset)
     {
+        if (datasets.isEmpty())
+            Assert.fail("No datasets");
+
         for (Attributes dataset : datasets)
         {
             assertContains(dataset, referenceDataset);
