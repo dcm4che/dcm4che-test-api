@@ -46,6 +46,8 @@ import java.util.List;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.ElementDictionary;
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Assertions on DICOM objects for tests.
@@ -53,6 +55,8 @@ import org.junit.Assert;
  * @author Hermann Czedik-Eysenberg <hermann-agfa@czedik.net>
  */
 public class DicomAssert {
+
+    private static final Logger log = LoggerFactory.getLogger(DicomAssert.class);
 
     /**
      * Check that the content of the given DICOM dataset is equal to the given
@@ -69,7 +73,10 @@ public class DicomAssert {
 
         if (!equal)
         {
-            // TODO output information about failure
+            Attributes expected = referenceDataset.getRemovedOrModified(dataset);
+            Attributes actual = dataset.getRemovedOrModified(referenceDataset);
+            log.info("Expected: \n{}", expected);
+            log.info("Actual: \n{}", actual);
 
             Assert.fail("The dicom objects are not equal");
         }
@@ -139,7 +146,11 @@ public class DicomAssert {
 
         if (!contains)
         {
-            // TODO output information about failure
+            Attributes selection = new Attributes(dataset, false, referenceDataset);
+            Attributes expected = referenceDataset.getRemovedOrModified(selection);
+            Attributes actual = new Attributes(selection, false, expected);
+            log.info("Expected: \n{}", expected);
+            log.info("Actual: \n{}", actual);
 
             Assert.fail("The dataset does not contain all tags of the test dataset or the values differ.");
         }
