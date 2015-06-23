@@ -46,6 +46,7 @@ import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.DcmGenParameters;
+import org.dcm4che.test.annotations.EchoParameters;
 import org.dcm4che.test.annotations.GetParameters;
 import org.dcm4che.test.annotations.MoveParameters;
 import org.dcm4che.test.annotations.MppsParameters;
@@ -59,6 +60,7 @@ import org.dcm4che.test.annotations.StoreSCPParameters;
 import org.dcm4che.test.annotations.StowRSParameters;
 import org.dcm4che.test.annotations.WadoRSParameters;
 import org.dcm4che.test.annotations.WadoURIParameters;
+import org.dcm4che.test.tool.EchoTool;
 import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
@@ -105,7 +107,8 @@ public class TestToolFactory {
         WadoRSTool,
         StoreSCPTool,
         DcmGenTool,
-        QCTool
+        QCTool,
+        EchoTool
     }
 
     public static TestTool createToolForTest(TestToolType type, BasicTest test) throws MissingArgumentException {
@@ -180,6 +183,10 @@ public class TestToolFactory {
         case StoreSCPTool:
 
             return createStoreSCPTool(test, defaultParams);
+
+        case EchoTool:
+
+            return createEchoTool(test, defaultParams, host, port);
 
         default:
             throw new IllegalArgumentException("Unsupported TestToolType specified"
@@ -577,6 +584,32 @@ public class TestToolFactory {
             throw new TestToolException(e);
         }
         return new StoreTool(host, port, aeTitle, baseDir, device, sourceAETitle, conn);
+    }
+
+    private static TestTool createEchoTool(BasicTest test, Properties defaultParams, String host, int port) {
+        EchoParameters echoParams = (EchoParameters) test.getParams().get("EchoParameters");
+
+        // we use re-use some of the default from the StoreTool here
+        String aeTitle = echoParams != null && !echoParams.aeTitle()
+                .equalsIgnoreCase("NULL") ? echoParams.aeTitle()
+                : (defaultParams.getProperty("store.aetitle") != null
+                        ? defaultParams.getProperty("store.aetitle") : null);
+
+        String sourceDevice = echoParams != null ? echoParams.sourceDevice() : "storescu";
+
+        String sourceAETitle = echoParams != null ? echoParams.sourceAETitle() : "ECHOSCU";
+
+        Device device;
+        Connection conn;
+        try {
+            device = getDicomConfiguration(test).findDevice(sourceDevice);
+            conn = device.connectionWithEqualsRDN(new Connection(
+                    (String) (echoParams != null && echoParams.connection() != null ?
+                            echoParams.connection() : defaultParams.get("store.connection")), ""));
+        } catch (ConfigurationException e) {
+            throw new TestToolException(e);
+        }
+        return new EchoTool(host, port, aeTitle, device, sourceAETitle, conn);
     }
 
     public static DicomConfiguration getDicomConfiguration(BasicTest test) {
