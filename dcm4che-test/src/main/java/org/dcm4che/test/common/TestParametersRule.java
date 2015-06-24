@@ -83,7 +83,10 @@ public class TestParametersRule implements TestRule {
                     return;
                 }
 
-                log.info("Running {} {}", description.getTestClass().getName(), description.getMethodName());
+                log.info("\n\n------------------------------------ \n" +
+                        "Running {} {} \n" +
+                        "------------------------------------ \n\n",
+                        description.getTestClass().getName(), description.getMethodName());
 
                 Method method = description.getTestClass().getMethod(description.getMethodName());
                 getInstance().clearParams();
