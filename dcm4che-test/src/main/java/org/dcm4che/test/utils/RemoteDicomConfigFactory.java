@@ -9,11 +9,14 @@ import org.dcm4che3.conf.core.util.PathPattern;
 import org.dcm4che3.conf.dicom.CommonDicomConfiguration;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.conf.dicom.DicomPath;
+import org.dcm4che3.net.ExternalArchiveAEExtension;
+import org.dcm4che3.net.TCGroupConfigAEExtension;
 import org.dcm4che3.net.audit.AuditLogger;
 import org.dcm4che3.net.audit.AuditRecordRepository;
 import org.dcm4che3.net.hl7.HL7DeviceExtension;
 import org.dcm4che3.net.imageio.ImageReaderExtension;
 import org.dcm4che3.net.imageio.ImageWriterExtension;
+import org.dcm4che3.net.web.WebServiceAEExtension;
 import org.dcm4chee.archive.conf.ArchiveAEExtension;
 import org.dcm4chee.archive.conf.ArchiveDeviceExtension;
 import org.dcm4chee.archive.conf.ArchiveHL7ApplicationExtension;
@@ -58,6 +61,9 @@ public class RemoteDicomConfigFactory {
             builder.registerDeviceExtension(StorageDeviceExtension.class);
             builder.registerAEExtension(ArchiveAEExtension.class);
             builder.registerHL7ApplicationExtension(ArchiveHL7ApplicationExtension.class);
+            builder.registerAEExtension(WebServiceAEExtension.class);
+            builder.registerAEExtension(ExternalArchiveAEExtension.class);
+            builder.registerAEExtension(TCGroupConfigAEExtension.class);
 
             return builder.build();
         } catch (ConfigurationException e) {
@@ -73,25 +79,30 @@ public class RemoteDicomConfigFactory {
             @GET
             @Path("/device/{deviceName}")
             @Produces(MediaType.APPLICATION_JSON)
-            public Map<String, Object> getDeviceConfig(@PathParam(value = "deviceName") String deviceName) throws ConfigurationException;
+            Map<String, Object> getDeviceConfig(@PathParam(value = "deviceName") String deviceName) throws ConfigurationException;
 
             @DELETE
             @Path("/device/{deviceName}")
             @Produces(MediaType.APPLICATION_JSON)
-            public void removeDevice(@PathParam(value = "deviceName") String deviceName) throws ConfigurationException;
+            void removeDevice(@PathParam(value = "deviceName") String deviceName) throws ConfigurationException;
 
             @POST
             @Path("/device/{deviceName}")
             @Produces(MediaType.APPLICATION_JSON)
             @Consumes(MediaType.APPLICATION_JSON)
-            public void modifyDeviceConfig(@Context UriInfo ctx, @PathParam(value = "deviceName") String deviceName, Map<String, Object> config) throws ConfigurationException;
+            void modifyDeviceConfig(@Context UriInfo ctx, @PathParam(value = "deviceName") String deviceName, Map<String, Object> config) throws ConfigurationException;
             
             
             @GET
             @Path("/devices")
             @Produces(MediaType.APPLICATION_JSON)
             @Consumes(MediaType.APPLICATION_JSON)
-            public List<Map<String, Object>> list() throws ConfigurationException;
+            List<Map<String, Object>> list() throws ConfigurationException;
+
+            @GET
+            @Path("/transferCapabilities")
+            @Produces(MediaType.APPLICATION_JSON)
+            Map<String,Object> getTransferCapabilitiesConfig();
         }
 
         /**
@@ -128,6 +139,17 @@ public class RemoteDicomConfigFactory {
 
                 // get connection from dummy
                 return ConfigNodeUtil.getNode(dummyRoot, path);
+
+            } catch (IllegalArgumentException e) {
+                //noop
+            }
+
+
+            // if TCConfig
+            try {
+
+                DicomPath.TCGroups.parse(path);
+                return remoteEndpoint.getTransferCapabilitiesConfig();
 
             } catch (IllegalArgumentException e) {
                 //noop
