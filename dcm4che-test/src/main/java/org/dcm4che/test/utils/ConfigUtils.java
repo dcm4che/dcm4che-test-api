@@ -67,8 +67,10 @@ public class ConfigUtils {
         WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/config-restore/");
         Response rsp = target.request().build("GET").invoke();
 
-        if (rsp.getStatus() != 200)
-            throw new RuntimeException("Config restore failed");
+        if (rsp.getStatus() != 200) {
+            String s = rsp.readEntity(String.class);
+            throw new RuntimeException("Config restore failed:\n" + (s != null ? s : rsp));
+        }
     }
 
 }
