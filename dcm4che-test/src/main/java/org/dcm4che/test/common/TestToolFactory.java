@@ -329,8 +329,7 @@ public class TestToolFactory {
                 ? qidoParams.fuzzyMatching() : false;
         boolean timezone = qidoParams != null && qidoParams.timezoneAdjustment()
                 ? qidoParams.timezoneAdjustment() : false;
-        boolean returnAll = qidoParams != null && qidoParams.returnAll()
-                ? qidoParams.returnAll() : true;
+        boolean returnAll = qidoParams != null ? qidoParams.returnAll() : false;
         String offset = qidoParams != null && !qidoParams.offset().equalsIgnoreCase("0")
                 ? qidoParams.offset() : "0";
         tool = new QidoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url),

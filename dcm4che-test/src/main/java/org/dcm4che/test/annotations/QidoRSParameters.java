@@ -41,6 +41,7 @@ package org.dcm4che.test.annotations;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.dcm4che3.tool.qidors.test.QidoRSTool;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -52,7 +53,17 @@ public @interface QidoRSParameters {
     public String url();
     public boolean timezoneAdjustment() default false;
     public boolean fuzzyMatching() default false;
-    public boolean returnAll() default true;
+
+    /**
+     * Set to true to indicate that all available fields should be included for
+     * each response ("includefield=all"). Default: false.
+     * 
+     * <p>
+     * Specific return fields can be added using {@link QidoRSTool#addReturnTag}.
+     * They will be ignored if this is set to true.
+     */
+    public boolean returnAll() default false;
+
     public String limit() default "-1";
     public String offset() default "0";
 }
