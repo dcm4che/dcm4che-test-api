@@ -45,14 +45,23 @@ import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Response;
 
 import org.dcm4che.test.common.BasicTest;
+import org.dcm4che3.conf.core.api.Configuration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
+
+import java.util.Map;
 
 /**
  * Utility methods to manipulate the server-side configuration from within
  * tests.
  * 
  * @author Hermann Czedik-Eysenberg <hermann-agfa@czedik.net>
+ * @author Roman K
  */
 public class ConfigUtils {
+
+
+   private static Map<String,Object> originalConfig;
+
 
     /**
      * Restore the configuration to its initial state.
@@ -60,17 +69,15 @@ public class ConfigUtils {
      * @param test
      *            the test
      */
-    public static void restoreConfig(BasicTest test)
-    {
-        String baseURL = test.getDefaultProperties().getProperty("remoteConn.url");
-        Client client = ClientBuilder.newBuilder().build();
-        WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/config-restore/");
-        Response rsp = target.request().build("GET").invoke();
+    public static void restoreConfig(BasicTest test) throws ConfigurationException {
 
-        if (rsp.getStatus() != 200) {
-            String s = rsp.readEntity(String.class);
-            throw new RuntimeException("Config restore failed:\n" + (s != null ? s : rsp));
+        Configuration configurationStorage = test.getRemoteConfig().getConfigurationStorage();
+        if (originalConfig == null) {
+            originalConfig = configurationStorage.getConfigurationRoot();
         }
+        else
+            configurationStorage.persistNode("/",originalConfig,null);
+
     }
 
 }

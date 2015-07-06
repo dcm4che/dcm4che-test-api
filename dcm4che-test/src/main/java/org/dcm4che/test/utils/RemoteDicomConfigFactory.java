@@ -1,6 +1,7 @@
 package org.dcm4che.test.utils;
 
 import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
 import org.dcm4che3.conf.core.DefaultBeanVitalizer;
 import org.dcm4che3.conf.core.api.Configuration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
@@ -43,7 +44,7 @@ import java.util.Map;
 public class RemoteDicomConfigFactory {
 
 
-    public static DicomConfiguration createRemoteDicomConfiguration(String remoteEndpointURL) {
+    public static DicomConfigurationManager createRemoteDicomConfiguration(String remoteEndpointURL) {
 
         RemoteConfiguration remoteConfiguration = new RemoteConfiguration(remoteEndpointURL);
         try {
@@ -134,7 +135,7 @@ public class RemoteDicomConfigFactory {
 
         @Override
         public Map<String, Object> getConfigurationRoot() throws ConfigurationException {
-            return null;
+            return remoteEndpoint.getFullConfig();
         }
 
         @Override
@@ -191,6 +192,13 @@ public class RemoteDicomConfigFactory {
 
         @Override
         public void persistNode(String path, Map<String, Object> configNode, Class configurableClass) throws ConfigurationException {
+
+            // if using import
+            if ("/".equals(path)) {
+                remoteEndpoint.setFullConfig(configNode);
+                return;
+            }
+
             try {
 
                 remoteEndpoint.modifyDeviceConfig(null, DicomPath.DeviceByName.parse(path).getParam("deviceName"), configNode);

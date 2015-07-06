@@ -56,6 +56,7 @@ import org.dcm4che.test.common.TestToolFactory.TestToolType;
 import org.dcm4che.test.utils.LoadProperties;
 import org.dcm4che.test.utils.RemoteDicomConfigFactory;
 import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.data.Attributes;
@@ -86,9 +87,9 @@ public abstract class BasicTest {
 
     private DicomConfiguration localConfig;
 
-    private DicomConfiguration remoteConfig = null;
+    private DicomConfigurationManager remoteConfig = null;
 
-    public DicomConfiguration getRemoteConfig() {
+    public DicomConfigurationManager getRemoteConfig() {
         if (remoteConfig == null) {
             String baseURL = getDefaultProperties().getProperty("remoteConn.url")+"/config/data";
             remoteConfig = RemoteDicomConfigFactory.createRemoteDicomConfiguration(baseURL);
