@@ -71,7 +71,7 @@ public class RemoteDicomConfigFactory {
         }
     }
 
-    private static class RemoteConfiguration implements Configuration {
+    public static class RemoteConfiguration implements Configuration {
 
         @Path("/config")
         private static interface RESTDicomConfigAPI {
@@ -92,7 +92,6 @@ public class RemoteDicomConfigFactory {
             @Consumes(MediaType.APPLICATION_JSON)
             void modifyDeviceConfig(@Context UriInfo ctx, @PathParam(value = "deviceName") String deviceName, Map<String, Object> config) throws ConfigurationException;
             
-            
             @GET
             @Path("/devices")
             @Produces(MediaType.APPLICATION_JSON)
@@ -103,12 +102,25 @@ public class RemoteDicomConfigFactory {
             @Path("/transferCapabilities")
             @Produces(MediaType.APPLICATION_JSON)
             Map<String,Object> getTransferCapabilitiesConfig();
+
+            @GET
+            @Path("/exportFullConfiguration")
+            @Produces(MediaType.APPLICATION_JSON)
+            Map<String,Object> getFullConfig();
+
+            @POST
+            @Path("/importFullConfiguration")
+            @Consumes(MediaType.APPLICATION_JSON)
+            public void setFullConfig(Map<String, Object> config);
         }
 
         /**
          * jax rs client
          */
         RESTDicomConfigAPI remoteEndpoint;
+
+        public RemoteConfiguration() {
+        }
 
         public RemoteConfiguration(String remoteEndpointURL) {
 
