@@ -54,6 +54,11 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  * @author Roman K
@@ -110,8 +115,10 @@ public class TestParametersRule implements TestRule {
                 // Clean DB before each test
                 DBUtils.cleanDB(getInstance());
 
-                // Reset config
+                // Reset config before each test
                 ConfigUtils.restoreConfig(getInstance());
+
+                notifyServerOfNewtest(description.getTestClass().getName() +" "+ description.getMethodName());
 
                 base.evaluate();
             }
@@ -120,6 +127,14 @@ public class TestParametersRule implements TestRule {
 
     public BasicTest getInstance() {
         return this.parametrizedTest;
+    }
+
+    protected void notifyServerOfNewtest(String testName) {
+        String baseURL = getInstance().getDefaultProperties().getProperty("remoteConn.url");
+        Client client = ClientBuilder.newBuilder().build();
+        WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/"+testName);
+        Response rsp = target.request().build("GET").invoke();
+
     }
 
 }
