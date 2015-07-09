@@ -253,7 +253,7 @@ public class RemoteDicomConfigFactory {
 
         @Override
         public void runBatch(ConfigBatch batch) {
-            batch.run(this);
+            batch.run();
         }
 
        
