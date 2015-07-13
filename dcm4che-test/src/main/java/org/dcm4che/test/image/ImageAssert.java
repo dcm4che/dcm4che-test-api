@@ -242,24 +242,22 @@ public class ImageAssert {
             }
         }
         
-        double sumOfDifferencesPerColor = sumOfAllDifferences / NUMBER_OF_COLORS;
+        double sumOfDifferencesPerColor = sumOfAllDifferences / NUMBER_OF_COLORS / VALUES_PER_COLOR;
         double sumOfDifferencesPerColorAndPixel = sumOfDifferencesPerColor / ((double) width * height);
-        double overallDifferenceRatio = sumOfDifferencesPerColorAndPixel / VALUES_PER_COLOR;
-        double overallDifferencesPercent = overallDifferenceRatio * 100.0;
 
         log.info("Tolerance per color channel: {}", threshold);
         log.info("Number of allowed different pixel: {}", maxAllowedDifferentPixels);
         log.info("Number of allowed differences in percent: {}", decimalFormat.format(allowedOverallDifferencePercentage));
         log.info("Number of different pixels outside threshold: {}", wrongPixels);
         log.info("Number of different pixels within threshold: {}", wrongPixelsWithinThreshold);
-        log.info("Maximum difference on one color channel: {}%", decimalFormat.format(maxDifference / VALUES_PER_COLOR));
-        log.info("Average difference for different pixels on one color channel: {}%", decimalFormat.format((sumOfDifferencesPerColor / (wrongPixels + wrongPixelsWithinThreshold)) / VALUES_PER_COLOR));
-        log.info("Overall percentage of differences: {}%", decimalFormat.format(overallDifferencesPercent));
+        log.info("Maximum difference on one color channel: {}%", decimalFormat.format(maxDifference / VALUES_PER_COLOR * 100.0));
+        log.info("Average difference for different pixels on one color channel: {}%", decimalFormat.format((sumOfDifferencesPerColor / (wrongPixels + wrongPixelsWithinThreshold)) * 100.0));
+        log.info("Overall percentage of differences: {}%", decimalFormat.format(sumOfDifferencesPerColorAndPixel  * 100.0));
 
         // too many differences during the comparison
-        if (wrongPixels > maxAllowedDifferentPixels && overallDifferencesPercent >= allowedOverallDifferencePercentage)
+        if (wrongPixels > maxAllowedDifferentPixels && sumOfDifferencesPerColorAndPixel  * 100.0 >= allowedOverallDifferencePercentage)
         {
-            String failureMessage = "Images have " + wrongPixels + " different pixels (" + decimalFormat.format(overallDifferencesPercent) + "%). [Max: " + maxAllowedDifferentPixels + ", threshold: " + threshold + ", percent: " + decimalFormat.format(allowedOverallDifferencePercentage) + "]";
+            String failureMessage = "Images have " + wrongPixels + " different pixels (" + decimalFormat.format(sumOfDifferencesPerColorAndPixel  * 100.0) + "%). [Max: " + maxAllowedDifferentPixels + ", threshold: " + threshold + ", percent: " + decimalFormat.format(allowedOverallDifferencePercentage) + "]";
             log.warn(failureMessage);
             return new ComparisonResult(false, failureMessage, binaryDifferenceImage, substractionDifferenceImage);
         }
