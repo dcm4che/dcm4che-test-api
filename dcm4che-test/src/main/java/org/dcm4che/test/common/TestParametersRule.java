@@ -104,7 +104,7 @@ public class TestParametersRule implements TestRule {
                 TestParamDefaults props = description.getTestClass().getAnnotation(TestParamDefaults.class);
                 getInstance().addParam("defaultParams", props);
 
-                getInstance().init((Class<? extends BasicTest>) description.getTestClass(), description.getMethodName());
+                getInstance().init(description.getMethodName());
 
                 ImageAssert.setFailureFilePath(getInstance().getBaseTemporaryDirectory().resolve("failureFiles"));
 
@@ -130,7 +130,7 @@ public class TestParametersRule implements TestRule {
     }
 
     protected void notifyServerOfNewtest(String testName) {
-        String baseURL = getInstance().getDefaultProperties().getProperty("remoteConn.url");
+        String baseURL = getInstance().getProperties().getProperty("remoteConn.url");
         Client client = ClientBuilder.newBuilder().build();
         WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/"+testName);
         Response rsp = target.request().build("GET").invoke();

@@ -55,7 +55,7 @@ public class DBUtils {
         RemoteConnectionParameters remoteParams = 
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");
 
-        String baseURL =  test.getDefaultProperties().getProperty("remoteConn.url");
+        String baseURL =  test.getProperties().getProperty("remoteConn.url");
         Client client = ClientBuilder.newBuilder().build();
         WebTarget target = client.target(baseURL+"/dcm4chee-arc-test/clean");
         ResteasyWebTarget rtarget = (ResteasyWebTarget) target;

@@ -87,7 +87,7 @@ public class TestUtils {
     }
 
     public static String reloadServerConfig(BasicTest test) throws MalformedURLException, IOException {
-        Properties defaultParams = test.getDefaultProperties();
+        Properties defaultParams = test.getProperties();
         //get remote connection parameters
         RemoteConnectionParameters remoteParams = 
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");

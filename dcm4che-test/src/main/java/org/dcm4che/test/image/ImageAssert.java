@@ -47,10 +47,12 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 
 import org.dcm4che.test.common.BasicTest;
+import org.dcm4che.test.utils.TestingProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -105,7 +107,13 @@ public class ImageAssert {
              * defaults, so that the thresholds do not need to be specified in
              * every test. (contact Hermann)
              */
-            ComparisonResult comparisonResult = compareAndCreateDifferenceImages(image, referenceImage, 0, 0, 0);
+
+            Properties properties = TestingProperties.load();
+
+            ComparisonResult comparisonResult = compareAndCreateDifferenceImages(image,
+                    referenceImage,
+                    Integer.valueOf(properties.getProperty("imageAssert.singleColorChannelThreshold", "0")),
+                    Integer.valueOf(properties.getProperty("imageAssert.overallDifferenceTolerance", "0")));
 
             if (!comparisonResult.isSuccess())
             {
@@ -162,18 +170,14 @@ public class ImageAssert {
      *            channel they will still be treated as equal and the comparison
      *            result is a success. Value has to be from 0 to 255. (Default:
      *            0 for equality).
-     * @param maxAllowedDifferentPixels
-     *            Maximum number of pixels that can be different (outside the
-     *            threshold) for the comparison to be a success. (Default: 0 for
-     *            equality).
      * @param allowedOverallDifferencePercentage
      *            Overall percentage of differences that need to be exceeded for
      *            the result to be not a success. Value from 0 to 100. (Default:
      *            0 for equality).
      * @return result of the comparison
      */
-    private static ComparisonResult compareAndCreateDifferenceImages(BufferedImage image1, BufferedImage image2, int threshold, int maxAllowedDifferentPixels,
-            double allowedOverallDifferencePercentage)
+    private static ComparisonResult compareAndCreateDifferenceImages(BufferedImage image1, BufferedImage image2, int threshold,
+                                                                     double allowedOverallDifferencePercentage)
     {
         int width = image1.getWidth();
         int height = image1.getHeight();
@@ -246,7 +250,7 @@ public class ImageAssert {
         double sumOfDifferencesPerColorAndPixel = sumOfDifferencesPerColor / ((double) width * height);
 
         log.info("Tolerance per color channel: {}", threshold);
-        log.info("Number of allowed different pixel: {}", maxAllowedDifferentPixels);
+        //log.info("Number of allowed different pixel: {}", maxAllowedDifferentPixels);
         log.info("Number of allowed differences in percent: {}", decimalFormat.format(allowedOverallDifferencePercentage));
         log.info("Number of different pixels outside threshold: {}", wrongPixels);
         log.info("Number of different pixels within threshold: {}", wrongPixelsWithinThreshold);
@@ -255,9 +259,9 @@ public class ImageAssert {
         log.info("Overall percentage of differences: {}%", decimalFormat.format(sumOfDifferencesPerColorAndPixel  * 100.0));
 
         // too many differences during the comparison
-        if (wrongPixels > maxAllowedDifferentPixels && sumOfDifferencesPerColorAndPixel  * 100.0 >= allowedOverallDifferencePercentage)
+        if (sumOfDifferencesPerColorAndPixel  * 100.0 >= allowedOverallDifferencePercentage)
         {
-            String failureMessage = "Images have " + wrongPixels + " different pixels (" + decimalFormat.format(sumOfDifferencesPerColorAndPixel  * 100.0) + "%). [Max: " + maxAllowedDifferentPixels + ", threshold: " + threshold + ", percent: " + decimalFormat.format(allowedOverallDifferencePercentage) + "]";
+            String failureMessage = "Images have " + wrongPixels + " different pixels (" + decimalFormat.format(sumOfDifferencesPerColorAndPixel  * 100.0) + "%). [ threshold: " + threshold + ", percent: " + decimalFormat.format(allowedOverallDifferencePercentage) + "]";
             log.warn(failureMessage);
             return new ComparisonResult(false, failureMessage, binaryDifferenceImage, substractionDifferenceImage);
         }

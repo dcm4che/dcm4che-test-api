@@ -58,7 +58,7 @@ public class StorageSystemsAccessTool {
 
     public StorageSystemsAccessTool(BasicTest test) {
 
-        String baseURL = test.getDefaultProperties().getProperty("remoteConn.url");
+        String baseURL = test.getProperties().getProperty("remoteConn.url");
 
         client = new ResteasyClientBuilder().build();
         ResteasyWebTarget target = client.target(baseURL + "/dcm4chee-arc-test/");

@@ -113,7 +113,7 @@ public class TestToolFactory {
 
     public static TestTool createToolForTest(TestToolType type, BasicTest test) throws MissingArgumentException {
 
-        Properties defaultParams = test.getDefaultProperties();
+        Properties defaultParams = test.getProperties();
 
         RemoteConnectionParameters remoteParams =
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");

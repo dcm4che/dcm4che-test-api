@@ -47,11 +47,11 @@ import java.util.Properties;
  * @author Umberto Cappellini <umberto.cappellini@agfa.com>
  *
  */
-public class LoadProperties {
+public class TestingProperties {
 
     private static Properties props = null;
     
-    public static Properties load(Class resourceClass) throws IOException
+    public static Properties load() throws IOException
     {
         if (props == null)
         {

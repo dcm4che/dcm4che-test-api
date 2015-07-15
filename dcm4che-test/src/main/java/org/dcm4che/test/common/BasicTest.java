@@ -53,7 +53,7 @@ import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.common.TestToolFactory.TestToolType;
-import org.dcm4che.test.utils.LoadProperties;
+import org.dcm4che.test.utils.TestingProperties;
 import org.dcm4che.test.utils.RemoteDicomConfigFactory;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
@@ -83,7 +83,7 @@ public abstract class BasicTest {
      */
     private String currentMethodName = "none";
 
-    private Properties defaultProperties;
+    private Properties properties;
 
     private DicomConfiguration localConfig;
 
@@ -91,7 +91,7 @@ public abstract class BasicTest {
 
     public DicomConfigurationManager getRemoteConfig() {
         if (remoteConfig == null) {
-            String baseURL = getDefaultProperties().getProperty("remoteConn.url")+"/config/data";
+            String baseURL = getProperties().getProperty("remoteConn.url")+"/config/data";
             remoteConfig = RemoteDicomConfigFactory.createRemoteDicomConfiguration(baseURL);
         }
         return remoteConfig;
@@ -103,11 +103,12 @@ public abstract class BasicTest {
         return params;
     }
 
-    public void setDefaultProperties(Properties props) {
-        defaultProperties = props;
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
-    public Properties getDefaultProperties() {
-        return defaultProperties;
+
+    public Properties getProperties() {
+        return properties;
     }
     protected void addParam( String key, Annotation anno) {
         params.put(key, anno);
@@ -116,7 +117,7 @@ public abstract class BasicTest {
         params.clear();
     }
 
-    public void init(Class<? extends BasicTest> clazz, String currentMethod) {
+    public void init(String currentMethod) {
 
         this.currentMethodName = currentMethod;
 
@@ -129,8 +130,8 @@ public abstract class BasicTest {
                     && this.getParams().get("defaultLocalConfig") != null)
                 System.setProperty("defaultLocalConfig", ((TestLocalConfig)
                         this.getParams().get("defaultLocalConfig")).configFile());
-            
-            this.setDefaultProperties(LoadProperties.load(clazz.getClass()));
+
+            this.setProperties(TestingProperties.load());
 
             this.setLocalConfig(System.getProperty("defaultLocalConfig"));
 
@@ -271,7 +272,7 @@ public abstract class BasicTest {
      */
     public Path getTestdataDirectory()
     {
-        return Paths.get(getDefaultProperties().getProperty("testdata.directory")).toAbsolutePath().normalize();
+        return Paths.get(getProperties().getProperty("testdata.directory")).toAbsolutePath().normalize();
     }
 
     /**
@@ -280,7 +281,7 @@ public abstract class BasicTest {
      */
     public Path getBaseTemporaryDirectory()
     {
-        Path tmpDir = Paths.get(getDefaultProperties().getProperty("base.tmp.directory"), this.getClass().getName(), currentMethodName).toAbsolutePath().normalize();
+        Path tmpDir = Paths.get(getProperties().getProperty("base.tmp.directory"), this.getClass().getName(), currentMethodName).toAbsolutePath().normalize();
         if (!Files.isDirectory(tmpDir)) {
             try {
                 Files.createDirectories(tmpDir);
