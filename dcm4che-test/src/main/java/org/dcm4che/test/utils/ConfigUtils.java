@@ -75,8 +75,18 @@ public class ConfigUtils {
         if (originalConfig == null) {
             originalConfig = configurationStorage.getConfigurationRoot();
         }
-        else
-            configurationStorage.persistNode("/",originalConfig,null);
+        else {
+            configurationStorage.persistNode("/", originalConfig, null);
+
+            // quick solution to prevent unexpected fails when config is not restored yet (notif is sent asynchronously)
+            // but the next test has already started
+
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                //noop
+            }
+        }
 
     }
 
