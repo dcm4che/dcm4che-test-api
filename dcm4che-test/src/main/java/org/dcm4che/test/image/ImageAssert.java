@@ -108,7 +108,7 @@ public class ImageAssert {
              * every test. (contact Hermann)
              */
 
-            Properties properties = TestingProperties.load();
+            Properties properties = TestingProperties.get();
 
             ComparisonResult comparisonResult = compareAndCreateDifferenceImages(image,
                     referenceImage,

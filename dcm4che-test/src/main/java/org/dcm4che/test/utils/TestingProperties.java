@@ -51,21 +51,25 @@ public class TestingProperties {
 
     private static Properties props = null;
     
-    public static Properties load() throws IOException
+    public static Properties get()
     {
         if (props == null)
         {
             props = new Properties();
             String fileURL = System.getProperty("defaultParams");
-            
+
             if (fileURL != null && fileURL.length()>0)
             {
-                //load passed file
-                props.load(new FileInputStream(new File(fileURL)));
+                try {
+                    //load passed file
+                    props.load(new FileInputStream(new File(fileURL)));
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to load properties from file", e);
+                }
             }
             else
             {
-                throw new IOException("A default configuration property defaultParams must be defined");
+                throw new RuntimeException("A default configuration property 'defaultParams' must be defined");
             }
         }
         

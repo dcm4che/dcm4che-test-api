@@ -83,8 +83,6 @@ public abstract class BasicTest {
      */
     private String currentMethodName = "none";
 
-    private Properties properties;
-
     private DicomConfiguration localConfig;
 
     private DicomConfigurationManager remoteConfig = null;
@@ -103,13 +101,10 @@ public abstract class BasicTest {
         return params;
     }
 
-    public void setProperties(Properties properties) {
-        this.properties = properties;
+    public Properties getProperties() {
+        return TestingProperties.get();
     }
 
-    public Properties getProperties() {
-        return properties;
-    }
     protected void addParam( String key, Annotation anno) {
         params.put(key, anno);
     }
@@ -131,12 +126,8 @@ public abstract class BasicTest {
                 System.setProperty("defaultLocalConfig", ((TestLocalConfig)
                         this.getParams().get("defaultLocalConfig")).configFile());
 
-            this.setProperties(TestingProperties.load());
-
             this.setLocalConfig(System.getProperty("defaultLocalConfig"));
 
-        } catch (IOException e) {
-            throw new TestToolException(e);
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
