@@ -71,18 +71,91 @@ public class TestUtils {
         }
 
     }
-    public static void addDBCustomAttribute(String archiveDeviceName, Entity entity, DicomConfiguration remoteConfig
-            , int tagToAdd, VR vr, int SequenceTag) throws ConfigurationException {
+
+    public static void addDBCustomAttribute(String archiveDeviceName, Entity
+            entity, DicomConfiguration remoteConfig
+            , int tagToAdd, VR vr, int sequenceTag) throws
+            ConfigurationException {
+
+        addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 1, null,
+                tagToAdd, vr, sequenceTag);
+    }
+
+    public static void addDBPrivateCustomAttribute(String archiveDeviceName,
+            Entity entity, DicomConfiguration remoteConfig, String privateCreator,
+            int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
+
+        addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 1,
+                privateCreator, tagToAdd, vr, sequenceTag);
+    }
+
+    public static void addDBCustomAttribute2(String archiveDeviceName, Entity
+            entity, DicomConfiguration remoteConfig
+            , int tagToAdd, VR vr, int sequenceTag) throws
+            ConfigurationException {
+
+        addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 2, null,
+                tagToAdd, vr, sequenceTag);
+    }
+
+    public static void addDBPrivateCustomAttribute2(String archiveDeviceName,
+            Entity entity, DicomConfiguration remoteConfig, String privateCreator,
+            int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
+
+        addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 2,
+                privateCreator, tagToAdd, vr, sequenceTag);
+    }
+
+    public static void addDBCustomAttribute3(String archiveDeviceName, Entity
+            entity, DicomConfiguration remoteConfig
+            , int tagToAdd, VR vr, int sequenceTag) throws
+            ConfigurationException {
+
+        addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 3, null,
+                tagToAdd, vr, sequenceTag);
+    }
+
+    public static void addDBPrivateCustomAttribute3(String archiveDeviceName,
+            Entity entity, DicomConfiguration remoteConfig, String privateCreator,
+            int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
+
+        addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 3,
+                privateCreator, tagToAdd, vr, sequenceTag);
+    }
+
+    private static void addDBCustomAttribute(String archiveDeviceName, Entity
+            entity, DicomConfiguration remoteConfig,
+           int attributeNumber, String privateCreator, int tagToAdd, VR vr,
+           int sequenceTag)
+            throws ConfigurationException {
 
         Device dev = remoteConfig.findDevice(archiveDeviceName);
         ArchiveDeviceExtension arcDevExt = dev
                 .getDeviceExtension(ArchiveDeviceExtension.class);
-        AttributeFilter filter = arcDevExt.getAttributeFilter(Entity.Instance);
-        if(SequenceTag>0) 
-            filter.setCustomAttribute1(new ValueSelector(null, tagToAdd, vr, 0, new ItemPointer(SequenceTag)));
-        else
-            filter.setCustomAttribute1(new ValueSelector(null, tagToAdd, vr, 0));
-        
+        AttributeFilter filter = arcDevExt.getAttributeFilter(entity);
+
+        if (attributeNumber==1)
+            if(sequenceTag>0)
+                filter.setCustomAttribute1(new ValueSelector(privateCreator,
+                        tagToAdd, vr, 0, new ItemPointer(sequenceTag)));
+            else
+                filter.setCustomAttribute1(new ValueSelector(privateCreator,
+                        tagToAdd, vr, 0));
+        else if (attributeNumber==2)
+            if(sequenceTag>0)
+                filter.setCustomAttribute2(new ValueSelector(privateCreator,
+                        tagToAdd, vr, 0, new ItemPointer(sequenceTag)));
+            else
+                filter.setCustomAttribute2(new ValueSelector(privateCreator,
+                        tagToAdd, vr, 0));
+        else if (attributeNumber==3)
+            if(sequenceTag>0)
+                filter.setCustomAttribute3(new ValueSelector(privateCreator,
+                        tagToAdd, vr, 0, new ItemPointer(sequenceTag)));
+            else
+                filter.setCustomAttribute3(new ValueSelector(privateCreator,
+                        tagToAdd, vr, 0));
+
         remoteConfig.merge(dev);
     }
 
