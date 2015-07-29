@@ -205,10 +205,9 @@ public class RemoteDicomConfigFactory {
             }
 
             try {
-
                 remoteEndpoint.modifyDeviceConfig(null, DicomPath.DeviceByName.parse(path).getParam("deviceName"), configNode);
-
-            } catch (IllegalArgumentException e) {
+                Thread.sleep(200);
+            } catch (Exception e) {
                 throw new ConfigurationException("This action is not supported when using the remote config", e);
             }
         }
