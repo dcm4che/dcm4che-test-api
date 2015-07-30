@@ -97,7 +97,7 @@ public class FileAssert {
                 ais.close();
             }
         } catch (IOException e) {
-
+            throw new FileAssertionError("I/O error while comparing files", e);
         }
     }
 
