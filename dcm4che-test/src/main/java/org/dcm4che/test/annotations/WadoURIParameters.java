@@ -54,7 +54,14 @@ public @interface WadoURIParameters {
     public String seriesUID();
     public String objectUID();
     //defaults
+
+    /**
+     * Content Media type. Can be "application/dicom" or one of the supported
+     * image/video formats (e.g. "image/png", "image/jpeg", "image/gif",
+     * "video/mpeg" ...).
+     */
     public String contentType() default "application/dicom";
+
     public String charset() default "UTF-8";
     public boolean anonymize() default false;
     public String annotation() default "NULL";
@@ -69,6 +76,10 @@ public @interface WadoURIParameters {
     //presentationUID;
     public String presentationSeriesUID() default "NULL";
     public String presentationUID() default "NULL";
+
+    /**
+     * Transfer syntax UID. Only used if the contentType is "application/dicom".
+     */
     public String transferSyntax() default "NULL";
 
     /**
