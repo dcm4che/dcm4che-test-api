@@ -48,6 +48,8 @@ import java.io.LineNumberReader;
 import java.io.Reader;
 
 import org.junit.Assert;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A set of assert methods specially targeted to asserting files.
@@ -58,6 +60,8 @@ import org.junit.Assert;
  */
 public class FileAssert {
     
+    private static final Logger log = LoggerFactory.getLogger(FileAssert.class);
+
     private FileAssert() {
         // NOOP
     }
@@ -67,6 +71,9 @@ public class FileAssert {
      * if they are not.
      */
     public static void assertEquals(String message, File expected, File actual) {
+
+        log.info("Comparing text files: {} and {}", expected, actual);
+
         Assert.assertNotNull(expected);
         Assert.assertNotNull(actual);
 
@@ -181,6 +188,9 @@ public class FileAssert {
      * <p>
      */
     public static void assertBinaryEquals(String message, File expected, File actual) {
+
+        log.info("Comparing binary files: {} and {}", expected, actual);
+
         Assert.assertNotNull(message, expected);
         Assert.assertNotNull(message, actual);
 
