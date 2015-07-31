@@ -58,6 +58,18 @@ import org.dcm4che3.io.DicomInputStream;
 public class DicomUtils {
 
     /**
+     * Read DICOM File Metadata from a file.
+     *
+     * @param dicomFile
+     * @return attributes
+     * @throws IOException
+     */
+    public static Attributes readMetaData(Path dicomFile) throws IOException
+    {
+        return read(new FileInputStream(dicomFile.toFile()), true);
+    }
+
+    /**
      * Read DICOM object from a file including all bulk data.
      * 
      * @param dicomFile
@@ -66,7 +78,7 @@ public class DicomUtils {
      */
     public static Attributes read(Path dicomFile) throws IOException
     {
-        return read(new FileInputStream(dicomFile.toFile()));
+        return read(new FileInputStream(dicomFile.toFile()), false);
     }
 
     /**
@@ -76,10 +88,10 @@ public class DicomUtils {
      * @return attributes
      * @throws IOException
      */
-    public static Attributes read(byte[] binaryDicomObject) throws IOException
+    public static Attributes read(byte[] binaryDicomObject, boolean metaOnly) throws IOException
     {
         ByteArrayInputStream binaryDicomObjectStream = new ByteArrayInputStream(binaryDicomObject);
-        return read(binaryDicomObjectStream);
+        return read(binaryDicomObjectStream, metaOnly);
     }
 
     /**
@@ -89,11 +101,14 @@ public class DicomUtils {
      * @return attributes
      * @throws IOException
      */
-    public static Attributes read( InputStream binaryDicomObjectStream ) throws IOException
+    public static Attributes read( InputStream binaryDicomObjectStream, boolean metaOnly) throws IOException
     {
         try(DicomInputStream dicomIn = new DicomInputStream( binaryDicomObjectStream ))
         {
-            return dicomIn.readDataset(-1, -1);
+            if (metaOnly)
+                return dicomIn.readFileMetaInformation();
+            else
+                return dicomIn.readDataset(-1, -1);
         }
     }
 
