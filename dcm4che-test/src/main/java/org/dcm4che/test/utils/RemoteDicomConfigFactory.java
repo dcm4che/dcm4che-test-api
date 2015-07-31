@@ -48,6 +48,8 @@ import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
  */
 public class RemoteDicomConfigFactory {
 
+    private static long DELAY = 500L;
+
 
     public static DicomConfigurationManager createRemoteDicomConfiguration(String remoteEndpointURL) {
 
@@ -206,8 +208,11 @@ public class RemoteDicomConfigFactory {
 
             try {
                 remoteEndpoint.modifyDeviceConfig(null, DicomPath.DeviceByName.parse(path).getParam("deviceName"), configNode);
-                Thread.sleep(200);
-            } catch (Exception e) {
+                Thread.sleep(DELAY);
+            } catch (ConfigurationException e) {
+                throw new ConfigurationException("This action is not supported when using the remote config", e);
+            }
+            catch (InterruptedException e) {
                 throw new ConfigurationException("This action is not supported when using the remote config", e);
             }
         }
