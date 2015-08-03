@@ -22,7 +22,17 @@
       <classifier>${db}</classifier>
       <version>${dcm4chee-arc.version}</version>
     </dependency>
-  </dependencies>	  
+    <dependency>
+      <groupId>org.dcm4che.dcm4chee-arc</groupId>
+      <artifactId>dcm4chee-arc-core</artifactId>
+      <version>${dcm4chee-arc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dcm4che.dcm4chee-arc</groupId>
+      <artifactId>dcm4chee-arc-conf</artifactId>
+      <version>${dcm4chee-arc.version}</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
