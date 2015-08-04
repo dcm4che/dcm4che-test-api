@@ -94,7 +94,7 @@ public class DicomAssert {
      *            reference DICOM file
      * @throws IOException
      */
-    public static void assertEqual(Path dicomFile, Path dicomReferenceFile) throws IOException
+    public static void assertEquals(Path dicomFile, Path dicomReferenceFile) throws IOException
     {
         assertEquals(DicomUtils.read(dicomFile), DicomUtils.read(dicomReferenceFile));
     }

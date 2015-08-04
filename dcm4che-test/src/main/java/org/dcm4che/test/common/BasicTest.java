@@ -53,8 +53,8 @@ import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.common.TestToolFactory.TestToolType;
-import org.dcm4che.test.utils.TestingProperties;
 import org.dcm4che.test.utils.RemoteDicomConfigFactory;
+import org.dcm4che.test.utils.TestingProperties;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
 import org.dcm4che3.conf.core.api.ConfigurationException;
@@ -69,12 +69,17 @@ import org.dcm4che3.tool.movescu.test.MoveTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
 import org.dcm4che3.tool.storescu.test.StoreTool;
 import org.junit.Rule;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  * @author Roman K
  */
 public abstract class BasicTest {
+
+    private static Logger log = LoggerFactory.getLogger(TestToolFactory.class);
+
     @Rule
     public TestParametersRule rule = new TestParametersRule(this);
 
@@ -281,5 +286,33 @@ public abstract class BasicTest {
             }
         }
         return tmpDir;
+    }
+
+    /**
+     * Create a new temporary directory for this test that is guaranteed to be
+     * unique.
+     * 
+     * Useful for storing temporary files generated within the test.
+     * 
+     * @param prefix
+     *            arbitrary string which will be used as a prefix for the
+     *            temporary directory
+     * @return path to newly created temporary directory
+     */
+    public Path createTempDirectory(String prefix) {
+
+        Path tmpDir = getBaseTemporaryDirectory();
+
+        Path subTempDirectory;
+        try {
+            subTempDirectory = Files.createTempDirectory(tmpDir, prefix + "_");
+        } catch (IOException e) {
+            // normally shouldn't happen unless the hard disk is full or something as severe
+            throw new RuntimeException(e);
+        }
+
+        log.info("Created temporary directory: {}", subTempDirectory);
+
+        return subTempDirectory;
     }
 }

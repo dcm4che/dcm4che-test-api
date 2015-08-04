@@ -39,8 +39,6 @@
 package org.dcm4che.test.common;
 
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Properties;
 
@@ -82,8 +80,6 @@ import org.dcm4che3.tool.storescu.test.StoreTool;
 import org.dcm4che3.tool.stowrs.test.StowRSTool;
 import org.dcm4che3.tool.wadors.test.WadoRSTool;
 import org.dcm4che3.tool.wadouri.test.WadoURITool;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Factory to create tools for testing.
@@ -91,8 +87,6 @@ import org.slf4j.LoggerFactory;
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
 public class TestToolFactory {
-
-    private static Logger log = LoggerFactory.getLogger(TestToolFactory.class);
 
     public enum TestToolType {
         StoreTool,
@@ -200,7 +194,7 @@ public class TestToolFactory {
 
         File storeDir;
         if (storeSCPParams == null || storeSCPParams.storageDirectory().isEmpty()) {
-            storeDir = createTempDirectory(test, "StoreSCP");
+            storeDir = test.createTempDirectory("StoreSCP").toFile();
         } else {
             storeDir = new File(storeSCPParams.storageDirectory());
         }
@@ -263,7 +257,7 @@ public class TestToolFactory {
         String retrieveDirString = wadoRSParams.retrieveDir();
         File retrieveDir;
         if (retrieveDirString.isEmpty()) {
-            retrieveDir = createTempDirectory(test, "WADORS");
+            retrieveDir = test.createTempDirectory("WADORS").toFile();
         } else {
             retrieveDir = new File(retrieveDirString);
         }
@@ -300,7 +294,7 @@ public class TestToolFactory {
 
         File retrieveDir;
         if (wadoUriParams.retrieveDir().isEmpty()) {
-            retrieveDir = createTempDirectory(test, "WADOURI");
+            retrieveDir = test.createTempDirectory("WADOURI").toFile();
         } else {
             retrieveDir = new File(wadoUriParams.retrieveDir());
         }
@@ -404,7 +398,7 @@ public class TestToolFactory {
 
         File baseDir = (stgcmtParams != null && !stgcmtParams.baseDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.baseDirectory()) : test.getTestdataDirectory().toFile();
 
-        File stgCmtStorageDirectory = (stgcmtParams != null && !stgcmtParams.storageDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.storageDirectory()) : createTempDirectory(test, "STGCMT");
+        File stgCmtStorageDirectory = (stgcmtParams != null && !stgcmtParams.storageDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.storageDirectory()) : test.createTempDirectory("STGCMT").toFile();
 
         String sourceDevice = stgcmtParams != null ? stgcmtParams.sourceDevice() : "stgcmtscu";
         String sourceAETitle = stgcmtParams != null ? stgcmtParams.sourceAETitle() : "STGCMTSCU";
@@ -433,7 +427,7 @@ public class TestToolFactory {
         File outputDir;
         String outputDirString = genParams.outputDir();
         if (outputDirString.isEmpty()) {
-            outputDir = createTempDirectory(test, "DCMGEN");
+            outputDir = test.createTempDirectory("DCMGEN").toFile();
         } else {
             outputDir = new File(outputDirString);
         }
@@ -463,7 +457,7 @@ public class TestToolFactory {
 
         File retrieveDir;
         if (getParams == null || getParams.retrieveDir().isEmpty()) {
-            retrieveDir = createTempDirectory(test, "RETRIEVE");
+            retrieveDir = test.createTempDirectory("RETRIEVE").toFile();
         } else {
             retrieveDir = new File(getParams.retrieveDir());
         }
@@ -615,20 +609,4 @@ public class TestToolFactory {
         return test.getLocalConfig();
     }
 
-    private static File createTempDirectory(BasicTest test, String prefix) {
-
-        Path tmpDir = test.getBaseTemporaryDirectory();
-
-        File subTempDirectory;
-        try {
-            subTempDirectory = Files.createTempDirectory(tmpDir, prefix + "_").toFile();
-        } catch (IOException e) {
-            // normally shouldn't happen unless the hard disk is full or something as severe
-            throw new RuntimeException(e);
-        }
-
-        log.info("Created temporary directory: {}", subTempDirectory.getAbsolutePath());
-
-        return subTempDirectory;
-    }
 }
