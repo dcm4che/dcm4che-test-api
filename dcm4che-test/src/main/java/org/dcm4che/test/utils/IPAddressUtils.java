@@ -8,7 +8,7 @@ import java.util.Enumeration;
  */
 public class IPAddressUtils {
 
-    public static String returnLocalIPv4 () throws SocketException {
+    public static String localIPv4 () throws SocketException {
 
         for (final Enumeration< NetworkInterface > interfaces =
              NetworkInterface.getNetworkInterfaces( );
@@ -32,6 +32,6 @@ public class IPAddressUtils {
     }
 
     public static void main(String[] args) throws SocketException{
-        System.out.println(IPAddressUtils.returnLocalIPv4());
+        System.out.println(IPAddressUtils.localIPv4());
     }
 }
