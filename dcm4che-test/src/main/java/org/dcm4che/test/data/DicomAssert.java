@@ -150,9 +150,11 @@ public class DicomAssert {
      *            DICOM file
      * @param dicomReferenceFile
      *            reference DICOM file
+     * @param tagsToIgnore
+     *            tags to ignore (e.g. {@link Tag#ImplementationVersionName})
      * @throws IOException
      */
-    private static void assertEqualsIgnoringTags(Path dicomFile, Path dicomReferenceFile, int... tagsToIgnore) throws IOException {
+    public static void assertEqualsIgnoringTags(Path dicomFile, Path dicomReferenceFile, int... tagsToIgnore) throws IOException {
         assertEqualsIgnoringTags(DicomUtils.read(dicomFile), DicomUtils.read(dicomReferenceFile), tagsToIgnore);
     }
 
