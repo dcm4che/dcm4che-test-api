@@ -48,7 +48,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.dcm4che3.data.Attributes;
+import org.dcm4che3.data.Attributes.Visitor;
+import org.dcm4che3.data.Sequence;
+import org.dcm4che3.data.VR;
 import org.dcm4che3.io.DicomInputStream;
+import org.dcm4che3.io.DicomInputStream.IncludeBulkData;
 
 /**
  * Helper methods for working with DICOM objects in tests.
@@ -57,58 +61,114 @@ import org.dcm4che3.io.DicomInputStream;
  */
 public class DicomUtils {
 
-    /**
-     * Read DICOM File Metadata from a file.
-     *
-     * @param dicomFile
-     * @return attributes
-     * @throws IOException
-     */
-    public static Attributes readMetaData(Path dicomFile) throws IOException
-    {
-        return read(new FileInputStream(dicomFile.toFile()), true);
+    public enum IncludeFileMetaInformation {
+        /**
+         * Only read the DICOM dataset without file meta information.
+         */
+        DATASET_ONLY,
+
+        /**
+         * Only read the file meta information.
+         */
+        FILE_META_INFORMATION_ONLY,
+
+        /**
+         * Read both file meta information and the dataset, and merge the two.
+         */
+        DATASET_MERGED_WITH_FILE_META_INFORMATION
     }
 
     /**
-     * Read DICOM object from a file including all bulk data.
+     * Read DICOM object from a file including all bulk data and including file
+     * meta information.
      * 
      * @param dicomFile
      * @return attributes
      * @throws IOException
      */
-    public static Attributes read(Path dicomFile) throws IOException
-    {
-        return read(new FileInputStream(dicomFile.toFile()), false);
+    public static Attributes read(Path dicomFile) throws IOException {
+        return read(dicomFile, IncludeFileMetaInformation.DATASET_MERGED_WITH_FILE_META_INFORMATION, IncludeBulkData.YES);
+    }
+
+    /**
+     * Read DICOM File meta information from a file.
+     * 
+     * Note: This is only a special area within the DICOM file which includes
+     * the TransferSyntaxUID and other meta information, but NOT the normal
+     * DICOM header.
+     *
+     * @param dicomFile
+     * @return attributes
+     * @throws IOException
+     */
+    public static Attributes readFileMetaInformation(Path dicomFile) throws IOException {
+        return read(dicomFile, IncludeFileMetaInformation.FILE_META_INFORMATION_ONLY, IncludeBulkData.NO);
+    }
+
+    /**
+     * Read DICOM object from a file.
+     * 
+     * @param dicomFile
+     * @param includeFileMetaInformation
+     *            specifies how to handle file meta information when reading the
+     *            dataset
+     * @param includeBulkData
+     *            specifies whether and how to include bulk data
+     * @return attributes
+     * @throws IOException
+     */
+    public static Attributes read(Path dicomFile, IncludeFileMetaInformation includeFileMetaInformation, IncludeBulkData includeBulkData) throws IOException {
+        return read(new FileInputStream(dicomFile.toFile()), includeFileMetaInformation, includeBulkData);
     }
 
     /**
      * Read DICOM object from a byte array including all bulk data.
      * 
      * @param binaryDicomObject
+     * @param includeFileMetaInformation
+     *            specifies how to handle file meta information when reading the
+     *            dataset
+     * @param includeBulkData
+     *            specifies whether and how to include bulk data
      * @return attributes
      * @throws IOException
      */
-    public static Attributes read(byte[] binaryDicomObject, boolean metaOnly) throws IOException
-    {
+    public static Attributes read(byte[] binaryDicomObject, IncludeFileMetaInformation includeFileMetaInformation, IncludeBulkData includeBulkData) throws IOException {
         ByteArrayInputStream binaryDicomObjectStream = new ByteArrayInputStream(binaryDicomObject);
-        return read(binaryDicomObjectStream, metaOnly);
+        return read(binaryDicomObjectStream, includeFileMetaInformation, includeBulkData);
     }
 
     /**
      * Read DICOM object from input stream including all bulk data.
      * 
      * @param binaryDicomObjectStream
+     * @param includeFileMetaInformation
+     *            specifies how to handle file meta information when reading the
+     *            dataset
+     * @param includeBulkData
+     *            specifies whether and how to include bulk data
      * @return attributes
      * @throws IOException
      */
-    public static Attributes read( InputStream binaryDicomObjectStream, boolean metaOnly) throws IOException
-    {
-        try(DicomInputStream dicomIn = new DicomInputStream( binaryDicomObjectStream ))
-        {
-            if (metaOnly)
-                return dicomIn.readFileMetaInformation();
-            else
-                return dicomIn.readDataset(-1, -1);
+    public static Attributes read(InputStream binaryDicomObjectStream, IncludeFileMetaInformation includeFileMetaInformation, IncludeBulkData includeBulkData) throws IOException {
+        try (DicomInputStream dicomIn = new DicomInputStream(binaryDicomObjectStream)) {
+
+            dicomIn.setIncludeBulkData(includeBulkData);
+
+            Attributes fmi = dicomIn.readFileMetaInformation();
+            if (includeFileMetaInformation == IncludeFileMetaInformation.FILE_META_INFORMATION_ONLY) {
+                return fmi;
+            } else {
+                Attributes dataset = dicomIn.readDataset(-1, -1);
+
+                if (includeFileMetaInformation == IncludeFileMetaInformation.DATASET_MERGED_WITH_FILE_META_INFORMATION) {
+                    if (fmi != null) {
+                        dataset.addAll(fmi);
+                    }
+                }
+
+                return dataset;
+            }
         }
     }
 
@@ -124,9 +184,41 @@ public class DicomUtils {
      */
     public static boolean contains(Attributes dataset, Attributes referenceDataset) {
 
-        Attributes selection = new Attributes(dataset, false, referenceDataset);
+        Attributes filteredDataset = filterDatasetIgnoringSequenceItems(dataset, referenceDataset);
 
-        return selection.equals(referenceDataset);
+        return filteredDataset.equals(referenceDataset);
+    }
+
+    /**
+     * Remove all tags from dataset that are not containing within the
+     * selection.
+     * 
+     * Different to {@link Attributes#addSelected(Attributes, Attributes)} this
+     * will consider sequence tags as a whole, i.e. not filter sequence items
+     * and sub-sequences.
+     * 
+     * @param dataset
+     * @param selection
+     * @return filtered dataset
+     */
+    protected static Attributes filterDatasetIgnoringSequenceItems(Attributes dataset, Attributes selection) {
+        Attributes selectionWithoutSequenceItems = new Attributes(selection);
+        // clear all sequences, which will ensure that the filtering will not go into sequence items and sub-sequences
+        try {
+            selectionWithoutSequenceItems.accept(new Visitor() {
+                @Override
+                public boolean visit(Attributes attrs, int tag, VR vr, Object value) throws Exception {
+                    if (value instanceof Sequence) {
+                        ((Sequence) value).clear();
+                    }
+                    return true;
+                }
+            }, false);
+        } catch (Exception e) {
+            throw new RuntimeException(e); // should never happen
+        }
+
+        return new Attributes(dataset, false, selectionWithoutSequenceItems);
     }
 
     /**
@@ -140,8 +232,7 @@ public class DicomUtils {
      * @return all datasets that contain all of the tag values of the reference
      *         dataset
      */
-    public static List<Attributes> selectAttributesThatContain(List<Attributes> candidateDatasets, Attributes referenceDataset)
-    {
+    public static List<Attributes> selectAttributesThatContain(List<Attributes> candidateDatasets, Attributes referenceDataset) {
         List<Attributes> matches = new ArrayList<>();
         for (Attributes candidate : candidateDatasets)
         {

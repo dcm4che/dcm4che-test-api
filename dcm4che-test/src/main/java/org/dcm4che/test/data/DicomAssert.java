@@ -41,10 +41,14 @@ package org.dcm4che.test.data;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.List;
 
+import org.dcm4che.test.data.DicomUtils.IncludeFileMetaInformation;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.ElementDictionary;
+import org.dcm4che3.data.Tag;
+import org.dcm4che3.io.DicomInputStream.IncludeBulkData;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,6 +66,9 @@ public class DicomAssert {
      * Check that the content of the given DICOM dataset is equal to the given
      * reference dataset.
      * 
+     * Note: to read a DICOM object from a file you can use the
+     * {@link DicomUtils#read} methods.
+     * 
      * @param dataset
      *            dataset
      * @param referenceDataset
@@ -69,6 +76,34 @@ public class DicomAssert {
      */
     public static void assertEquals(Attributes dataset, Attributes referenceDataset)
     {
+        assertEqualsIgnoringTags(dataset, referenceDataset);
+    }
+
+    /**
+     * Check that the content of the given DICOM dataset is equal to the given
+     * reference dataset ignoring some tags.
+     * 
+     * @param dataset
+     *            dataset
+     * @param referenceDataset
+     *            reference dataset
+     * @param tagsToIgnore
+     *            tags to ignore (e.g. {@link Tag#ImplementationVersionName})
+     */
+    public static void assertEqualsIgnoringTags(Attributes dataset, Attributes referenceDataset, int... tagsToIgnore) {
+
+        if (tagsToIgnore != null && tagsToIgnore.length > 0) {
+            Arrays.sort(tagsToIgnore);
+            
+            Attributes filteredDataset = new Attributes(dataset.size());
+            filteredDataset.addNotSelected(dataset, tagsToIgnore);
+            dataset = filteredDataset;
+
+            Attributes filteredReferenceDataset = new Attributes(dataset.size());
+            filteredReferenceDataset.addNotSelected(referenceDataset, tagsToIgnore);
+            referenceDataset = filteredReferenceDataset;
+        }
+
         boolean equal = dataset.equals(referenceDataset);
 
         if (!equal)
@@ -86,7 +121,10 @@ public class DicomAssert {
      * Check that the content of the given DICOM file is equal to the given
      * reference DICOM file.
      * 
-     * File meta information is NOT considered.
+     * This method also considers file meta information and bulk data. Use
+     * {@link DicomUtils#read(Path,IncludeFileMetaInformation, IncludeBulkData)}
+     * to read in the files yourself if you want to control whether file meta
+     * information and bulk is considered.
      * 
      * @param dicomFile
      *            DICOM file
@@ -96,7 +134,26 @@ public class DicomAssert {
      */
     public static void assertEquals(Path dicomFile, Path dicomReferenceFile) throws IOException
     {
-        assertEquals(DicomUtils.read(dicomFile), DicomUtils.read(dicomReferenceFile));
+        assertEqualsIgnoringTags(dicomFile, dicomReferenceFile);
+    }
+
+    /**
+     * Check that the content of the given DICOM file is equal to the given
+     * reference DICOM file ignoring some tags.
+     * 
+     * This method also considers file meta information and bulk data. Use
+     * {@link DicomUtils#read(Path,IncludeFileMetaInformation, IncludeBulkData)}
+     * to read in the files yourself if you want to control whether file meta
+     * information and bulk is considered.
+     * 
+     * @param dicomFile
+     *            DICOM file
+     * @param dicomReferenceFile
+     *            reference DICOM file
+     * @throws IOException
+     */
+    private static void assertEqualsIgnoringTags(Path dicomFile, Path dicomReferenceFile, int... tagsToIgnore) throws IOException {
+        assertEqualsIgnoringTags(DicomUtils.read(dicomFile), DicomUtils.read(dicomReferenceFile), tagsToIgnore);
     }
 
     /**
@@ -144,11 +201,10 @@ public class DicomAssert {
     {
         boolean contains = DicomUtils.contains(dataset, referenceDataset);
 
-        if (!contains)
-        {
-            Attributes selection = new Attributes(dataset, false, referenceDataset);
-            Attributes expected = referenceDataset.getRemovedOrModified(selection);
-            Attributes actual = new Attributes(selection, false, expected);
+        if (!contains) {
+            Attributes filteredDataset = DicomUtils.filterDatasetIgnoringSequenceItems(dataset, referenceDataset);
+            Attributes expected = referenceDataset.getRemovedOrModified(filteredDataset);
+            Attributes actual = DicomUtils.filterDatasetIgnoringSequenceItems(filteredDataset, expected);
             log.info("Expected: \n{}", expected);
             log.info("Actual: \n{}", actual);
 
