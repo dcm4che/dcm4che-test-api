@@ -40,6 +40,16 @@ package org.dcm4che.test.common;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
 
 import org.apache.commons.io.FileUtils;
 import org.dcm4che.test.annotations.TestLocalConfig;
@@ -53,11 +63,6 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -80,9 +85,9 @@ public class TestParametersRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
 
-                // Skip heavy tests if not explicilty specified by a property
-                if (description.getTestClass().getAnnotation(Heavy.class) != null &&
-                        Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
+                // Skip heavy tests if not explicilty specified by a property and if it's a run during daytime
+                if (description.getTestClass().getAnnotation(Heavy.class) != null && !nightRun("22:00:00", "04:00:00")
+                        && Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
                 {
                     log.info("Skipping Heavy Test {}", description.getTestClass().getName());
                     return;
@@ -121,6 +126,33 @@ public class TestParametersRule implements TestRule {
                 notifyServerOfNewtest(description.getTestClass().getName() +" "+ description.getMethodName());
 
                 base.evaluate();
+            }
+
+            // if it's a nightRun also the test cases with a "@Heavy" annotation should get executed
+            private boolean nightRun(String startTime, String endTime) throws ParseException {
+                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+
+                Date startDate = dateFormat.parse(startTime);
+                Calendar startCalendar = Calendar.getInstance();
+                startCalendar.setTime(startDate);
+
+                Date endDate = dateFormat.parse(endTime);
+                Calendar endCalendar = Calendar.getInstance();
+                endCalendar.setTime(endDate);
+
+                String currentTime = dateFormat.format(new Date());
+                Date currentDate = dateFormat.parse(currentTime);
+                Calendar currentCalendar = Calendar.getInstance();
+                currentCalendar.setTime(currentDate);
+
+                if (currentCalendar.after(endCalendar) && currentCalendar.before(startCalendar)) {
+                    // dayRun
+                    return false;
+                }
+                else {
+                    // nightRun
+                    return true;
+                }
             }
         };
     }
