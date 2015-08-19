@@ -71,7 +71,7 @@ public @interface WadoURIParameters {
     //windowParams;
     public String windowCenter() default "NULL";
     public String windowWidth() default "NULL";
-    public int frameNumber() default -1;
+    public int[] frameNumbers() default {};
     public int imageQuality() default -1;
     //presentationUID;
     public String presentationSeriesUID() default "NULL";

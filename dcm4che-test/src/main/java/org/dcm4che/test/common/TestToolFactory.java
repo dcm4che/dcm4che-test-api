@@ -289,7 +289,7 @@ public class TestToolFactory {
         boolean anonymize = wadoUriParams.anonymize();
         int rows = wadoUriParams.rows();
         int columns = wadoUriParams.columns();
-        int frameNumber = wadoUriParams.frameNumber();
+        int[] frameNumbers = wadoUriParams.frameNumbers();
         int imageQuality = wadoUriParams.imageQuality();
 
         File retrieveDir;
@@ -304,7 +304,7 @@ public class TestToolFactory {
                 , contentType, charset, anonymize
                 , annotation, rows, columns
                 , regionCoordinates, windowCenter, windowWidth
-                , frameNumber, imageQuality, presentationSeriesUID
+                , frameNumbers, imageQuality, presentationSeriesUID
                 , presentationUID, transferSyntax, retrieveDir);
     }
 
