@@ -63,6 +63,7 @@ import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.data.Code;
+import org.dcm4che3.net.ApplicationEntity;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
 import org.dcm4che3.tool.common.test.TestTool;
@@ -70,6 +71,7 @@ import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
 import org.dcm4che3.tool.findscu.test.QueryTool;
 import org.dcm4che3.tool.getscu.test.RetrieveTool;
 import org.dcm4che3.tool.movescu.test.MoveTool;
+import org.dcm4che3.tool.mppsscp.test.MPPSSCPTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
 import org.dcm4che3.tool.qc.QCOperation;
 import org.dcm4che3.tool.qc.test.QCTool;
@@ -102,7 +104,8 @@ public class TestToolFactory {
         StoreSCPTool,
         DcmGenTool,
         QCTool,
-        EchoTool
+        EchoTool,
+        MppsScpTool
     }
 
     public static TestTool createToolForTest(TestToolType type, BasicTest test) throws MissingArgumentException {
@@ -181,6 +184,15 @@ public class TestToolFactory {
         case EchoTool:
 
             return createEchoTool(test, defaultParams, host, port);
+
+        case MppsScpTool:
+
+            try {
+                Device mppsscp = getDicomConfiguration(test).findDevice("MPPSSCP");
+                return new MPPSSCPTool(mppsscp);
+            } catch (ConfigurationException e) {
+                throw new RuntimeException(e);
+            }
 
         default:
             throw new IllegalArgumentException("Unsupported TestToolType specified"
