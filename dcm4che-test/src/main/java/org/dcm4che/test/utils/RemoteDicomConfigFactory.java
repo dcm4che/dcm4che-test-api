@@ -1,25 +1,5 @@
 package org.dcm4che.test.utils;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriInfo;
-
-import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
 import org.dcm4che3.conf.core.DefaultBeanVitalizer;
 import org.dcm4che3.conf.core.api.Configuration;
@@ -42,6 +22,17 @@ import org.dcm4chee.archive.conf.ArchiveDeviceExtension;
 import org.dcm4chee.archive.conf.ArchiveHL7ApplicationExtension;
 import org.dcm4chee.storage.conf.StorageDeviceExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+
+import javax.ws.rs.*;
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.UriInfo;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @author Roman K
@@ -97,7 +88,7 @@ public class RemoteDicomConfigFactory {
             @Produces(MediaType.APPLICATION_JSON)
             @Consumes(MediaType.APPLICATION_JSON)
             void modifyDeviceConfig(@Context UriInfo ctx, @PathParam(value = "deviceName") String deviceName, Map<String, Object> config) throws ConfigurationException;
-            
+
             @GET
             @Path("/devices")
             @Produces(MediaType.APPLICATION_JSON)
@@ -107,12 +98,12 @@ public class RemoteDicomConfigFactory {
             @GET
             @Path("/transferCapabilities")
             @Produces(MediaType.APPLICATION_JSON)
-            Map<String,Object> getTransferCapabilitiesConfig();
+            Map<String, Object> getTransferCapabilitiesConfig();
 
             @GET
             @Path("/exportFullConfiguration")
             @Produces(MediaType.APPLICATION_JSON)
-            Map<String,Object> getFullConfig();
+            Map<String, Object> getFullConfig();
 
             @POST
             @Path("/importFullConfiguration")
@@ -234,14 +225,8 @@ public class RemoteDicomConfigFactory {
 
         @Override
         public Iterator search(String liteXPathExpression) throws IllegalArgumentException, ConfigurationException {
-            ArrayList<String> listOfDevices = new ArrayList<String>();
-            if(liteXPathExpression.equalsIgnoreCase(DicomPath.AllDeviceNames.path())) {
-                List<Map<String, Object>> tmpMapList = remoteEndpoint.list();
-                for(Map<String,Object> map : tmpMapList){
-                    listOfDevices.add(map.get("deviceName").toString());
-                }
-            }
-            return listOfDevices.iterator();
+            Map<String, Object> fullConfig = remoteEndpoint.getFullConfig();
+            return ConfigNodeUtil.search(fullConfig, liteXPathExpression);
         }
 
         @Override
@@ -254,7 +239,7 @@ public class RemoteDicomConfigFactory {
             batch.run();
         }
 
-       
+
     }
 
 

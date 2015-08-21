@@ -188,7 +188,7 @@ public class TestToolFactory {
         case MppsScpTool:
 
             try {
-                Device mppsscp = getDicomConfiguration(test).findDevice("MPPSSCP");
+                Device mppsscp = getDicomConfiguration(test).findDevice("mppsscp");
                 return new MPPSSCPTool(mppsscp);
             } catch (ConfigurationException e) {
                 throw new RuntimeException(e);
