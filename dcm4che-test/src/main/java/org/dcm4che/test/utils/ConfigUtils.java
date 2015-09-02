@@ -39,16 +39,11 @@
 
 package org.dcm4che.test.utils;
 
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
+import java.util.Map;
 
 import org.dcm4che.test.common.BasicTest;
 import org.dcm4che3.conf.core.api.Configuration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
-
-import java.util.Map;
 
 /**
  * Utility methods to manipulate the server-side configuration from within
@@ -68,6 +63,7 @@ public class ConfigUtils {
      * 
      * @param test
      *            the test
+     * @throws ConfigurationException
      */
     public static void restoreConfig(BasicTest test) throws ConfigurationException {
 
