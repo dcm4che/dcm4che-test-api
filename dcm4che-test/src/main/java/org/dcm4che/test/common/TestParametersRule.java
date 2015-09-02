@@ -43,6 +43,7 @@ import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -87,24 +88,43 @@ public class TestParametersRule implements TestRule {
             @Override
             public void evaluate() throws Throwable {
 
-                // Skip heavy tests if not explicilty specified by a property and if it's a run during daytime
-                if (hasAnnotation(description, Heavy.class) && !nightRun("22:00:00", "04:00:00")
-                        && Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
-                {
+                boolean isHeavy = hasAnnotation(description, Heavy.class);
+                ReportedIssue reportedIssue = getAnnotation(description, ReportedIssue.class);
+                boolean hasReportedIssue = reportedIssue != null;
+
+                boolean skipHeavyTests = System.getProperty("org.dcm4che.test.skipHeavyTests") != null;
+                boolean onlyHeavyTests = System.getProperty("org.dcm4che.test.onlyHeavyTests") != null;
+                boolean skipReportedIssueTests = System.getProperty("org.dcm4che.test.skipReportedIssueTests") != null;
+                boolean onlyReportedIssueTests = System.getProperty("org.dcm4che.test.onlyReportedIssueTests") != null;
+
+                if (isHeavy && skipHeavyTests) {
                     log.info("Skipping Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
                     throw new AssumptionViolatedException("Skipping Heavy Test " + description.getTestClass().getName() + " " + description.getMethodName());
                 }
 
-                // if system property org.dcm4che.test.skipReportedIssueTests is set, we skip tests annotated with @ReportedIssue
-                if (hasAnnotation(description, ReportedIssue.class) && System.getProperty("org.dcm4che.test.skipReportedIssueTests") != null) {
-                    log.info("Skipping Test with Reported Issue {} {}", description.getTestClass().getName(), description.getMethodName());
-                    throw new AssumptionViolatedException("Skipping Test with Reported Issue " + description.getTestClass().getName() + " " + description.getMethodName());
+                if (hasReportedIssue && skipReportedIssueTests) {
+                    log.info("Skipping Test with Reported Issue {}: {} {}", Arrays.toString(reportedIssue.value()), description.getTestClass().getName(), description.getMethodName());
+                    throw new AssumptionViolatedException("Skipping Test with Reported Issue " + Arrays.toString(reportedIssue.value()) + ": " + description.getTestClass().getName() + " " + description.getMethodName());
+                }
+
+                if (onlyHeavyTests && !isHeavy) {
+                    log.info("Skipping Non-Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
+                    throw new AssumptionViolatedException("Skipping Non-Heavy Test " + description.getTestClass().getName() + " " + description.getMethodName());
+                }
+
+                if (onlyReportedIssueTests && !hasReportedIssue) {
+                    log.info("Skipping Non-ReportedIssue Test {} {}", description.getTestClass().getName(), description.getMethodName());
+                    throw new AssumptionViolatedException("Skipping Non-ReportedIssue Test " + description.getTestClass().getName() + " " + description.getMethodName());
                 }
 
                 log.info("\n\n------------------------------------ \n" +
                         "Running {} {} \n" +
                         "------------------------------------ \n\n",
                         description.getTestClass().getName(), description.getMethodName());
+
+                if (reportedIssue != null) {
+                    log.info("Issue(s) reported for this test: {}", Arrays.toString(reportedIssue.value()));
+                }
 
                 Method method = getTestMethod(description);
                 getInstance().clearParams();
@@ -181,10 +201,15 @@ public class TestParametersRule implements TestRule {
         return description.getTestClass().getMethod(description.getMethodName());
     }
 
-    private boolean hasAnnotation(Description description, Class<? extends Annotation> annotation) throws NoSuchMethodException {
-        boolean classHasAnnotation = description.getTestClass().getAnnotation(annotation) != null;
-        boolean methodHasAnnotation = getTestMethod(description).getAnnotation(annotation) != null;
-        return classHasAnnotation || methodHasAnnotation;
+    private <A extends Annotation> A getAnnotation(Description description, Class<A> annotationClass) throws NoSuchMethodException {
+        A annotation = getTestMethod(description).getAnnotation(annotationClass);
+        if (annotation == null)
+            annotation = description.getTestClass().getAnnotation(annotationClass);
+        return annotation;
+    }
+
+    private boolean hasAnnotation(Description description, Class<? extends Annotation> annotationClass) throws NoSuchMethodException {
+        return getAnnotation(description, annotationClass) != null;
     }
 
 }
