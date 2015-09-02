@@ -67,7 +67,7 @@ public class ImageAssert {
     private static final int COLOR_WHITE = 0x00FFFFFF;
     private static final int COLOR_GRAY = 0x00C0C0C0;
 
-    private static final int redMask = 0xFF0000, greenMask = 0x00FF00, blueMask = 0x0000FF;
+    private static final int MASK_RED = 0xFF0000, MASK_GREEN = 0x00FF00, MASK_BLUE = 0x0000FF;
 
     private static final int NUMBER_OF_COLORS = 3;
 
@@ -206,13 +206,13 @@ public class ImageAssert {
 
                 if (different)
                 {
-                    int redOrig = (pixelOrig & redMask) >> 16;
-                    int greenOrig = (pixelOrig & greenMask) >> 8;
-                    int blueOrig = pixelOrig & blueMask;
+                    int redOrig = (pixelOrig & MASK_RED) >> 16;
+                    int greenOrig = (pixelOrig & MASK_GREEN) >> 8;
+                    int blueOrig = pixelOrig & MASK_BLUE;
                     
-                    int redComp = (pixelComp & redMask) >> 16;
-                    int greenComp = (pixelComp & greenMask) >> 8;
-                    int blueComp = pixelComp & blueMask;
+                    int redComp = (pixelComp & MASK_RED) >> 16;
+                    int greenComp = (pixelComp & MASK_GREEN) >> 8;
+                    int blueComp = pixelComp & MASK_BLUE;
                     
                     int redDiff = Math.abs( redOrig - redComp );
                     int greenDiff = Math.abs( greenOrig - greenComp );
