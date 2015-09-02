@@ -87,7 +87,7 @@ public class TestParametersRule implements TestRule {
             public void evaluate() throws Throwable {
 
                 // Skip heavy tests if not explicilty specified by a property and if it's a run during daytime
-                if (description.getTestClass().getAnnotation(Heavy.class) != null && !nightRun("22:00:00", "04:00:00")
+                if (hasAnnotation(description, Heavy.class) && !nightRun("22:00:00", "04:00:00")
                         && Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
                 {
                     log.info("Skipping Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
@@ -99,10 +99,10 @@ public class TestParametersRule implements TestRule {
                         "------------------------------------ \n\n",
                         description.getTestClass().getName(), description.getMethodName());
 
-                Method method = description.getTestClass().getMethod(description.getMethodName());
+                Method method = getTestMethod(description);
                 getInstance().clearParams();
                 for (Annotation anno : method.getAnnotations()) {
-                    Class annoType = anno.annotationType();
+                    Class<? extends Annotation> annoType = anno.annotationType();
                     getInstance().addParam(annoType.getSimpleName(), method.getAnnotation(annoType));
                 }
                 TestLocalConfig cnf = description.getTestClass().getAnnotation(TestLocalConfig.class);
@@ -168,6 +168,16 @@ public class TestParametersRule implements TestRule {
         WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/"+testName);
         Response rsp = target.request().build("GET").invoke();
 
+    }
+
+    private Method getTestMethod(Description description) throws NoSuchMethodException {
+        return description.getTestClass().getMethod(description.getMethodName());
+    }
+
+    private boolean hasAnnotation(Description description, Class<? extends Annotation> annotation) throws NoSuchMethodException {
+        boolean classHasAnnotation = description.getTestClass().getAnnotation(annotation) != null;
+        boolean methodHasAnnotation = getTestMethod(description).getAnnotation(annotation) != null;
+        return classHasAnnotation || methodHasAnnotation;
     }
 
 }
