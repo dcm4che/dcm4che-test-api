@@ -43,27 +43,12 @@ import java.nio.file.Path;
 import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
-import org.dcm4che.test.annotations.DcmGenParameters;
-import org.dcm4che.test.annotations.EchoParameters;
-import org.dcm4che.test.annotations.GetParameters;
-import org.dcm4che.test.annotations.MoveParameters;
-import org.dcm4che.test.annotations.MppsParameters;
-import org.dcm4che.test.annotations.QCParameters;
-import org.dcm4che.test.annotations.QidoRSParameters;
-import org.dcm4che.test.annotations.QueryParameters;
-import org.dcm4che.test.annotations.RemoteConnectionParameters;
-import org.dcm4che.test.annotations.StgCmtParameters;
-import org.dcm4che.test.annotations.StoreParameters;
-import org.dcm4che.test.annotations.StoreSCPParameters;
-import org.dcm4che.test.annotations.StowRSParameters;
-import org.dcm4che.test.annotations.WadoRSParameters;
-import org.dcm4che.test.annotations.WadoURIParameters;
+import org.dcm4che.test.annotations.*;
 import org.dcm4che.test.tool.EchoTool;
 import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.data.Code;
-import org.dcm4che3.net.ApplicationEntity;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
 import org.dcm4che3.tool.common.test.TestTool;
@@ -264,7 +249,7 @@ public class TestToolFactory {
         if (wadoRSParams == null)
             throw new MissingArgumentException("WadoRSParameters annotation"
                     + " must be used to create a WadoRS tool");
-        String url = wadoRSParams.url() != null ? wadoRSParams.url() : null;
+        String url = wadoRSParams.url();
 
         String retrieveDirString = wadoRSParams.retrieveDir();
         File retrieveDir;
@@ -283,8 +268,7 @@ public class TestToolFactory {
         if(wadoUriParams == null)
             throw new MissingArgumentException("WadoURIParameters annotation"
                     + " must be used to create a WadoURI tool");
-        String url = wadoUriParams.url() != null ? wadoUriParams.url()
-                :null;
+        String url = wadoUriParams.url();
         String studyUID = wadoUriParams.studyUID() != null ? wadoUriParams.studyUID() : null;
         String seriesUID = wadoUriParams.seriesUID() != null ? wadoUriParams.seriesUID() : null;
         String objectUID = wadoUriParams.objectUID() != null ? wadoUriParams.objectUID() : null;
@@ -321,26 +305,17 @@ public class TestToolFactory {
     }
 
     private static TestTool createQidoTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
-        TestTool tool;
         QidoRSParameters qidoParams = (QidoRSParameters) test.getParams().get("QidoRSParameters");
 
-        String url = qidoParams != null && qidoParams.url() != null ? qidoParams.url()
-                : null;
+        String url = qidoParams != null && qidoParams.url() != null ? qidoParams.url() : null;
         if (url == null)
-            throw new MissingArgumentException("To create a QidoRS Tool a url must be specified"
-                    + " in the QidoParameters annotation");
-        String limit = qidoParams != null && !qidoParams.limit()
-                .equalsIgnoreCase("-1") ? qidoParams.limit() : null;
-        boolean fuzzy = qidoParams != null && qidoParams.fuzzyMatching()
-                ? qidoParams.fuzzyMatching() : false;
-        boolean timezone = qidoParams != null && qidoParams.timezoneAdjustment()
-                ? qidoParams.timezoneAdjustment() : false;
+            throw new MissingArgumentException("To create a QidoRS Tool a url must be specified" + " in the QidoParameters annotation");
+        String limit = qidoParams != null && !qidoParams.limit().equalsIgnoreCase("-1") ? qidoParams.limit() : null;
+        boolean fuzzy = qidoParams != null && qidoParams.fuzzyMatching() ? qidoParams.fuzzyMatching() : false;
+        boolean timezone = qidoParams != null && qidoParams.timezoneAdjustment() ? qidoParams.timezoneAdjustment() : false;
         boolean returnAll = qidoParams != null ? qidoParams.returnAll() : false;
-        String offset = qidoParams != null && !qidoParams.offset().equalsIgnoreCase("0")
-                ? qidoParams.offset() : "0";
-        tool = new QidoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url),
-                limit, fuzzy, timezone, returnAll, offset);
-        return tool;
+        String offset = qidoParams != null && !qidoParams.offset().equalsIgnoreCase("0") ? qidoParams.offset() : "0";
+        return new QidoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), limit, fuzzy, timezone, returnAll, offset);
     }
 
     private static TestTool createStowTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
@@ -360,28 +335,15 @@ public class TestToolFactory {
         TestTool tool;
         MoveParameters moveParams = (MoveParameters) test.getParams().get("MoveParameters");
 
-        String aeTitle = moveParams != null && !moveParams.aeTitle()
-                .equalsIgnoreCase("NULL")? moveParams.aeTitle()
-                :(defaultParams.getProperty("move.aetitle")!=null
-                ?defaultParams.getProperty("move.aetitle"):null);
+        String aeTitle = moveParams != null && !moveParams.aeTitle().equalsIgnoreCase("NULL") ? moveParams.aeTitle() : defaultParams.getProperty("move.aetitle");
 
-        String retrieveLevel = moveParams != null && !moveParams.retrieveLevel()
-                .equalsIgnoreCase("NULL")? moveParams.retrieveLevel()
-                :(defaultParams.getProperty("move.level")!=null
-                ?defaultParams.getProperty("move.level"):null);
+        String retrieveLevel = moveParams != null && !moveParams.retrieveLevel().equalsIgnoreCase("NULL") ? moveParams.retrieveLevel() : defaultParams.getProperty("move.level");
 
-        String queryInformationModel = moveParams != null ? moveParams.retrieveInformationModel()
-                :(defaultParams.getProperty("move.informationmodel")!=null
-                ?defaultParams.getProperty("move.informationmodel"):null);
+        String queryInformationModel = moveParams != null ? moveParams.retrieveInformationModel() : defaultParams.getProperty("move.informationmodel");
 
-        boolean relational = moveParams != null ? moveParams.relational()
-                :(defaultParams.getProperty("move.relational")!=null
-                ?Boolean.valueOf(defaultParams.getProperty("move.relational")):null);
+        boolean relational = moveParams != null ? moveParams.relational() : Boolean.valueOf(defaultParams.getProperty("move.relational"));
 
-        String destAEtitle = moveParams != null && !moveParams.destAEtitle()
-                .equalsIgnoreCase("NULL")? moveParams.destAEtitle()
-                :(defaultParams.getProperty("move.destaetitle")!=null
-                ?defaultParams.getProperty("move.destaetitle"):null);
+        String destAEtitle = moveParams != null && !moveParams.destAEtitle().equalsIgnoreCase("NULL") ? moveParams.destAEtitle() : defaultParams.getProperty("move.destaetitle");
 
         String sourceDevice = moveParams != null ? moveParams.sourceDevice() : "movescu";
         String sourceAETitle = moveParams != null ? moveParams.sourceAETitle() : "MOVESCU";
@@ -451,21 +413,13 @@ public class TestToolFactory {
     private static TestTool createGetTool(BasicTest test, Properties defaultParams, String host, int port) {
         GetParameters getParams = (GetParameters) test.getParams().get("GetParameters");
 
-        String aeTitle = getParams != null && !getParams.aeTitle()
-                .equalsIgnoreCase("NULL")? getParams.aeTitle()
-                :(defaultParams.getProperty("retrieve.aetitle")!=null
-                ?defaultParams.getProperty("retrieve.aetitle"):null);
+        String aeTitle = getParams != null && !getParams.aeTitle().equalsIgnoreCase("NULL") ? getParams.aeTitle() : defaultParams.getProperty("retrieve.aetitle");
 
-        String retrieveLevel = getParams != null && getParams.retrieveLevel() != null ? getParams.retrieveLevel()
-                : defaultParams.getProperty("retrieve.level");
+        String retrieveLevel = getParams != null && getParams.retrieveLevel() != null ? getParams.retrieveLevel() : defaultParams.getProperty("retrieve.level");
 
-        String queryInformationModel = getParams != null ? getParams.retrieveInformationModel()
-                :(defaultParams.getProperty("retrieve.informationmodel")!=null
-                ?defaultParams.getProperty("retrieve.informationmodel"):null);
+        String queryInformationModel = getParams != null ? getParams.retrieveInformationModel() : defaultParams.getProperty("retrieve.informationmodel");
 
-        boolean relational = getParams != null ? getParams.relational()
-                :(defaultParams.getProperty("retrieve.relational")!=null
-                ?Boolean.valueOf(defaultParams.getProperty("retrieve.relational")) : null);
+        boolean relational = getParams != null ? getParams.relational() : Boolean.valueOf(defaultParams.getProperty("retrieve.relational"));
 
         File retrieveDir;
         if (getParams == null || getParams.retrieveDir().isEmpty()) {
@@ -480,9 +434,7 @@ public class TestToolFactory {
         Connection conn;
         try {
             device = getDicomConfiguration(test).findDevice(sourceDevice);
-            conn = device.connectionWithEqualsRDN(new Connection(
-                    (String) (getParams != null && getParams.connection() != null?
-                            getParams.connection():defaultParams.get("retrieve.connection")), ""));
+            conn = device.connectionWithEqualsRDN(new Connection((String) (getParams != null && getParams.connection() != null ? getParams.connection() : defaultParams.get("retrieve.connection")), ""));
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
@@ -490,19 +442,13 @@ public class TestToolFactory {
     }
 
     private static TestTool createMPPSTool(BasicTest test, Properties defaultParams, String host, int port) {
-        TestTool tool;
-        String aeTitle;
-        File baseDir;
         MppsParameters mppsParams = (MppsParameters) test.getParams().get("MppsParameters");
 
-        aeTitle = mppsParams!=null && !mppsParams.aeTitle()
-                .equalsIgnoreCase("NULL")? mppsParams.aeTitle()
-                :(defaultParams.getProperty("mpps.aetitle")!=null
-                ?defaultParams.getProperty("mpps.aetitle"):null);
+        String aeTitle = mppsParams != null && !mppsParams.aeTitle().equalsIgnoreCase("NULL") ? mppsParams.aeTitle() : defaultParams.getProperty("mpps.aetitle");
 
         String mppsDir = defaultParams.getProperty("mpps.directory");
         if (mppsDir == null) throw new RuntimeException("mpps.directory not set in properties!");
-        baseDir = new File(mppsDir);
+        File baseDir = new File(mppsDir);
 
         String sourceDevice = mppsParams != null ? mppsParams.sourceDevice() : "mppsscu";
         String sourceAETitle = mppsParams != null ? mppsParams.sourceAETitle() : "MPPSSCU";
@@ -510,69 +456,44 @@ public class TestToolFactory {
         Connection conn;
         try {
             device = getDicomConfiguration(test).findDevice(sourceDevice);
-            conn = device.connectionWithEqualsRDN(new Connection(
-                    (String) (mppsParams != null && mppsParams.connection() != null?
-                            mppsParams.connection():defaultParams.get("mpps.connection")), ""));
+            conn = device.connectionWithEqualsRDN(new Connection((String) (mppsParams != null && mppsParams.connection() != null ? mppsParams.connection() : defaultParams.get("mpps.connection")), ""));
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
-        tool = new MppsTool(host, port, aeTitle, baseDir, device, sourceAETitle, conn);
-        return tool;
+        return new MppsTool(host, port, aeTitle, baseDir, device, sourceAETitle, conn);
     }
 
     private static TestTool createQueryTool(BasicTest test, Properties defaultParams, String host, int port) {
-        TestTool tool;
-        String sourceDevice;
-        String sourceAETitle;
         QueryParameters queryParams = (QueryParameters) test.getParams().get("QueryParameters");
 
-        String aeTitle = queryParams != null && !queryParams.aeTitle()
-                .equalsIgnoreCase("NULL") ? queryParams.aeTitle()
-                : (defaultParams.getProperty("query.aetitle") != null
-                        ? defaultParams.getProperty("query.aetitle") : null);
+        String aeTitle = queryParams != null && !queryParams.aeTitle().equalsIgnoreCase("NULL") ? queryParams.aeTitle() : defaultParams.getProperty("query.aetitle");
 
-        String queryLevel = queryParams != null ? queryParams.queryLevel()
-                : (defaultParams.getProperty("query.level") != null
-                        ? defaultParams.getProperty("query.level") : null);
+        String queryLevel = queryParams != null ? queryParams.queryLevel() : defaultParams.getProperty("query.level");
 
-        String queryInformationModel = queryParams != null ? queryParams.queryInformationModel()
-                : (defaultParams.getProperty("query.informationmodel") != null
-                        ? defaultParams.getProperty("query.informationmodel") : null);
-        boolean relational = queryParams != null ? queryParams.relational()
-                : (defaultParams.getProperty("query.relational") != null
-                        ? Boolean.valueOf(defaultParams.getProperty("query.relational")) : null);
+        String queryInformationModel = queryParams != null ? queryParams.queryInformationModel() : defaultParams.getProperty("query.informationmodel");
+        boolean relational = queryParams != null ? queryParams.relational() : Boolean.valueOf(defaultParams.getProperty("query.relational"));
 
-        sourceDevice = queryParams != null ? queryParams.sourceDevice() : "findscu";
+        String sourceDevice = queryParams != null ? queryParams.sourceDevice() : "findscu";
 
-        sourceAETitle = queryParams != null ? queryParams.sourceAETitle() : "FINDSCU";
+        String sourceAETitle = queryParams != null ? queryParams.sourceAETitle() : "FINDSCU";
 
         Device device;
         Connection conn;
         try {
             device = getDicomConfiguration(test).findDevice(sourceDevice);
-            conn = device.connectionWithEqualsRDN(new Connection(
-                    (String) (queryParams != null && queryParams.connection() != null ?
-                            queryParams.connection() : defaultParams.get("query.connection")), ""));
+            conn = device.connectionWithEqualsRDN(new Connection((String) (queryParams != null && queryParams.connection() != null ? queryParams.connection() : defaultParams.get("query.connection")), ""));
         } catch (ConfigurationException e) {
             throw new RuntimeException(e);
         }
-        tool = new QueryTool(host, port, aeTitle, queryLevel
-                , queryInformationModel, relational, device, sourceAETitle, conn);
-        return tool;
+        return new QueryTool(host, port, aeTitle, queryLevel, queryInformationModel, relational, device, sourceAETitle, conn);
     }
 
     private static TestTool createStoreTool(BasicTest test, Properties defaultParams, String host, int port) {
         StoreParameters storeParams = (StoreParameters) test.getParams().get("StoreParameters");
 
-        String aeTitle = storeParams != null && !storeParams.aeTitle()
-                .equalsIgnoreCase("NULL") ? storeParams.aeTitle()
-                : (defaultParams.getProperty("store.aetitle") != null
-                        ? defaultParams.getProperty("store.aetitle") : null);
+        String aeTitle = storeParams != null && !storeParams.aeTitle().equalsIgnoreCase("NULL") ? storeParams.aeTitle() : defaultParams.getProperty("store.aetitle");
 
-        File baseDir = storeParams != null && !storeParams.baseDirectory()
-                .equalsIgnoreCase("NULL") ? new File(storeParams.baseDirectory())
-                : (defaultParams.getProperty("store.directory") != null
-                        ? new File(defaultParams.getProperty("store.directory")) : null);
+        File baseDir = storeParams != null && !storeParams.baseDirectory().equalsIgnoreCase("NULL") ? new File(storeParams.baseDirectory()) : new File(defaultParams.getProperty("store.directory"));
 
         String sourceDevice = storeParams != null ? storeParams.sourceDevice() : "storescu";
 
@@ -582,9 +503,7 @@ public class TestToolFactory {
         Connection conn;
         try {
             device = getDicomConfiguration(test).findDevice(sourceDevice);
-            conn = device.connectionWithEqualsRDN(new Connection(
-                    (String) (storeParams != null && storeParams.connection() != null ?
-                            storeParams.connection() : defaultParams.get("store.connection")), ""));
+            conn = device.connectionWithEqualsRDN(new Connection((String) (storeParams != null && storeParams.connection() != null ? storeParams.connection() : defaultParams.get("store.connection")), ""));
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
@@ -595,10 +514,7 @@ public class TestToolFactory {
         EchoParameters echoParams = (EchoParameters) test.getParams().get("EchoParameters");
 
         // we use re-use some of the default from the StoreTool here
-        String aeTitle = echoParams != null && !echoParams.aeTitle()
-                .equalsIgnoreCase("NULL") ? echoParams.aeTitle()
-                : (defaultParams.getProperty("store.aetitle") != null
-                        ? defaultParams.getProperty("store.aetitle") : null);
+        String aeTitle = echoParams != null && !echoParams.aeTitle().equalsIgnoreCase("NULL") ? echoParams.aeTitle() : defaultParams.getProperty("store.aetitle");
 
         String sourceDevice = echoParams != null ? echoParams.sourceDevice() : "storescu";
 
@@ -608,9 +524,7 @@ public class TestToolFactory {
         Connection conn;
         try {
             device = getDicomConfiguration(test).findDevice(sourceDevice);
-            conn = device.connectionWithEqualsRDN(new Connection(
-                    (String) (echoParams != null && echoParams.connection() != null ?
-                            echoParams.connection() : defaultParams.get("store.connection")), ""));
+            conn = device.connectionWithEqualsRDN(new Connection((String) (echoParams != null && echoParams.connection() != null ? echoParams.connection() : defaultParams.get("store.connection")), ""));
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
