@@ -58,6 +58,7 @@ import org.dcm4che.test.annotations.markers.Heavy;
 import org.dcm4che.test.image.ImageAssert;
 import org.dcm4che.test.utils.ConfigUtils;
 import org.dcm4che.test.utils.DBUtils;
+import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
@@ -89,8 +90,8 @@ public class TestParametersRule implements TestRule {
                 if (description.getTestClass().getAnnotation(Heavy.class) != null && !nightRun("22:00:00", "04:00:00")
                         && Boolean.valueOf(System.getProperty("org.dcm4che.test.skipHeavyTests", "true")))
                 {
-                    log.info("Skipping Heavy Test {}", description.getTestClass().getName());
-                    return;
+                    log.info("Skipping Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
+                    throw new AssumptionViolatedException("Skipping Heavy Test " + description.getTestClass().getName() + " " + description.getMethodName());
                 }
 
                 log.info("\n\n------------------------------------ \n" +
