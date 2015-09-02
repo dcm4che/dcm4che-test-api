@@ -40,12 +40,7 @@ package org.dcm4che.test.common;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 import java.nio.file.Path;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -60,6 +55,7 @@ import org.dcm4che.test.annotations.markers.ReportedIssue;
 import org.dcm4che.test.image.ImageAssert;
 import org.dcm4che.test.utils.ConfigUtils;
 import org.dcm4che.test.utils.DBUtils;
+import org.junit.Assert;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
@@ -155,33 +151,6 @@ public class TestParametersRule implements TestRule {
 
                 base.evaluate();
             }
-
-            // if it's a nightRun also the test cases with a "@Heavy" annotation should get executed
-            private boolean nightRun(String startTime, String endTime) throws ParseException {
-                DateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
-
-                Date startDate = dateFormat.parse(startTime);
-                Calendar startCalendar = Calendar.getInstance();
-                startCalendar.setTime(startDate);
-
-                Date endDate = dateFormat.parse(endTime);
-                Calendar endCalendar = Calendar.getInstance();
-                endCalendar.setTime(endDate);
-
-                String currentTime = dateFormat.format(new Date());
-                Date currentDate = dateFormat.parse(currentTime);
-                Calendar currentCalendar = Calendar.getInstance();
-                currentCalendar.setTime(currentDate);
-
-                if (currentCalendar.after(endCalendar) && currentCalendar.before(startCalendar)) {
-                    // dayRun
-                    return false;
-                }
-                else {
-                    // nightRun
-                    return true;
-                }
-            }
         };
     }
 
@@ -194,7 +163,7 @@ public class TestParametersRule implements TestRule {
         Client client = ClientBuilder.newBuilder().build();
         WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/"+testName);
         Response rsp = target.request().build("GET").invoke();
-
+        Assert.assertEquals(Response.Status.OK, rsp.getStatus());
     }
 
     private Method getTestMethod(Description description) throws NoSuchMethodException {
