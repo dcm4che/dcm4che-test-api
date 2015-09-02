@@ -55,6 +55,7 @@ import org.apache.commons.io.FileUtils;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.annotations.markers.Heavy;
+import org.dcm4che.test.annotations.markers.ReportedIssue;
 import org.dcm4che.test.image.ImageAssert;
 import org.dcm4che.test.utils.ConfigUtils;
 import org.dcm4che.test.utils.DBUtils;
@@ -92,6 +93,12 @@ public class TestParametersRule implements TestRule {
                 {
                     log.info("Skipping Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
                     throw new AssumptionViolatedException("Skipping Heavy Test " + description.getTestClass().getName() + " " + description.getMethodName());
+                }
+
+                // if system property org.dcm4che.test.skipReportedIssueTests is set, we skip tests annotated with @ReportedIssue
+                if (hasAnnotation(description, ReportedIssue.class) && System.getProperty("org.dcm4che.test.skipReportedIssueTests") != null) {
+                    log.info("Skipping Test with Reported Issue {} {}", description.getTestClass().getName(), description.getMethodName());
+                    throw new AssumptionViolatedException("Skipping Test with Reported Issue " + description.getTestClass().getName() + " " + description.getMethodName());
                 }
 
                 log.info("\n\n------------------------------------ \n" +
