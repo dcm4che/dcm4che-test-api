@@ -310,11 +310,11 @@ public class TestToolFactory {
         String url = qidoParams != null && qidoParams.url() != null ? qidoParams.url() : null;
         if (url == null)
             throw new MissingArgumentException("To create a QidoRS Tool a url must be specified" + " in the QidoParameters annotation");
-        String limit = qidoParams != null && !qidoParams.limit().equalsIgnoreCase("-1") ? qidoParams.limit() : null;
+        String limit = qidoParams != null && !"-1".equals(qidoParams.limit()) ? qidoParams.limit() : null;
         boolean fuzzy = qidoParams != null && qidoParams.fuzzyMatching() ? qidoParams.fuzzyMatching() : false;
         boolean timezone = qidoParams != null && qidoParams.timezoneAdjustment() ? qidoParams.timezoneAdjustment() : false;
         boolean returnAll = qidoParams != null ? qidoParams.returnAll() : false;
-        String offset = qidoParams != null && !qidoParams.offset().equalsIgnoreCase("0") ? qidoParams.offset() : "0";
+        String offset = qidoParams != null ? qidoParams.offset() : "0";
         return new QidoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), limit, fuzzy, timezone, returnAll, offset);
     }
 
@@ -335,15 +335,15 @@ public class TestToolFactory {
         TestTool tool;
         MoveParameters moveParams = (MoveParameters) test.getParams().get("MoveParameters");
 
-        String aeTitle = moveParams != null && !moveParams.aeTitle().equalsIgnoreCase("NULL") ? moveParams.aeTitle() : defaultParams.getProperty("move.aetitle");
+        String aeTitle = moveParams != null && !"NULL".equalsIgnoreCase(moveParams.aeTitle()) ? moveParams.aeTitle() : defaultParams.getProperty("move.aetitle");
 
-        String retrieveLevel = moveParams != null && !moveParams.retrieveLevel().equalsIgnoreCase("NULL") ? moveParams.retrieveLevel() : defaultParams.getProperty("move.level");
+        String retrieveLevel = moveParams != null && !"NULL".equalsIgnoreCase(moveParams.retrieveLevel()) ? moveParams.retrieveLevel() : defaultParams.getProperty("move.level");
 
         String queryInformationModel = moveParams != null ? moveParams.retrieveInformationModel() : defaultParams.getProperty("move.informationmodel");
 
         boolean relational = moveParams != null ? moveParams.relational() : Boolean.valueOf(defaultParams.getProperty("move.relational"));
 
-        String destAEtitle = moveParams != null && !moveParams.destAEtitle().equalsIgnoreCase("NULL") ? moveParams.destAEtitle() : defaultParams.getProperty("move.destaetitle");
+        String destAEtitle = moveParams != null && !"NULL".equalsIgnoreCase(moveParams.destAEtitle()) ? moveParams.destAEtitle() : defaultParams.getProperty("move.destaetitle");
 
         String sourceDevice = moveParams != null ? moveParams.sourceDevice() : "movescu";
         String sourceAETitle = moveParams != null ? moveParams.sourceAETitle() : "MOVESCU";
@@ -365,14 +365,11 @@ public class TestToolFactory {
     private static TestTool createStorageCommitmentTool(BasicTest test, Properties defaultParams, String host, int port) {
         StgCmtParameters stgcmtParams = (StgCmtParameters) test.getParams().get("StgCmtParameters");
 
-        String aeTitle = stgcmtParams != null && !stgcmtParams.aeTitle()
-                .equalsIgnoreCase("NULL")? stgcmtParams.aeTitle()
-                :(defaultParams.getProperty("stgcmt.aetitle")!=null
-                ?defaultParams.getProperty("stgcmt.aetitle"):null);
+        String aeTitle = stgcmtParams != null && !"NULL".equalsIgnoreCase(stgcmtParams.aeTitle()) ? stgcmtParams.aeTitle() : defaultParams.getProperty("stgcmt.aetitle");
 
-        File baseDir = (stgcmtParams != null && !stgcmtParams.baseDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.baseDirectory()) : test.getTestdataDirectory().toFile();
+        File baseDir = (stgcmtParams != null && !"NULL".equalsIgnoreCase(stgcmtParams.baseDirectory())) ? new File(stgcmtParams.baseDirectory()) : test.getTestdataDirectory().toFile();
 
-        File stgCmtStorageDirectory = (stgcmtParams != null && !stgcmtParams.storageDirectory().equalsIgnoreCase("NULL")) ? new File(stgcmtParams.storageDirectory()) : test.createTempDirectory("STGCMT").toFile();
+        File stgCmtStorageDirectory = (stgcmtParams != null && !"NULL".equalsIgnoreCase(stgcmtParams.storageDirectory())) ? new File(stgcmtParams.storageDirectory()) : test.createTempDirectory("STGCMT").toFile();
 
         String sourceDevice = stgcmtParams != null ? stgcmtParams.sourceDevice() : "stgcmtscu";
         String sourceAETitle = stgcmtParams != null ? stgcmtParams.sourceAETitle() : "STGCMTSCU";
@@ -413,7 +410,7 @@ public class TestToolFactory {
     private static TestTool createGetTool(BasicTest test, Properties defaultParams, String host, int port) {
         GetParameters getParams = (GetParameters) test.getParams().get("GetParameters");
 
-        String aeTitle = getParams != null && !getParams.aeTitle().equalsIgnoreCase("NULL") ? getParams.aeTitle() : defaultParams.getProperty("retrieve.aetitle");
+        String aeTitle = getParams != null && !"NULL".equalsIgnoreCase(getParams.aeTitle()) ? getParams.aeTitle() : defaultParams.getProperty("retrieve.aetitle");
 
         String retrieveLevel = getParams != null && getParams.retrieveLevel() != null ? getParams.retrieveLevel() : defaultParams.getProperty("retrieve.level");
 
@@ -444,7 +441,7 @@ public class TestToolFactory {
     private static TestTool createMPPSTool(BasicTest test, Properties defaultParams, String host, int port) {
         MppsParameters mppsParams = (MppsParameters) test.getParams().get("MppsParameters");
 
-        String aeTitle = mppsParams != null && !mppsParams.aeTitle().equalsIgnoreCase("NULL") ? mppsParams.aeTitle() : defaultParams.getProperty("mpps.aetitle");
+        String aeTitle = mppsParams != null && !"NULL".equalsIgnoreCase(mppsParams.aeTitle()) ? mppsParams.aeTitle() : defaultParams.getProperty("mpps.aetitle");
 
         String mppsDir = defaultParams.getProperty("mpps.directory");
         if (mppsDir == null) throw new RuntimeException("mpps.directory not set in properties!");
@@ -466,7 +463,7 @@ public class TestToolFactory {
     private static TestTool createQueryTool(BasicTest test, Properties defaultParams, String host, int port) {
         QueryParameters queryParams = (QueryParameters) test.getParams().get("QueryParameters");
 
-        String aeTitle = queryParams != null && !queryParams.aeTitle().equalsIgnoreCase("NULL") ? queryParams.aeTitle() : defaultParams.getProperty("query.aetitle");
+        String aeTitle = queryParams != null && !"NULL".equalsIgnoreCase(queryParams.aeTitle()) ? queryParams.aeTitle() : defaultParams.getProperty("query.aetitle");
 
         String queryLevel = queryParams != null ? queryParams.queryLevel() : defaultParams.getProperty("query.level");
 
@@ -491,9 +488,9 @@ public class TestToolFactory {
     private static TestTool createStoreTool(BasicTest test, Properties defaultParams, String host, int port) {
         StoreParameters storeParams = (StoreParameters) test.getParams().get("StoreParameters");
 
-        String aeTitle = storeParams != null && !storeParams.aeTitle().equalsIgnoreCase("NULL") ? storeParams.aeTitle() : defaultParams.getProperty("store.aetitle");
+        String aeTitle = storeParams != null && !"NULL".equalsIgnoreCase(storeParams.aeTitle()) ? storeParams.aeTitle() : defaultParams.getProperty("store.aetitle");
 
-        File baseDir = storeParams != null && !storeParams.baseDirectory().equalsIgnoreCase("NULL") ? new File(storeParams.baseDirectory()) : new File(defaultParams.getProperty("store.directory"));
+        File baseDir = storeParams != null && !"NULL".equalsIgnoreCase(storeParams.baseDirectory()) ? new File(storeParams.baseDirectory()) : new File(defaultParams.getProperty("store.directory"));
 
         String sourceDevice = storeParams != null ? storeParams.sourceDevice() : "storescu";
 
@@ -514,7 +511,7 @@ public class TestToolFactory {
         EchoParameters echoParams = (EchoParameters) test.getParams().get("EchoParameters");
 
         // we use re-use some of the default from the StoreTool here
-        String aeTitle = echoParams != null && !echoParams.aeTitle().equalsIgnoreCase("NULL") ? echoParams.aeTitle() : defaultParams.getProperty("store.aetitle");
+        String aeTitle = echoParams != null && !"NULL".equalsIgnoreCase(echoParams.aeTitle()) ? echoParams.aeTitle() : defaultParams.getProperty("store.aetitle");
 
         String sourceDevice = echoParams != null ? echoParams.sourceDevice() : "storescu";
 
