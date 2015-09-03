@@ -163,7 +163,7 @@ public class TestParametersRule implements TestRule {
         Client client = ClientBuilder.newBuilder().build();
         WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/"+testName);
         Response rsp = target.request().build("GET").invoke();
-        Assert.assertEquals(Response.Status.OK, rsp.getStatus());
+        Assert.assertEquals(Response.Status.OK.getStatusCode(), rsp.getStatus());
     }
 
     private Method getTestMethod(Description description) throws NoSuchMethodException {
