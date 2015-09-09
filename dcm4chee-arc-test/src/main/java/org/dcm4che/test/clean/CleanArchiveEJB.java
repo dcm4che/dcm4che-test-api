@@ -74,7 +74,8 @@ public class CleanArchiveEJB implements CleanArchive{
         "DELETE FROM person_name", "DELETE FROM qc_instance_history",
         "DELETE FROM qc_series_history", "DELETE FROM qc_study_history",
         "DELETE FROM qc_action_history", "DELETE FROM qc_update_history",
-        "DELETE FROM code", "DELETE FROM dicomattrs" };
+        "DELETE FROM code", "DELETE FROM dicomattrs",
+        "DELETE FROM study_update_session"};
 
     @PersistenceContext(name="dcm4chee-arc")
     EntityManager em;
