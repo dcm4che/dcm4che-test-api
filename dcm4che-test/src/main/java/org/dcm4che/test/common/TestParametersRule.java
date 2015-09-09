@@ -142,7 +142,7 @@ public class TestParametersRule implements TestRule {
                 FileUtils.cleanDirectory(tmpDir.toFile());
 
                 // Clean DB before each test
-                DBUtils.cleanDB(getInstance());
+                Assert.assertTrue("Database could not be cleaned successfully.", DBUtils.cleanDB(getInstance()));
 
                 // Reset config before each test
                 ConfigUtils.restoreConfig(getInstance());
