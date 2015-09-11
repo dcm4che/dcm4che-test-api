@@ -37,6 +37,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 package org.dcm4che.test.clean;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.enterprise.context.RequestScoped;
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -54,11 +58,12 @@ import javax.ws.rs.core.Response.Status;
 
 /**
  * @author Hesham Elbadawi <bsdreko@gmail.com>
- * 
  */
 @Path("/")
 @RequestScoped
 public class CleanArchiveRest {
+
+    private static Logger LOG = LoggerFactory.getLogger(CleanArchiveRest.class);
 
     @Inject
     private CleanArchive cleaner;
@@ -68,10 +73,24 @@ public class CleanArchiveRest {
     @GET
     @Path("clean")
     public Response clean() throws SecurityException
-    , IllegalStateException, NotSupportedException
-    , SystemException, RollbackException
-    , HeuristicMixedException, HeuristicRollbackException {
-        return Response.status(Status.OK).entity(cleaner.clearDB()).build();
+            , IllegalStateException, NotSupportedException
+            , SystemException, RollbackException
+            , HeuristicMixedException, HeuristicRollbackException {
+
+        String o;
+
+        int fails = 3;
+        while (true)
+            try {
+                o = cleaner.clearDB();
+                break;
+            } catch (Exception e) {
+                LOG.warn("Re-trying cleaning the DB...");
+                fails--;
+                if (fails <= 0) throw e;
+            }
+
+        return Response.status(Status.OK).entity(o).build();
     }
 
 
