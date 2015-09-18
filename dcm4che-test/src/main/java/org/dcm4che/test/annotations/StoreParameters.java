@@ -50,7 +50,7 @@ public @interface StoreParameters {
     public String aeTitle() default "NULL";
 
     /**
-     * DO NOT USE until really necessary - it will destabilize the tests running
+     * DO NOT USE unless really necessary - it will destabilize the tests running
      * on Jenkins
      */
     @Deprecated
