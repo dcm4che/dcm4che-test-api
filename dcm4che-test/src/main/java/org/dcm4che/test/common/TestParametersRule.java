@@ -37,8 +37,10 @@
  * ***** END LICENSE BLOCK ***** */
 package org.dcm4che.test.common;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
 import java.nio.file.Path;
 import java.util.Arrays;
 
@@ -161,13 +163,26 @@ public class TestParametersRule implements TestRule {
     protected void notifyServerOfNewtest(String testName) {
         String baseURL = getInstance().getProperties().getProperty("remoteConn.url");
         Client client = ClientBuilder.newBuilder().build();
-        WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/"+testName);
+
+        // seems server/JAX-RS doesn't like slashes, even if they are URL encoded
+        String testNameEncoded = testName.replace('/', '|');
+        try {
+            testNameEncoded = URLEncoder.encode(testNameEncoded, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e); // will not happen
+        }
+
+        WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/" + testNameEncoded);
         Response rsp = target.request().build("GET").invoke();
         Assert.assertEquals(Response.Status.OK.getStatusCode(), rsp.getStatus());
     }
 
     private Method getTestMethod(Description description) throws NoSuchMethodException {
-        return description.getTestClass().getMethod(description.getMethodName());
+        String methodName = description.getMethodName();
+        int parametersIndex = methodName.indexOf('[');
+        if(parametersIndex != -1)
+            methodName = methodName.substring(0, parametersIndex);
+        return description.getTestClass().getMethod(methodName);
     }
 
     private <A extends Annotation> A getAnnotation(Description description, Class<A> annotationClass) throws NoSuchMethodException {
