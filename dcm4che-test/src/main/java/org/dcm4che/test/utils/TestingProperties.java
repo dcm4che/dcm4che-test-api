@@ -50,6 +50,7 @@ import java.util.Properties;
 public class TestingProperties {
 
     private static Properties props = null;
+    private static Properties sandboxProps = null;
     
     public static Properties get()
     {
@@ -57,7 +58,6 @@ public class TestingProperties {
         {
             props = new Properties();
             String fileURL = System.getProperty("defaultParams");
-
             if (fileURL != null && fileURL.length()>0)
             {
                 try {
@@ -74,5 +74,29 @@ public class TestingProperties {
         }
         
         return props;
+    }
+
+    public static Properties getSandboxConfig()
+    {
+        if (sandboxProps == null)
+        {
+            sandboxProps = new Properties();
+            String fileURL = System.getProperty("sandboxParams");
+            if (fileURL != null && fileURL.length()>0)
+            {
+                try {
+                    //load passed file
+                    sandboxProps.load(new FileInputStream(new File(fileURL)));
+                } catch (IOException e) {
+                    throw new RuntimeException("Failed to load properties from file", e);
+                }
+            }
+            else
+            {
+                throw new RuntimeException("A sandbox configuration property 'sandboxParams' must be defined");
+            }
+        }
+
+        return sandboxProps;
     }
 }
