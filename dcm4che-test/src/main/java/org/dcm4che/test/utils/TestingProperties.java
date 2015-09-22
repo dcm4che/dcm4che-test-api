@@ -45,7 +45,7 @@ import java.util.Properties;
 
 /**
  * @author Umberto Cappellini <umberto.cappellini@agfa.com>
- *
+ * @author Philipp Halbrainer <philipp.halbrainer@agfa.com>
  */
 public class TestingProperties {
 
