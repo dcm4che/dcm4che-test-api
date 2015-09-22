@@ -57,22 +57,13 @@ public class TestingProperties {
         if (props == null)
         {
             props = new Properties();
-            String fileURL = System.getProperty("defaultParams");
-            if (fileURL != null && fileURL.length()>0)
-            {
                 try {
                     //load passed file
-                    props.load(new FileInputStream(new File(fileURL)));
+                    props.load(new FileInputStream(new File("../../config.properties")));
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to load properties from file", e);
                 }
-            }
-            else
-            {
-                throw new RuntimeException("A default configuration property 'defaultParams' must be defined");
-            }
         }
-        
         return props;
     }
 
@@ -81,22 +72,13 @@ public class TestingProperties {
         if (sandboxProps == null)
         {
             sandboxProps = new Properties();
-            String fileURL = System.getProperty("sandboxParams");
-            if (fileURL != null && fileURL.length()>0)
-            {
-                try {
-                    //load passed file
-                    sandboxProps.load(new FileInputStream(new File(fileURL)));
-                } catch (IOException e) {
-                    throw new RuntimeException("Failed to load properties from file", e);
-                }
-            }
-            else
-            {
-                throw new RuntimeException("A sandbox configuration property 'sandboxParams' must be defined");
+            try {
+                //load passed file
+                sandboxProps.load(new FileInputStream(new File("../../../sandbox.conf")));
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to load properties from file", e);
             }
         }
-
         return sandboxProps;
     }
 }
