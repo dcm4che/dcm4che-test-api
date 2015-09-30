@@ -57,13 +57,15 @@ public class TestingProperties {
         if (props == null)
         {
             props = new Properties();
+            String fileURL = System.getProperty("defaultParams", "../../config.properties");
                 try {
                     //load passed file
-                    props.load(new FileInputStream(new File("../../config.properties")));
+                    props.load(new FileInputStream(new File(fileURL)));
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to load properties from file", e);
                 }
         }
+
         return props;
     }
 
@@ -72,13 +74,15 @@ public class TestingProperties {
         if (sandboxProps == null)
         {
             sandboxProps = new Properties();
+            String fileURL = System.getProperty("sandboxParams", "../../../sandbox.conf");
             try {
                 //load passed file
-                sandboxProps.load(new FileInputStream(new File("../../../sandbox.conf")));
+                sandboxProps.load(new FileInputStream(new File(fileURL)));
             } catch (IOException e) {
                 throw new RuntimeException("Failed to load properties from file", e);
             }
         }
+
         return sandboxProps;
     }
 }
