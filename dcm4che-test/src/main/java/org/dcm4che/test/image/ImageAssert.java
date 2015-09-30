@@ -39,8 +39,11 @@
 
 package org.dcm4che.test.image;
 
-import static org.junit.Assert.fail;
+import org.dcm4che.test.common.BasicTest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -48,11 +51,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.text.DecimalFormat;
 
-import javax.imageio.ImageIO;
-
-import org.dcm4che.test.common.BasicTest;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import static org.junit.Assert.fail;
 
 /**
  * Assertions to check the equality of images in tests.
@@ -84,6 +83,10 @@ public class ImageAssert {
 
     /**
      * Check that the given image is the same as the reference image.
+     * <p>
+     * IMPORTANT: This check works only for 24 bit RGB images (8 bits per color channel) that have only one frame and no
+     * transparency (alpha is ignored) (i.e. only INT-RGB-rendered JPEG, PNG, GIF; but NO animated GIF, and no PNG with
+     * transparency).
      * 
      * @param imagePath
      *            path to image
@@ -148,7 +151,7 @@ public class ImageAssert {
     }
 
     /**
-     * Compares two images.
+     * Compares two RGB images. Only 8-bit per color channel will be compared. Alpha is currently beeing ignored.
      * 
      * The result will be a success if the images are equal/similar.
      * 
