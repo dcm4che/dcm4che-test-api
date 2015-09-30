@@ -20,7 +20,6 @@ import org.dcm4che3.net.web.WebServiceAEExtension;
 import org.dcm4chee.archive.conf.ArchiveAEExtension;
 import org.dcm4chee.archive.conf.ArchiveDeviceExtension;
 import org.dcm4chee.archive.conf.ArchiveHL7ApplicationExtension;
-import org.dcm4chee.archive.conf.NoneIOCMChangeRequestorExtension;
 import org.dcm4chee.storage.conf.StorageDeviceExtension;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
 
@@ -57,7 +56,6 @@ public class RemoteDicomConfigFactory {
 
             builder.registerDeviceExtension(ArchiveDeviceExtension.class);
             builder.registerDeviceExtension(StorageDeviceExtension.class);
-            builder.registerDeviceExtension(NoneIOCMChangeRequestorExtension.class);
             builder.registerAEExtension(ArchiveAEExtension.class);
             builder.registerHL7ApplicationExtension(ArchiveHL7ApplicationExtension.class);
             builder.registerAEExtension(WebServiceAEExtension.class);
