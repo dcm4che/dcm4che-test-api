@@ -177,11 +177,6 @@ public class RemoteDicomConfigFactory {
         }
 
         @Override
-        public Class getConfigurationNodeClass(String path) throws ConfigurationException, ClassNotFoundException {
-            return null;
-        }
-
-        @Override
         public boolean nodeExists(String path) throws ConfigurationException {
             if (path.equals(DicomPath.ConfigRoot.path())) return true;
 
