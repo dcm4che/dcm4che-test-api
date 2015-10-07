@@ -38,17 +38,6 @@
 package org.dcm4che.test.common;
 
 
-import java.io.File;
-import java.io.IOException;
-import java.lang.annotation.Annotation;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.StandardCopyOption;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
-
 import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
@@ -67,10 +56,23 @@ import org.dcm4che3.tool.findscu.test.QueryTool;
 import org.dcm4che3.tool.movescu.test.MoveResult;
 import org.dcm4che3.tool.movescu.test.MoveTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
+import org.dcm4che3.tool.storescu.test.StoreResult;
 import org.dcm4che3.tool.storescu.test.StoreTool;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.annotation.Annotation;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -145,9 +147,11 @@ public abstract class BasicTest {
         } catch (Exception e) {
             throw new TestToolException(e);
         }
-        return storeTool.getResult();
+        StoreResult storeResult = storeTool.getResult();
+        Assert.assertTrue("Store", storeResult.getFilesSent() > 0 && storeResult.getFailures() == 0);
+        return storeResult;
     }
-    
+
     public TestResult storeResource(String description, String fileName) throws MissingArgumentException {
         StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
         File f = new File(fileName);
@@ -157,7 +161,9 @@ public abstract class BasicTest {
         } catch (Exception e) {
             throw new TestToolException(e);
         }
-        return storeTool.getResult();
+        StoreResult storeResult = storeTool.getResult();
+        Assert.assertTrue("Store", storeResult.getFilesSent() > 0 && storeResult.getFailures() == 0);
+        return storeResult;
     }   
     public TestResult query(String description, Attributes keys, boolean fuzzy
             , boolean datatimeCombine, int expectedMatches) throws MissingArgumentException {
