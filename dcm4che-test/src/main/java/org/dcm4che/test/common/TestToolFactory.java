@@ -39,16 +39,33 @@
 package org.dcm4che.test.common;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 
 import org.apache.commons.cli.MissingArgumentException;
-import org.dcm4che.test.annotations.*;
+import org.dcm4che.test.annotations.DcmGenParameters;
+import org.dcm4che.test.annotations.EchoParameters;
+import org.dcm4che.test.annotations.GetParameters;
+import org.dcm4che.test.annotations.MoveParameters;
+import org.dcm4che.test.annotations.MppsParameters;
+import org.dcm4che.test.annotations.QCParameters;
+import org.dcm4che.test.annotations.QidoRSParameters;
+import org.dcm4che.test.annotations.QueryParameters;
+import org.dcm4che.test.annotations.RemoteConnectionParameters;
+import org.dcm4che.test.annotations.StgCmtParameters;
+import org.dcm4che.test.annotations.StoreParameters;
+import org.dcm4che.test.annotations.StoreSCPParameters;
+import org.dcm4che.test.annotations.StowRSParameters;
+import org.dcm4che.test.annotations.WadoRSParameters;
+import org.dcm4che.test.annotations.WadoURIParameters;
 import org.dcm4che.test.tool.EchoTool;
+import org.dcm4che.test.tool.externaldevice.ExternalDeviceToolConfig;
 import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.data.Code;
+import org.dcm4che3.net.ApplicationEntity;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
 import org.dcm4che3.tool.common.test.TestTool;
@@ -527,6 +544,47 @@ public class TestToolFactory {
         }
         return new EchoTool(host, port, aeTitle, device, sourceAETitle, conn);
     }
+    
+    public static ExternalDeviceToolConfig createExternalDeviceToolConfig(BasicTest test, String extDeviceName, String extDeviceAeTitle, String archiveDeviceName, String archiveDeviceAeTitle ) {
+        Device extDevice;
+        try {
+            extDevice = getDicomConfiguration(test).findDevice(extDeviceName);
+        } catch (ConfigurationException e) {
+            throw new TestToolException(e);
+        }
+        
+        ApplicationEntity extDeviceAe = extDevice.getApplicationEntity(extDeviceAeTitle);
+        
+      
+        Device archiveDevice;
+        try {
+            archiveDevice = getDicomConfiguration(test).findDevice(archiveDeviceName);
+        } catch (ConfigurationException e) {
+            throw new TestToolException(e);
+        }
+        
+        ApplicationEntity archiveDeviceAE = archiveDevice.getApplicationEntity(archiveDeviceAeTitle);
+        
+        ExternalDeviceToolConfig qrScpConfig = new ExternalDeviceToolConfig();
+        for(Connection remoteConn : archiveDeviceAE.getConnections()) {
+            qrScpConfig.addRemoteConnection(remoteConn.getCommonName(), remoteConn);
+        }
+        
+        qrScpConfig.device(extDevice)
+            .aeTitle(extDeviceAe.getAETitle())
+            .port(extDeviceAe.getConnections().iterator().next().getPort());
+        
+        try {
+            File tmpDir = test.createTempDirectory("EXTDEVICE").toFile();
+            File dicomDir = File.createTempFile("dcmext_storage_", ".dicomdir", tmpDir);
+            qrScpConfig.dicomDir(dicomDir);
+        } catch(IOException e) {
+            throw new TestToolException(e);
+        }
+        
+        return qrScpConfig;
+    }
+    
 
     public static DicomConfiguration getDicomConfiguration(BasicTest test) {
         return test.getLocalConfig();
