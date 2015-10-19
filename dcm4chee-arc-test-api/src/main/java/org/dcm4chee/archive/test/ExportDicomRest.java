@@ -39,11 +39,10 @@
 
 package org.dcm4chee.archive.test;
 
-import java.util.List;
-
 import javax.ws.rs.FormParam;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import java.util.List;
 
 /**
  * Restful Wrapper for ExportDicom API. Currently only used for testing.
@@ -75,4 +74,16 @@ public interface ExportDicomRest {
     void exportInstances(@FormParam("destinationAET") String destinationAET,
                          @FormParam("instanceUID") List<String> instanceUIDs);
 
+    /**
+     * Sends the instances to a destination AE.
+     *
+     * @param destinationAET destination AE title
+     * @param studyInstanceUIDs list of Study Instance UIDs
+     * @param keyObjectDocumentCodes codes (including designator, and optionally version) of key object documents
+     */
+    @POST
+    @Path("instances")
+    void exportKeyImages(@FormParam("destinationAET")String destinationAET,
+                         @FormParam("studyUID") List<String> studyInstanceUIDs,
+                         @FormParam("keyObjectCodes") List<String> keyObjectDocumentCodes);
 }

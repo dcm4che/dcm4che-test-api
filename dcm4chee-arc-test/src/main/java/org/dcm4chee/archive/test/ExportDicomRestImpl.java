@@ -38,10 +38,13 @@
 
 package org.dcm4chee.archive.test;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ws.rs.FormParam;
 
+import org.dcm4che3.data.Code;
 import org.dcm4chee.archive.api.ExportDicom;
 
 /**
@@ -56,11 +59,22 @@ public class ExportDicomRestImpl implements ExportDicomRest {
 
     @Override
     public void exportStudies(String destinationAET, List<String> studyInstanceUIDs) {
-        exportDicom.exportStudy(destinationAET, studyInstanceUIDs);
+        exportDicom.exportStudies(destinationAET, studyInstanceUIDs);
     }
 
     @Override
     public void exportInstances(String destinationAET, List<String> instanceUIDs) {
         exportDicom.exportInstances(destinationAET, instanceUIDs);
+    }
+
+    @Override
+    public void exportKeyImages(@FormParam("destinationAET") String destinationAET, @FormParam("studyUID") List<String> studyInstanceUIDs, @FormParam("keyObjectCodes") List<String> keyObjectDocumentCodes) {
+        List<Code> codes = new ArrayList<Code>(keyObjectDocumentCodes.size());
+        for(String keyObjectDocumentCode : keyObjectDocumentCodes)
+        {
+            codes.add(new Code(keyObjectDocumentCode));
+        }
+
+        exportDicom.exportKeyImages(destinationAET,studyInstanceUIDs, codes);
     }
 }

@@ -173,8 +173,8 @@ public class BehavioralStgCmtSCP {
                             if(timeout <= 0) {
                                 wait();
                             } else {
-                                if(timeout > 0 && leftTimeout <= 0) {
-                                    throw new InterruptedException();
+                                if(leftTimeout <= 0) {
+                                    throw new InterruptedException("Timeout passed: Not all stg-cmt responses sent!");
                                 }
                                 
                                 long now = System.currentTimeMillis();

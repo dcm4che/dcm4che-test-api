@@ -148,12 +148,14 @@ public class ExternalDeviceTool implements TestTool {
         
         @Override
         protected void addCStoreSCPService(DicomServiceRegistry serviceRegistry) {
-            serviceRegistry.addDicomService(builder.cStoreSCP);
+            if(builder.cStoreSCP != null)
+                serviceRegistry.addDicomService(builder.cStoreSCP);
         }
         
         @Override
         protected void addStgCmtSCPService(DicomServiceRegistry serviceRegistry) {
-            serviceRegistry.addDicomService(builder.stgCmtSCP);
+            if(builder.stgCmtSCP != null)
+                serviceRegistry.addDicomService(builder.stgCmtSCP);
         }
        
     }

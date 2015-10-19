@@ -39,11 +39,9 @@
 
 package org.dcm4che.test.tool.externaldevice;
 
+import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.Tag;
@@ -98,6 +96,8 @@ public class BehavioralCStoreSCP {
     
     public static class InterceptableCStoreSCPImpl extends CStoreSCPImpl {
         private List<DicomServiceInterceptor> interceptors = new ArrayList<DicomServiceInterceptor>();
+
+        private Set<String> storedInstances = new HashSet<>();
         
         public InterceptableCStoreSCPImpl(DicomDirWriter dicomDirWriter,
                 AttributesFormat filePathFormat, RecordFactory recordFactory) {
@@ -116,7 +116,55 @@ public class BehavioralCStoreSCP {
         private void addInterceptor(DicomServiceInterceptor interceptor) {
             interceptors.add(interceptor);
         }
-        
+
+        @Override
+        protected boolean addDicomDirRecords(Association as, Attributes ds, Attributes fmi, File f) throws IOException {
+            boolean added = super.addDicomDirRecords(as, ds, fmi, f);
+
+            if(added) {
+                String iuid = Objects.requireNonNull(fmi.getString(Tag.MediaStorageSOPInstanceUID, null));
+
+                synchronized(storedInstances) {
+                    storedInstances.add(iuid);
+                    storedInstances.notifyAll();
+                }
+            }
+
+            return added;
+        }
+
+        public void waitForInstancesStored(long timeout, String... sopInstanceUIDs) throws InterruptedException {
+            long leftTimeout = timeout;
+            boolean failed = true;
+
+            synchronized (storedInstances) {
+                while (failed) {
+                    failed = false;
+                    for (String sopInstanceUID : sopInstanceUIDs) {
+                        if (!storedInstances.contains(sopInstanceUID)) {
+                            if(timeout <= 0) {
+                                storedInstances.wait();
+                            } else {
+                                if(leftTimeout <= 0) {
+                                    throw new InterruptedException("Timeout passed: Not all instances stored!");
+                                }
+
+                                long now = System.currentTimeMillis();
+                                storedInstances.wait(leftTimeout);
+                                leftTimeout -= System.currentTimeMillis() - now;
+                            }
+
+                            failed = true;
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        public Set<String> getStoredInstances() {
+            return storedInstances;
+        }
     }
     
     private static class RequestInterceptor implements DicomServiceInterceptor {
