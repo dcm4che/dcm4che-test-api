@@ -104,6 +104,8 @@ public class ExternalDeviceTool implements TestTool {
         qrscp = new ExternalDeviceDcmQRSCP();
         qrscp.setDevice(device);
         qrscp.setApplicationEntity(ae);
+        qrscp.setDicomDirReader(builder.cfg.getDicomDirWriter());
+        
         qrscp.init();
         
         qrscp.setFilePathFormat(builder.cfg.getFilePathFormat());

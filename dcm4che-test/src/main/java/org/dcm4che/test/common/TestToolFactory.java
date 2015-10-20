@@ -545,10 +545,10 @@ public class TestToolFactory {
         return new EchoTool(host, port, aeTitle, device, sourceAETitle, conn);
     }
     
-    public static ExternalDeviceToolConfig createExternalDeviceToolConfig(BasicTest test, String extDeviceName, String extDeviceAeTitle, String archiveDeviceName, String archiveDeviceAeTitle ) {
+    public static ExternalDeviceToolConfig createExternalDeviceToolConfig(DicomConfiguration dicomCfg, File testStorageDir, String extDeviceName, String extDeviceAeTitle, String archiveDeviceName, String archiveDeviceAeTitle) {
         Device extDevice;
         try {
-            extDevice = getDicomConfiguration(test).findDevice(extDeviceName);
+            extDevice = dicomCfg.findDevice(extDeviceName);
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
@@ -558,7 +558,7 @@ public class TestToolFactory {
       
         Device archiveDevice;
         try {
-            archiveDevice = getDicomConfiguration(test).findDevice(archiveDeviceName);
+            archiveDevice = dicomCfg.findDevice(archiveDeviceName);
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
@@ -575,8 +575,7 @@ public class TestToolFactory {
             .port(extDeviceAe.getConnections().iterator().next().getPort());
         
         try {
-            File tmpDir = test.createTempDirectory("EXTDEVICE").toFile();
-            File dicomDir = File.createTempFile("dcmext_storage_", ".dicomdir", tmpDir);
+            File dicomDir = File.createTempFile("dcmext_storage_", ".dicomdir", testStorageDir);
             qrScpConfig.dicomDir(dicomDir);
         } catch(IOException e) {
             throw new TestToolException(e);
@@ -585,7 +584,12 @@ public class TestToolFactory {
         return qrScpConfig;
     }
     
-
+    public static ExternalDeviceToolConfig createExternalDeviceToolConfig(BasicTest test, String extDeviceName, String extDeviceAeTitle, String archiveDeviceName, String archiveDeviceAeTitle ) {
+        DicomConfiguration dicomCfg = getDicomConfiguration(test);
+        File tmpStorageDir = test.createTempDirectory("EXTDEVICE").toFile();
+        return createExternalDeviceToolConfig(dicomCfg, tmpStorageDir, extDeviceName, extDeviceAeTitle, archiveDeviceName, archiveDeviceAeTitle);
+    }
+    
     public static DicomConfiguration getDicomConfiguration(BasicTest test) {
         return test.getLocalConfig();
     }
