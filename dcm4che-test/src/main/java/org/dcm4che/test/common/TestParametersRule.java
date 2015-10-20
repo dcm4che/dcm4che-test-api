@@ -116,9 +116,10 @@ public class TestParametersRule implements TestRule {
                 }
 
                 log.info("\n\n------------------------------------ \n" +
-                        "Running {} {} \n" +
-                        "------------------------------------ \n\n",
-                        description.getTestClass().getName(), description.getMethodName());
+                             "Running {}({}) \n" +
+                             "------------------------------------ \n\n",
+                        description.getMethodName(),
+                        description.getTestClass().getName());
 
                 if (reportedIssue != null) {
                     log.info("Issue(s) reported for this test: {}", Arrays.toString(reportedIssue.value()));
@@ -149,7 +150,7 @@ public class TestParametersRule implements TestRule {
                 // Reset config before each test
                 ConfigUtils.restoreConfig(getInstance());
 
-                notifyServerOfNewtest(description.getTestClass().getName() +" "+ description.getMethodName());
+                notifyServerOfNewtest(description.getMethodName() + "(" + description.getTestClass().getName() + ")");
 
                 base.evaluate();
             }
