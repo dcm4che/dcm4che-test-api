@@ -46,7 +46,8 @@ public class RemoteDicomConfigFactory {
         RemoteConfiguration remoteConfiguration = new RemoteConfiguration(remoteEndpointURL);
         try {
             DicomConfigurationBuilder builder = new DicomConfigurationBuilder().
-                    registerCustomConfigurationStorage(remoteConfiguration);
+                    registerCustomConfigurationStorage(remoteConfiguration).
+                    persistDefaults(true);
 
             builder.registerDeviceExtension(HL7DeviceExtension.class);
             builder.registerDeviceExtension(AuditLogger.class);
@@ -231,9 +232,11 @@ public class RemoteDicomConfigFactory {
         }
 
         @Override
-        public void runBatch(Batch batch) {
+        public void runBatch(ConfigBatch batch) {
             batch.run();
         }
+
+
     }
 
 
