@@ -44,6 +44,7 @@ import java.util.Map;
 import org.dcm4che.test.common.BasicTest;
 import org.dcm4che3.conf.core.api.Configuration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
+import org.dcm4che3.conf.core.util.ConfigNodeUtil;
 
 /**
  * Utility methods to manipulate the server-side configuration from within
@@ -65,11 +66,12 @@ public class ConfigUtils {
      *            the test
      * @throws ConfigurationException
      */
+    @SuppressWarnings("unchecked")
     public static void restoreConfig(BasicTest test) throws ConfigurationException {
 
         Configuration configurationStorage = test.getRemoteConfig().getConfigurationStorage();
         if (originalConfig == null) {
-            originalConfig = configurationStorage.getConfigurationRoot();
+            originalConfig = (Map<String, Object>) ConfigNodeUtil.deepCloneNode(configurationStorage.getConfigurationRoot());
         }
         else
             configurationStorage.persistNode("/", originalConfig, null);
