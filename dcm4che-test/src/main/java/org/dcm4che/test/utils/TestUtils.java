@@ -1,5 +1,24 @@
 package org.dcm4che.test.utils;
 
+import org.dcm4che.test.annotations.RemoteConnectionParameters;
+import org.dcm4che.test.common.BasicTest;
+import org.dcm4che3.conf.api.AttributeCoercion;
+import org.dcm4che3.conf.api.AttributeCoercions;
+import org.dcm4che3.conf.api.DicomConfiguration;
+import org.dcm4che3.conf.core.api.ConfigurationException;
+import org.dcm4che3.data.*;
+import org.dcm4che3.io.DicomInputStream;
+import org.dcm4che3.net.ApplicationEntity;
+import org.dcm4che3.net.Connection;
+import org.dcm4che3.net.Device;
+import org.dcm4che3.net.TransferCapability;
+import org.dcm4che3.net.hl7.HL7Application;
+import org.dcm4che3.net.hl7.HL7DeviceExtension;
+import org.dcm4che3.tool.wadouri.test.WadoURIResponse;
+import org.dcm4chee.archive.conf.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -9,66 +28,54 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Properties;
 
-import org.dcm4che.test.annotations.RemoteConnectionParameters;
-import org.dcm4che.test.common.BasicTest;
-import org.dcm4che3.conf.api.AttributeCoercion;
-import org.dcm4che3.conf.api.AttributeCoercions;
-import org.dcm4che3.conf.api.DicomConfiguration;
-import org.dcm4che3.conf.core.api.ConfigurationException;
-import org.dcm4che3.data.Attributes;
-import org.dcm4che3.data.ItemPointer;
-import org.dcm4che3.data.Tag;
-import org.dcm4che3.data.VR;
-import org.dcm4che3.data.ValueSelector;
-import org.dcm4che3.io.DicomInputStream;
-import org.dcm4che3.net.ApplicationEntity;
-import org.dcm4che3.net.Connection;
-import org.dcm4che3.net.Device;
-import org.dcm4che3.net.TransferCapability;
-import org.dcm4che3.net.hl7.HL7Application;
-import org.dcm4che3.net.hl7.HL7DeviceExtension;
-import org.dcm4che3.tool.wadouri.test.WadoURIResponse;
-import org.dcm4chee.archive.conf.ArchiveAEExtension;
-import org.dcm4chee.archive.conf.ArchiveDeviceExtension;
-import org.dcm4chee.archive.conf.AttributeFilter;
-import org.dcm4chee.archive.conf.Entity;
-import org.dcm4chee.archive.conf.RetrieveSuppressionCriteria;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class TestUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestUtils.class);
 
+    /**
+     *
+     * @param ac
+     * @param ae
+     * @param remoteConfig if null, just modifies the ae without persisting the changes
+     */
     public static void addCoercionTemplate(AttributeCoercion ac, ApplicationEntity ae, DicomConfiguration remoteConfig) {
         ArchiveAEExtension aeExt = ae.getAEExtension(ArchiveAEExtension.class);
         AttributeCoercions coercions = aeExt.getAttributeCoercions();
         coercions.add(ac);
         aeExt.setAttributeCoercions(coercions);
         Device arcDevice = ae.getDevice();
-        try {
-            remoteConfig.merge(arcDevice);
-            remoteConfig.sync();
-        } catch (ConfigurationException e) {
-            LOG.error("Unable to merge and sync device after coercions change, {}", e);
-        }
+
+        if (remoteConfig != null)
+            try {
+                remoteConfig.merge(arcDevice);
+                remoteConfig.sync();
+            } catch (ConfigurationException e) {
+                LOG.error("Unable to merge and sync device after coercions change, {}", e);
+            }
     }
-    
+
+    /**
+     *
+     * @param ac
+     * @param ae
+     * @param remoteConfig if null, just modifies the ae without persisting the changes
+     */
     public static void removeCoercionTemplate(AttributeCoercion ac, ApplicationEntity ae, DicomConfiguration remoteConfig) {
         ArchiveAEExtension aeExt = ae.getAEExtension(ArchiveAEExtension.class);
         AttributeCoercions coercions = aeExt.getAttributeCoercions();
-        for(Iterator<AttributeCoercion> iter = coercions.iterator(); iter.hasNext();) {
-            if(ac.getCommonName().equalsIgnoreCase(iter.next().getCommonName()))
+        for (Iterator<AttributeCoercion> iter = coercions.iterator(); iter.hasNext(); ) {
+            if (ac.getCommonName().equalsIgnoreCase(iter.next().getCommonName()))
                 iter.remove();
         }
         aeExt.setAttributeCoercions(coercions);
         Device arcDevice = ae.getDevice();
-        try {
-            remoteConfig.merge(arcDevice);
-            remoteConfig.sync();
-        } catch (ConfigurationException e) {
-            LOG.error("Unable to merge and sync device after coercions change, {}", e);
-        }
+        if (remoteConfig != null)
+            try {
+                remoteConfig.merge(arcDevice);
+                remoteConfig.sync();
+            } catch (ConfigurationException e) {
+                LOG.error("Unable to merge and sync device after coercions change, {}", e);
+            }
 
     }
 
@@ -82,8 +89,8 @@ public class TestUtils {
     }
 
     public static void addDBPrivateCustomAttribute(String archiveDeviceName,
-            Entity entity, DicomConfiguration remoteConfig, String privateCreator,
-            int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
+                                                   Entity entity, DicomConfiguration remoteConfig, String privateCreator,
+                                                   int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
 
         addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 1,
                 privateCreator, tagToAdd, vr, sequenceTag);
@@ -99,8 +106,8 @@ public class TestUtils {
     }
 
     public static void addDBPrivateCustomAttribute2(String archiveDeviceName,
-            Entity entity, DicomConfiguration remoteConfig, String privateCreator,
-            int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
+                                                    Entity entity, DicomConfiguration remoteConfig, String privateCreator,
+                                                    int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
 
         addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 2,
                 privateCreator, tagToAdd, vr, sequenceTag);
@@ -116,8 +123,8 @@ public class TestUtils {
     }
 
     public static void addDBPrivateCustomAttribute3(String archiveDeviceName,
-            Entity entity, DicomConfiguration remoteConfig, String privateCreator,
-            int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
+                                                    Entity entity, DicomConfiguration remoteConfig, String privateCreator,
+                                                    int tagToAdd, VR vr, int sequenceTag) throws ConfigurationException {
 
         addDBCustomAttribute(archiveDeviceName, entity, remoteConfig, 3,
                 privateCreator, tagToAdd, vr, sequenceTag);
@@ -125,8 +132,8 @@ public class TestUtils {
 
     private static void addDBCustomAttribute(String archiveDeviceName, Entity
             entity, DicomConfiguration remoteConfig,
-           int attributeNumber, String privateCreator, int tagToAdd, VR vr,
-           int sequenceTag)
+                                             int attributeNumber, String privateCreator, int tagToAdd, VR vr,
+                                             int sequenceTag)
             throws ConfigurationException {
 
         Device dev = remoteConfig.findDevice(archiveDeviceName);
@@ -134,22 +141,22 @@ public class TestUtils {
                 .getDeviceExtension(ArchiveDeviceExtension.class);
         AttributeFilter filter = arcDevExt.getAttributeFilter(entity);
 
-        if (attributeNumber==1)
-            if(sequenceTag>0)
+        if (attributeNumber == 1)
+            if (sequenceTag > 0)
                 filter.setCustomAttribute1(new ValueSelector(privateCreator,
                         tagToAdd, vr, 0, new ItemPointer(sequenceTag)));
             else
                 filter.setCustomAttribute1(new ValueSelector(privateCreator,
                         tagToAdd, vr, 0));
-        else if (attributeNumber==2)
-            if(sequenceTag>0)
+        else if (attributeNumber == 2)
+            if (sequenceTag > 0)
                 filter.setCustomAttribute2(new ValueSelector(privateCreator,
                         tagToAdd, vr, 0, new ItemPointer(sequenceTag)));
             else
                 filter.setCustomAttribute2(new ValueSelector(privateCreator,
                         tagToAdd, vr, 0));
-        else if (attributeNumber==3)
-            if(sequenceTag>0)
+        else if (attributeNumber == 3)
+            if (sequenceTag > 0)
                 filter.setCustomAttribute3(new ValueSelector(privateCreator,
                         tagToAdd, vr, 0, new ItemPointer(sequenceTag)));
             else
@@ -162,20 +169,20 @@ public class TestUtils {
     public static String reloadServerConfig(BasicTest test) throws MalformedURLException, IOException {
         Properties defaultParams = test.getProperties();
         //get remote connection parameters
-        RemoteConnectionParameters remoteParams = 
+        RemoteConnectionParameters remoteParams =
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");
-        String baseURL =  defaultParams.getProperty("remoteConn.url");
+        String baseURL = defaultParams.getProperty("remoteConn.url");
 
         String webContext = defaultParams.getProperty("remoteConn.webcontext");
-        baseURL+=webContext.endsWith("/")?webContext:"/"+webContext;
-        HttpURLConnection connection = (HttpURLConnection) 
-                new URL(baseURL + (baseURL.endsWith("/")?"ctrl/reload":"/ctrl/reload"))
-                .openConnection();
+        baseURL += webContext.endsWith("/") ? webContext : "/" + webContext;
+        HttpURLConnection connection = (HttpURLConnection)
+                new URL(baseURL + (baseURL.endsWith("/") ? "ctrl/reload" : "/ctrl/reload"))
+                        .openConnection();
         connection.setDoInput(true);
         connection.setInstanceFollowRedirects(false);
         connection.setRequestMethod("GET");
         connection.setRequestProperty("charset", "utf-8");
-        String responseCode = connection.getResponseCode()+"";
+        String responseCode = connection.getResponseCode() + "";
         connection.disconnect();
         return responseCode;
     }
@@ -186,16 +193,16 @@ public class TestUtils {
         Device scpDevice = null;
         try {
             scpDevice = remote.findDevice(scpToAdjust);
-            if(scpDevice == null)
+            if (scpDevice == null)
                 throw new ConfigurationException();
         } catch (ConfigurationException e) {
             LOG.error("Unable to load scp device from remote configuration", e);
         }
-        
-        
-        for (Iterator<Connection> iter = scpDevice.getConnections().iterator();iter.hasNext();) {
+
+
+        for (Iterator<Connection> iter = scpDevice.getConnections().iterator(); iter.hasNext(); ) {
             Connection conn = iter.next();
-            if(!conn.getCommonName().equalsIgnoreCase(connectionToKeep)) {
+            if (!conn.getCommonName().equalsIgnoreCase(connectionToKeep)) {
                 for (ApplicationEntity ae : scpDevice.getApplicationEntities()) {
                     ae.removeConnection(conn);
                 }
@@ -211,7 +218,7 @@ public class TestUtils {
     }
 
     public static boolean containsSOPClassAndTransferSyntax(String sopClass,
-            Collection<TransferCapability> collection, String transferSyntax) {
+                                                            Collection<TransferCapability> collection, String transferSyntax) {
         for (TransferCapability tc : collection) {
             if (tc.getSopClass().equalsIgnoreCase(sopClass))
                 if (transferSyntax == null)
@@ -232,12 +239,11 @@ public class TestUtils {
             return din.readDataset(-1, Tag.PixelData);
         } catch (IOException e) {
             return null;
-        }
-        finally {
+        } finally {
             try {
                 din.close();
             } catch (IOException e) {
-                LOG.error("Error closing dicom input stream , {}",e);
+                LOG.error("Error closing dicom input stream , {}", e);
             }
         }
     }
