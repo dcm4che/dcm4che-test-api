@@ -90,12 +90,12 @@ public class TestParametersRule implements TestRule {
                 ReportedIssue reportedIssue = getAnnotation(description, ReportedIssue.class);
                 boolean hasReportedIssue = reportedIssue != null;
 
-                boolean skipHeavyTests = System.getProperty("org.dcm4che.test.skipHeavyTests") != null;
+                boolean runHeavyTests = System.getProperty("org.dcm4che.test.runHeavyTests") != null;
                 boolean onlyHeavyTests = System.getProperty("org.dcm4che.test.onlyHeavyTests") != null;
                 boolean skipReportedIssueTests = System.getProperty("org.dcm4che.test.skipReportedIssueTests") != null;
                 boolean onlyReportedIssueTests = System.getProperty("org.dcm4che.test.onlyReportedIssueTests") != null;
 
-                if (isHeavy && skipHeavyTests) {
+                if (isHeavy && !runHeavyTests && !onlyHeavyTests) {
                     log.info("Skipping Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
                     throw new AssumptionViolatedException("Skipping Heavy Test " + description.getTestClass().getName() + " " + description.getMethodName());
                 }
