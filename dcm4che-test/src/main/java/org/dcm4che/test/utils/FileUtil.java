@@ -38,6 +38,15 @@
 
 package org.dcm4che.test.utils;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardWatchEventKinds;
+import java.nio.file.WatchEvent;
+import java.nio.file.WatchKey;
+import java.nio.file.WatchService;
+import java.util.concurrent.TimeUnit;
+
 /**
  * @author Umberto Cappellini <umberto.cappellini@agfa.com>
  *
@@ -50,6 +59,71 @@ public class FileUtil {
         int exp = (int) (Math.log(bytes) / Math.log(unit));
         String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
+    }
+    
+    /**
+     * Pauses the calling thread until a specified file exists / is created
+     * @param timeout Maximum time to wait before giving up
+     * @param filePath The observed filepath
+     * @return Returns <code>true</code> if the file exists, returns <code>false</code> otherwise
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static boolean waitUntilFileExists(long timeout, Path filePath) throws IOException,
+            InterruptedException {
+        if(Files.exists(filePath)) {
+            return true;
+        }
+        
+        Path parentDir = filePath.getParent();
+        long timeoutLeft = timeout;
+        try (WatchService fsWatcher = filePath.getFileSystem().newWatchService()) {
+            WatchKey key = parentDir.register(fsWatcher, StandardWatchEventKinds.ENTRY_CREATE);
+            for (;;) {
+                if(timeoutLeft <= 0) {
+                    break;
+                }
+                
+                long start = System.currentTimeMillis();
+                key = fsWatcher.poll(timeoutLeft, TimeUnit.MILLISECONDS);
+                
+                // poll() returns null if timeout happened
+                if(key == null) {
+                    break;
+                }
+                
+                // subtract time already spent for waiting from left timeout
+                timeoutLeft -= System.currentTimeMillis() - start;
+                
+                for (WatchEvent<?> fsEvent : key.pollEvents()) {
+                    WatchEvent.Kind<?> kind = fsEvent.kind();
+
+                    // This key is registered only
+                    // for ENTRY_CREATE events,
+                    // but an OVERFLOW event can
+                    // occur regardless if events
+                    // are lost or discarded.
+                    if (kind == StandardWatchEventKinds.OVERFLOW) {
+                        continue;
+                    }
+
+                    // The filename is the context of the event.
+                    Path createdFilePath = ((WatchEvent<Path>)fsEvent).context();
+                    Path absCreatedFilePath = parentDir.resolve(createdFilePath);
+                    if (filePath.equals(absCreatedFilePath)) {
+                        return true;
+                    }
+                }
+
+                // reset the key
+                boolean valid = key.reset();
+                if (!valid) {
+                    break;
+                }
+            }
+            
+            return false;
+        }
     }
 
 }
