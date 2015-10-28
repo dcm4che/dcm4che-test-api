@@ -82,7 +82,7 @@ public class FileUtilTest {
             
         }).start();
         
-        Assert.assertTrue(FileUtil.waitUntilFileExists(100, testFile));
+        Assert.assertTrue(FileUtil.waitUntilFileExists(200, testFile));
     }
     
     private void touch(File file) {
