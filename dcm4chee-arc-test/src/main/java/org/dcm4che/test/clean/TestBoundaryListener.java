@@ -43,12 +43,9 @@ package org.dcm4che.test.clean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.transaction.*;
-import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 /**
@@ -65,8 +62,11 @@ public class TestBoundaryListener {
     @Path("beginTest/{name}")
     public Response beginTest(@PathParam("name") String name) {
 
+        // can be picked up by whoever is interested
+        System.setProperty("org.dcm4che.test.currentTestName", name);
+
         log.info("\n\n------------------------------------ \n" +
-                        "Running test {} \n" +
+                        "Running {} \n" +
                         "------------------------------------ \n\n",
                 name);
 
