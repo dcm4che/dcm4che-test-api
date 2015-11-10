@@ -116,7 +116,7 @@ public class TestParametersRule implements TestRule {
                 }
 
                 log.info("\n\n------------------------------------ \n" +
-                             "Running {}({}) \n" +
+                             "Running test {}({}) \n" +
                              "------------------------------------ \n\n",
                         description.getMethodName(),
                         description.getTestClass().getName());
