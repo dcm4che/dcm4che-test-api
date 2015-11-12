@@ -43,7 +43,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 
-import org.apache.commons.cli.MissingArgumentException;
+
 import org.dcm4che.test.annotations.DcmGenParameters;
 import org.dcm4che.test.annotations.EchoParameters;
 import org.dcm4che.test.annotations.GetParameters;
@@ -110,7 +110,7 @@ public class TestToolFactory {
         MppsScpTool
     }
 
-    public static TestTool createToolForTest(TestToolType type, BasicTest test) throws MissingArgumentException {
+    public static TestTool createToolForTest(TestToolType type, BasicTest test) {
 
         Properties defaultParams = test.getProperties();
 
@@ -233,12 +233,12 @@ public class TestToolFactory {
         return new StoreSCPTool(storeDir, device, sourceAETitle, conn, noStore);
     }
 
-    private static TestTool createQCTool(BasicTest test) throws MissingArgumentException {
+    private static TestTool createQCTool(BasicTest test) throws IllegalArgumentException {
         TestTool tool;
         QCParameters qcParams = (QCParameters) test.getParams().get("QCParameters");
         
         if(qcParams == null)
-            throw new MissingArgumentException("QCParameters annotation"
+            throw new IllegalArgumentException("QCParameters annotation"
                     + "must be used to create QCTool");
         String url = qcParams.url();
         QCOperation operation = qcParams.operation();
@@ -260,11 +260,11 @@ public class TestToolFactory {
         return tool;
     }
 
-    private static TestTool createWadoRSTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
+    private static TestTool createWadoRSTool(BasicTest test, String baseURL, String webContext) throws IllegalArgumentException {
         WadoRSParameters wadoRSParams = (WadoRSParameters) test.getParams().get("WadoRSParameters");
 
         if (wadoRSParams == null)
-            throw new MissingArgumentException("WadoRSParameters annotation"
+            throw new IllegalArgumentException("WadoRSParameters annotation"
                     + " must be used to create a WadoRS tool");
         String url = wadoRSParams.url();
 
@@ -279,11 +279,11 @@ public class TestToolFactory {
         return new WadoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), retrieveDir);
     }
 
-    private static TestTool createWadoURITool(BasicTest test, Properties defaultParams, String baseURL, String webContext) throws MissingArgumentException {
+    private static TestTool createWadoURITool(BasicTest test, Properties defaultParams, String baseURL, String webContext) throws IllegalArgumentException {
         WadoURIParameters wadoUriParams = (WadoURIParameters) test.getParams().get("WadoURIParameters");
 
         if(wadoUriParams == null)
-            throw new MissingArgumentException("WadoURIParameters annotation"
+            throw new IllegalArgumentException("WadoURIParameters annotation"
                     + " must be used to create a WadoURI tool");
         String url = wadoUriParams.url();
         String studyUID = wadoUriParams.studyUID() != null ? wadoUriParams.studyUID() : null;
@@ -321,12 +321,12 @@ public class TestToolFactory {
                 , presentationUID, transferSyntax, retrieveDir);
     }
 
-    private static TestTool createQidoTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
+    private static TestTool createQidoTool(BasicTest test, String baseURL, String webContext) throws IllegalArgumentException {
         QidoRSParameters qidoParams = (QidoRSParameters) test.getParams().get("QidoRSParameters");
 
         String url = qidoParams != null && qidoParams.url() != null ? qidoParams.url() : null;
         if (url == null)
-            throw new MissingArgumentException("To create a QidoRS Tool a url must be specified" + " in the QidoParameters annotation");
+            throw new IllegalArgumentException("To create a QidoRS Tool a url must be specified" + " in the QidoParameters annotation");
         String limit = qidoParams != null && !"-1".equals(qidoParams.limit()) ? qidoParams.limit() : null;
         boolean fuzzy = qidoParams != null && qidoParams.fuzzyMatching() ? qidoParams.fuzzyMatching() : false;
         boolean timezone = qidoParams != null && qidoParams.timezoneAdjustment() ? qidoParams.timezoneAdjustment() : false;
@@ -335,14 +335,14 @@ public class TestToolFactory {
         return new QidoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), limit, fuzzy, timezone, returnAll, offset);
     }
 
-    private static TestTool createStowTool(BasicTest test, String baseURL, String webContext) throws MissingArgumentException {
+    private static TestTool createStowTool(BasicTest test, String baseURL, String webContext) {
         TestTool tool;
         StowRSParameters stowParams = (StowRSParameters) test.getParams().get("StowRSParameters");
 
         String url = stowParams != null && stowParams.url() != null ? stowParams.url()
                 : null;
         if (url == null)
-            throw new MissingArgumentException("To create a StowRS Tool a url must be specified"
+            throw new IllegalArgumentException("To create a StowRS Tool a url must be specified"
                     + " in the StowParameters annotation");
         tool = new StowRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url));
         return tool;

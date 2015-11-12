@@ -140,7 +140,7 @@ public abstract class BasicTest {
         }
     }
 
-    public TestResult store(String description, String fileName) throws MissingArgumentException {
+    public TestResult store(String description, String fileName) {
         StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
         try {
             storeTool.store(description, fileName);
