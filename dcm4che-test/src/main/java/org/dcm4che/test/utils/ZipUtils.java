@@ -24,7 +24,7 @@ public class ZipUtils {
      *
      * @throws IOException IO exception
      */
-    public void unzip(Path zipFile, Path destDirectory) throws IOException {
+    public static void unzip(Path zipFile, Path destDirectory) throws IOException {
         if (!Files.isDirectory(destDirectory))
             throw new IOException(destDirectory + " is not a directory");
 
@@ -41,7 +41,7 @@ public class ZipUtils {
         }
     }
 
-    private void extractFile(ZipInputStream zipIn, Path dstFilePath) throws IOException {
+    private static void extractFile(ZipInputStream zipIn, Path dstFilePath) throws IOException {
         try (OutputStream out = new BufferedOutputStream(Files.newOutputStream(dstFilePath))) {
             StreamUtils.copy(zipIn, out);
         }
