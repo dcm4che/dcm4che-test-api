@@ -43,7 +43,6 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Properties;
 
-
 import org.dcm4che.test.annotations.DcmGenParameters;
 import org.dcm4che.test.annotations.EchoParameters;
 import org.dcm4che.test.annotations.GetParameters;
@@ -123,8 +122,8 @@ public class TestToolFactory {
                 Integer.valueOf(defaultParams.getProperty("remoteConn.port"))
                 : Integer.valueOf(remoteParams.port());
 
-        String baseURL = defaultParams.getProperty("remoteConn.url");
-        String webContext = defaultParams.getProperty("remoteConn.webcontext");
+        String baseURL = getBaseURL(test);
+        String webContext = getWebContext(test);
 
         if (host == null || baseURL == null || webContext == null)
             throw new RuntimeException("Not all the properties are set");
@@ -202,6 +201,14 @@ public class TestToolFactory {
         }
     }
 
+    private static String getBaseURL(BasicTest test) {
+        return test.getProperties().getProperty("remoteConn.url");
+    }
+
+    private static String getWebContext(BasicTest test) {
+        return test.getProperties().getProperty("remoteConn.webcontext");
+    }
+
     private static TestTool createStoreSCPTool(BasicTest test, Properties defaultParams) {
 
         StoreSCPParameters storeSCPParams = (StoreSCPParameters) test.getParams().get("StoreSCPParameters");
@@ -260,9 +267,17 @@ public class TestToolFactory {
         return tool;
     }
 
-    private static TestTool createWadoRSTool(BasicTest test, String baseURL, String webContext) throws IllegalArgumentException {
+    public static WadoRSTool createWadoRSTool(BasicTest test, WadoRSParameters params) {
+        return createWadoRSTool(test, getBaseURL(test), getWebContext(test), params);
+    }
+
+    private static WadoRSTool createWadoRSTool(BasicTest test, String baseURL, String webContext) throws IllegalArgumentException {
         WadoRSParameters wadoRSParams = (WadoRSParameters) test.getParams().get("WadoRSParameters");
 
+        return createWadoRSTool(test, baseURL, webContext, wadoRSParams);
+    }
+
+    private static WadoRSTool createWadoRSTool(BasicTest test, String baseURL, String webContext, WadoRSParameters wadoRSParams) throws IllegalArgumentException {
         if (wadoRSParams == null)
             throw new IllegalArgumentException("WadoRSParameters annotation"
                     + " must be used to create a WadoRS tool");

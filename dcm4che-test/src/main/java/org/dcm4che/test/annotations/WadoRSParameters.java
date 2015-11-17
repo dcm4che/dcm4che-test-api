@@ -45,7 +45,6 @@ import org.dcm4che3.tool.wadors.test.WadoRSTool;
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
  */
-
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WadoRSParameters {
 
