@@ -39,14 +39,14 @@
 
 package org.dcm4che.test.utils;
 
+import org.junit.Assert;
+import org.junit.Test;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-
-import org.junit.Assert;
-import org.junit.Test;
 
 /**
  * @author Alexander Hoermandinger <alexander.hoermandinger@agfa.com>
@@ -81,8 +81,8 @@ public class FileUtilTest {
             }
             
         }).start();
-        
-        Assert.assertTrue(FileUtil.waitUntilFileExists(200, testFile));
+
+        Assert.assertTrue(FileUtil.waitUntilFileExists(1000, testFile));
     }
     
     private void touch(File file) {
