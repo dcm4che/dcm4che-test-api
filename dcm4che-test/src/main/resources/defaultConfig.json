@@ -5,574 +5,519 @@
         "hl7ApplicationName" : "HL7RCV^DCM4CHEE"
       }
     },
-    "dicomUniqueAETitlesRegistryRoot" : {
-      "DCMQRSCP" : {
-        "dicomAETitle" : "DCMQRSCP"
-      },
-      "STGCMTSCU" : {
-        "dicomAETitle" : "STGCMTSCU"
-      },
-      "STORESCP" : {
-        "dicomAETitle" : "STORESCP"
-      },
-      "MPPSSCP" : {
-        "dicomAETitle" : "MPPSSCP"
-      },
-      "IANSCP" : {
-        "dicomAETitle" : "IANSCP"
-      },
-      "STORESCU" : {
-        "dicomAETitle" : "STORESCU"
-      },
-      "MPPSSCU" : {
-        "dicomAETitle" : "MPPSSCU"
-      },
-      "FINDSCU" : {
-        "dicomAETitle" : "FINDSCU"
-      },
-      "GETSCU" : {
-        "dicomAETitle" : "GETSCU"
-      },
-      "DCM4CHEE" : {
-        "dicomAETitle" : "DCM4CHEE"
-      },
-      "DCM4CHEE_ADMIN" : {
-        "dicomAETitle" : "DCM4CHEE_ADMIN"
-      },
-      "DCM4CHEE_TRASH" : {
-        "dicomAETitle" : "DCM4CHEE_TRASH"
-      }
-    },
+    "dicomUniqueAETitlesRegistryRoot" : { },
     "dicomDevicesRoot" : {
       "dcmqrscp" : {
-        "dicomInstitutionName" : [ "Site B" ],
-        "dicomInstalled" : true,
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site B&1.2.40.0.13.1.1.999.222.2222&ISO",
+        "_.uuid" : "Device-dcmqrscp",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : {
-          "DCMQRSCP" : {
-            "dicomVendorData" : [ ],
-            "dicomAETitle" : "DCMQRSCP",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
-            "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='dcmqrscp']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='dcmqrscp']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
-          }
-        },
-        "dicomIssuerOfPatientID" : "Site B&1.2.40.0.13.1.1.999.222.2222&ISO",
-        "dicomDeviceName" : "dcmqrscp",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
         "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "75784F6F751CC0D18283619758BAD1DE8B83E2C1",
           "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
           "dicomPort" : 11113
         }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "DB94C48405DEE56A1727FFAA85837F74F3677152",
           "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 2763
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 2763,
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
         } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ "(222.2222, 99DCM4CHEE, \"Site B\")" ]
+        "dicomDeviceName" : "dcmqrscp",
+        "dicomInstalled" : true,
+        "dicomInstitutionCode" : [ "(222.2222, 99DCM4CHEE, \"Site B\")" ],
+        "dicomInstitutionName" : [ "Site B" ],
+        "dicomIssuerOfAccessionNumber" : "Site B&1.2.40.0.13.1.1.999.222.2222&ISO",
+        "dicomIssuerOfPatientID" : "Site B&1.2.40.0.13.1.1.999.222.2222&ISO",
+        "dicomNetworkAE" : {
+          "DCMQRSCP" : {
+            "_.uuid" : "BBE76D10585889B2B157037852235E65477E7502",
+            "aeExtensions" : {
+              "ExternalArchiveAEExtension" : {
+                "dcmAEFetchPriority" : 0
+              }
+            },
+            "dicomAETitle" : "DCMQRSCP",
+            "dicomAssociationAcceptor" : true,
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='75784F6F751CC0D18283619758BAD1DE8B83E2C1']"
+            }, {
+              "_.ref" : "//*[_.uuid='DB94C48405DEE56A1727FFAA85837F74F3677152']"
+            } ]
+          }
+        },
+        "dicomPrimaryDeviceType" : [ "ARCHIVE" ]
       },
       "stgcmtscu" : {
-        "dicomInstitutionName" : [ ],
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomInstitutionDepartmentName" : [ ],
+        "_.uuid" : "Device-stgcmtscu",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : {
-          "STGCMTSCU" : {
-            "dicomVendorData" : [ ],
-            "dicomAETitle" : "STGCMTSCU",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
-            "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='stgcmtscu']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='stgcmtscu']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
-          }
-        },
-        "dicomDeviceName" : "stgcmtscu",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
         "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "0424D50169C401DC84B38D1B68CAA6A46A7EA789",
           "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
           "dicomPort" : 11114
         }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "F4D96179462AC3575A92B26785156C744132BF3D",
           "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 2765
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 2765,
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
         } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        "dicomDeviceName" : "stgcmtscu",
+        "dicomInstalled" : true,
+        "dicomNetworkAE" : {
+          "STGCMTSCU" : {
+            "_.uuid" : "B358168C2FA0F6FEF5B7EBD9754C12D969410551",
+            "dicomAETitle" : "STGCMTSCU",
+            "dicomAssociationAcceptor" : true,
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='0424D50169C401DC84B38D1B68CAA6A46A7EA789']"
+            }, {
+              "_.ref" : "//*[_.uuid='F4D96179462AC3575A92B26785156C744132BF3D']"
+            } ]
+          }
+        }
       },
       "storescp" : {
-        "dicomInstitutionName" : [ ],
-        "dicomInstalled" : true,
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-storescp",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : {
-          "STORESCP" : {
-            "dicomVendorData" : [ ],
-            "dicomAETitle" : "STORESCP",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
-            "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='storescp']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='storescp']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
-          }
-        },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "storescp",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
         "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "89102C98FD2B0AA2ABE715177758137B5F22D0DD",
           "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
           "dicomPort" : 11115
         }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "811072022E35D96792958481BC7390587F0FF4AE",
           "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 2766
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 2766,
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
         } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        "dicomDeviceName" : "storescp",
+        "dicomInstalled" : true,
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomNetworkAE" : {
+          "STORESCP" : {
+            "_.uuid" : "2C8EEDA1855368589F222109FE5867B30532260D",
+            "dicomAETitle" : "STORESCP",
+            "dicomAssociationAcceptor" : true,
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='89102C98FD2B0AA2ABE715177758137B5F22D0DD']"
+            }, {
+              "_.ref" : "//*[_.uuid='811072022E35D96792958481BC7390587F0FF4AE']"
+            } ]
+          }
+        }
       },
       "mppsscp" : {
-        "dicomInstitutionName" : [ ],
-        "dicomInstalled" : true,
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-mppsscp",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : {
-          "MPPSSCP" : {
-            "dicomVendorData" : [ ],
-            "dicomAETitle" : "MPPSSCP",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
-            "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='mppsscp']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='mppsscp']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
-          }
-        },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "mppsscp",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
         "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "5D132870E3B0D2F45FC51B27C14A37955FA40A08",
           "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
           "dicomPort" : 11116
         }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "DA99E0863621DD818AA92DAA1E766EC8ED5421A0",
           "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 2767
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 2767,
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
         } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        "dicomDeviceName" : "mppsscp",
+        "dicomInstalled" : true,
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomNetworkAE" : {
+          "MPPSSCP" : {
+            "_.uuid" : "B9C7AB013F8DA013D0D56AFD707F5A3A5A1F1FEB",
+            "dicomAETitle" : "MPPSSCP",
+            "dicomAssociationAcceptor" : true,
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='5D132870E3B0D2F45FC51B27C14A37955FA40A08']"
+            }, {
+              "_.ref" : "//*[_.uuid='DA99E0863621DD818AA92DAA1E766EC8ED5421A0']"
+            } ]
+          }
+        }
       },
       "ianscp" : {
-        "dicomInstitutionName" : [ ],
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstalled" : true,
-        "dicomInstitutionDepartmentName" : [ ],
+        "_.uuid" : "Device-ianscp",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : {
-          "IANSCP" : {
-            "dicomVendorData" : [ ],
-            "dicomAETitle" : "IANSCP",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
-            "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='ianscp']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='ianscp']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
-          }
-        },
-        "dicomDeviceName" : "ianscp",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
         "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "11899AB78597D6A9226D77CBCAAAD7607D2A7750",
           "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
           "dicomPort" : 11117
         }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
+          "_.uuid" : "1DAC285D769C35FC2CEB1C74D121F31BC10680CD",
           "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 2768
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 2768,
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
         } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        "dicomDeviceName" : "ianscp",
+        "dicomInstalled" : true,
+        "dicomNetworkAE" : {
+          "IANSCP" : {
+            "_.uuid" : "95470095D02872D92E63D98510857CEE3F3B7BBA",
+            "dicomAETitle" : "IANSCP",
+            "dicomAssociationAcceptor" : true,
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='11899AB78597D6A9226D77CBCAAAD7607D2A7750']"
+            }, {
+              "_.ref" : "//*[_.uuid='1DAC285D769C35FC2CEB1C74D121F31BC10680CD']"
+            } ]
+          }
+        }
       },
       "storescu" : {
-        "dicomInstitutionName" : [ "Site A" ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-storescu",
         "dcmLimitOpenAssociations" : 0,
+        "dicomConnection" : [ {
+          "_.uuid" : "11B6949A4C0D280C56AC01C92E49B4A9E9316E39",
+          "cn" : "dicom",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost"
+        }, {
+          "_.uuid" : "90CEB323120D25EC474168E9A87705F2F198D5BC",
+          "cn" : "dicom-tls",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
+        } ],
+        "dicomDeviceName" : "storescu",
+        "dicomInstalled" : true,
+        "dicomInstitutionCode" : [ "(111.1111, 99DCM4CHEE, \"Site A\")" ],
+        "dicomInstitutionName" : [ "Site A" ],
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
         "dicomNetworkAE" : {
           "STORESCU" : {
-            "dicomVendorData" : [ ],
+            "_.uuid" : "ECE352A0D4D21B3230950C8E8BA4D11B5635D60A",
             "dicomAETitle" : "STORESCU",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
             "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='storescu']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='storescu']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='11B6949A4C0D280C56AC01C92E49B4A9E9316E39']"
+            }, {
+              "_.ref" : "//*[_.uuid='90CEB323120D25EC474168E9A87705F2F198D5BC']"
+            } ]
           }
-        },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "storescu",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0"
-        }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0"
-        } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ "(111.1111, 99DCM4CHEE, \"Site A\")" ]
+        }
       },
       "mppsscu" : {
-        "dicomInstitutionName" : [ ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-mppsscu",
         "dcmLimitOpenAssociations" : 0,
+        "dicomConnection" : [ {
+          "_.uuid" : "BAD705E64246482F1B7BEF61B588FBAD0D70B9A2",
+          "cn" : "dicom",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost"
+        }, {
+          "_.uuid" : "58579B7A53376DD40DB60E7163B0888461AA2CAC",
+          "cn" : "dicom-tls",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
+        } ],
+        "dicomDeviceName" : "mppsscu",
+        "dicomInstalled" : true,
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
         "dicomNetworkAE" : {
           "MPPSSCU" : {
-            "dicomVendorData" : [ ],
+            "_.uuid" : "88BEC35DB5924A8AE0CD8129C70AC67CB4489017",
             "dicomAETitle" : "MPPSSCU",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
             "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='mppsscu']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='mppsscu']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='BAD705E64246482F1B7BEF61B588FBAD0D70B9A2']"
+            }, {
+              "_.ref" : "//*[_.uuid='58579B7A53376DD40DB60E7163B0888461AA2CAC']"
+            } ]
           }
-        },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "mppsscu",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0"
-        }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0"
-        } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        }
       },
       "findscu" : {
-        "dicomInstitutionName" : [ ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-findscu",
         "dcmLimitOpenAssociations" : 0,
+        "dicomConnection" : [ {
+          "_.uuid" : "91F28A5D61F56998EA12635629D848818E764F88",
+          "cn" : "dicom",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost"
+        }, {
+          "_.uuid" : "8DCDCF20CE909443C2F26E2F3BA2C4E3EAE2844F",
+          "cn" : "dicom-tls",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
+        } ],
+        "dicomDeviceName" : "findscu",
+        "dicomInstalled" : true,
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
         "dicomNetworkAE" : {
           "FINDSCU" : {
-            "dicomVendorData" : [ ],
+            "_.uuid" : "B62D014A03A24EC783FD15044973266008AF0904",
             "dicomAETitle" : "FINDSCU",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
             "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='findscu']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='findscu']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='91F28A5D61F56998EA12635629D848818E764F88']"
+            }, {
+              "_.ref" : "//*[_.uuid='8DCDCF20CE909443C2F26E2F3BA2C4E3EAE2844F']"
+            } ]
           }
-        },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "findscu",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0"
-        }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0"
-        } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        }
       },
       "getscu" : {
-        "dicomInstitutionName" : [ ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-getscu",
         "dcmLimitOpenAssociations" : 0,
+        "dicomConnection" : [ {
+          "_.uuid" : "E104FF227FC8AE34B4A9AD2C828471340D8C8178",
+          "cn" : "dicom",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost"
+        }, {
+          "_.uuid" : "C75355A7D32000B7C38F2C81CAE8752A1E8BFBC0",
+          "cn" : "dicom-tls",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
+        } ],
+        "dicomDeviceName" : "getscu",
+        "dicomInstalled" : true,
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
         "dicomNetworkAE" : {
           "GETSCU" : {
-            "dicomVendorData" : [ ],
+            "_.uuid" : "EA0690F40E43BF4F8692299339D0C975D23E01D8",
             "dicomAETitle" : "GETSCU",
-            "dcmAcceptedCallingAETitle" : [ ],
-            "dicomPreferredCallingAETitle" : [ ],
-            "dicomSupportedCharacterSet" : [ ],
-            "dicomApplicationCluster" : [ ],
-            "dicomAssociationInitiator" : true,
             "dicomAssociationAcceptor" : true,
-            "dcmTransferCapability" : [ ],
-            "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='getscu']/dicomConnection[cn='dicom']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='getscu']/dicomConnection[cn='dicom-tls']" ],
-            "dicomPreferredCalledAETitle" : [ ]
+            "dicomAssociationInitiator" : true,
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='E104FF227FC8AE34B4A9AD2C828471340D8C8178']"
+            }, {
+              "_.ref" : "//*[_.uuid='C75355A7D32000B7C38F2C81CAE8752A1E8BFBC0']"
+            } ]
           }
-        },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "getscu",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0",
-          "dcmRetrieveTimeout" : 5000
-        }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dcmRetrieveTimeout" : 5000
-        } ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        }
       },
       "movescu" : {
-        "dicomInstitutionName" : [ ],
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomInstitutionDepartmentName" : [ ],
+        "_.uuid" : "Device-movescu",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : { },
         "dicomDeviceName" : "movescu",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [{
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom",
-          "dicomHostname" : "0.0.0.0"
-        }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "dicom-tls",
-          "dicomHostname" : "0.0.0.0"
-        }],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        "dicomInstalled" : true
       },
       "hl7snd" : {
-        "dicomInstitutionName" : [ ],
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomInstitutionDepartmentName" : [ ],
+        "_.uuid" : "Device-hl7snd",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : { },
         "dicomDeviceName" : "hl7snd",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [ ],
-        "dicomRelatedDeviceReference" : [ ],
-        "dicomInstitutionCode" : [ ]
+        "dicomInstalled" : true
       },
       "hl7rcv" : {
-        "dicomInstitutionName" : [ "Site A" ],
-        "dicomInstalled" : true,
-        "dcmKeyStoreURL" : "/key.jks",
-        "dcmKeyStorePin" : "changeit",
-        "dcmKeyStoreType" : "JKS",
-        "dcmTrustStoreURL" : "/key.jks",
-        "dcmTrustStorePin" : "changeit",
-        "dcmTrustStoreType" : "JKS",
-        "dicomSoftwareVersion" : [ ],
-        "dicomInstitutionDepartmentName" : [ ],
-        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "_.uuid" : "Device-hl7rcv",
         "dcmLimitOpenAssociations" : 0,
-        "dicomNetworkAE" : { },
-        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
-        "dicomDeviceName" : "hl7rcv",
-        "dicomVendorData" : [ ],
-        "dicomPrimaryDeviceType" : [ ],
-        "dicomInstitutionAddress" : [ ],
-        "dicomConnection" : [ {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ ],
-          "dcmProtocol" : "HL7",
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "hl7",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 2576
-        }, {
-          "dcmBlacklistedHostname" : [ ],
-          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ],
-          "dcmProtocol" : "HL7",
-          "dcmTLSProtocol" : [ "TLSv1", "SSLv3" ],
-          "cn" : "hl7-tls",
-          "dicomHostname" : "0.0.0.0",
-          "dicomPort" : 12576
-        } ],
-        "dicomRelatedDeviceReference" : [ ],
         "deviceExtensions" : {
           "HL7DeviceExtension" : {
             "hl7Apps" : {
               "HL7RCV^DCM4CHEE" : {
-                "hl7ApplicationName" : "HL7RCV^DCM4CHEE",
-                "hl7AcceptedSendingApplication" : [ ],
-                "hl7AcceptedMessageType" : [ ],
-                "dicomNetworkConnectionReference" : [ "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='hl7rcv']/dicomConnection[cn='hl7']", "/dicomConfigurationRoot/dicomDevicesRoot/*[dicomDeviceName='hl7rcv']/dicomConnection[cn='hl7-tls']" ]
+                "dicomNetworkConnectionReference" : [ {
+                  "_.ref" : "//*[_.uuid='3A3D4A0D5AC4E7152F42B63B20198E0A6D1FFEFD']"
+                }, {
+                  "_.ref" : "//*[_.uuid='8BF6EE6F07FA8E22DEA0A4DF817F56CCD5C2BC15']"
+                } ],
+                "hl7ApplicationName" : "HL7RCV^DCM4CHEE"
               }
             }
           }
         },
-        "dicomInstitutionCode" : [ "(111.1111, 99DCM4CHEE, \"Site A\")" ]
+        "dicomConnection" : [ {
+          "_.uuid" : "3A3D4A0D5AC4E7152F42B63B20198E0A6D1FFEFD",
+          "cn" : "hl7",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmProtocol" : "HL7",
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 2576
+        }, {
+          "_.uuid" : "8BF6EE6F07FA8E22DEA0A4DF817F56CCD5C2BC15",
+          "cn" : "hl7-tls",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmProtocol" : "HL7",
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 12576,
+          "dicomTLSCipherSuite" : [ "TLS_RSA_WITH_AES_128_CBC_SHA", "SSL_RSA_WITH_3DES_EDE_CBC_SHA" ]
+        } ],
+        "dicomDeviceName" : "hl7rcv",
+        "dicomInstalled" : true,
+        "dicomInstitutionCode" : [ "(111.1111, 99DCM4CHEE, \"Site A\")" ],
+        "dicomInstitutionName" : [ "Site A" ],
+        "dicomIssuerOfAccessionNumber" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO",
+        "dicomIssuerOfPatientID" : "Site A&1.2.40.0.13.1.1.999.111.1111&ISO"
+      },
+      "syslog" : {
+        "_.uuid" : "Device-syslog",
+        "dcmLimitOpenAssociations" : 0,
+        "deviceExtensions" : {
+          "AuditRecordRepository" : {
+            "dicomNetworkConnectionReference" : [ {
+              "_.ref" : "//*[_.uuid='50155B68A11B365124FA537CC7EB47202DACAF31']"
+            } ]
+          }
+        },
+        "dicomConnection" : [ {
+          "_.uuid" : "50155B68A11B365124FA537CC7EB47202DACAF31",
+          "cn" : "audit-udp",
+          "dcmAAACTimeout" : 5000,
+          "dcmAARQTimeout" : 5000,
+          "dcmARRPTimeout" : 5000,
+          "dcmIdleTimeout" : 5000,
+          "dcmProtocol" : "SYSLOG_UDP",
+          "dcmResponseTimeout" : 5000,
+          "dcmRetrieveTimeout" : 5000,
+          "dcmTCPConnectTimeout" : 5000,
+          "dicomHostname" : "localhost",
+          "dicomPort" : 514
+        } ],
+        "dicomDeviceName" : "syslog",
+        "dicomInstalled" : true
       }
     }
   }
