@@ -59,6 +59,7 @@ import org.dcm4che3.tool.storescp.test.StoreSCPTool;
 import org.dcm4che3.tool.storescu.test.StoreResult;
 import org.dcm4che3.tool.storescu.test.StoreTool;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 /**
@@ -84,6 +85,7 @@ public class ExternalDeviceToolTest {
     private ExternalDeviceTool runningExtDevice;
 
     @Test
+    @Ignore("Needs a test_config.json with latest additions (uuids) to run properly")
     public void testCStoreOnExternalDevice() throws Exception {
         File extDeviceStorageDir = createTempDir("ExternalDeviceToolTest_testCStore");
         
@@ -123,6 +125,7 @@ public class ExternalDeviceToolTest {
     }
     
     @Test
+    @Ignore("Needs a test_config.json with latest additions (uuids) to run properly")
     public void testCMoveOnExternalDevice() throws Exception {
         File extDeviceStorageDir = createTempDir("ExternalDeviceToolTest_testCMove");
         
