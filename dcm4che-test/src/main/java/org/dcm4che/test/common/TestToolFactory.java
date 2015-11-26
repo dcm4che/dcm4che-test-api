@@ -67,6 +67,7 @@ import org.dcm4che3.data.Code;
 import org.dcm4che3.net.ApplicationEntity;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
+import org.dcm4che3.net.IncompatibleConnectionException;
 import org.dcm4che3.tool.common.test.TestTool;
 import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
 import org.dcm4che3.tool.findscu.test.QueryTool;
@@ -581,10 +582,12 @@ public class TestToolFactory {
         ApplicationEntity archiveDeviceAE = archiveDevice.getApplicationEntity(archiveDeviceAeTitle);
         
         ExternalDeviceToolConfig qrScpConfig = new ExternalDeviceToolConfig();
-        for(Connection remoteConn : archiveDeviceAE.getConnections()) {
-            qrScpConfig.addRemoteConnection(remoteConn.getCommonName(), remoteConn);
+        try {
+            qrScpConfig.addRemoteConnection(archiveDeviceAeTitle,archiveDevice.getDefaultAE().findCompatibelConnection(extDeviceAe).getLocalConnection());
+        } catch (IncompatibleConnectionException e) {
+            throw new RuntimeException("Cannot find an appropriate connection of the archive for the external device tool to use",e);
         }
-        
+
         qrScpConfig.device(extDevice)
             .aeTitle(extDeviceAe.getAETitle())
             .port(extDeviceAe.getConnections().iterator().next().getPort());
