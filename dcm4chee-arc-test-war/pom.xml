@@ -18,12 +18,6 @@
     </dependency>
     <dependency>
       <groupId>org.dcm4che.dcm4chee-arc</groupId>
-      <artifactId>dcm4chee-arc-entity</artifactId>
-      <classifier>${db}</classifier>
-      <version>${dcm4chee-arc.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.dcm4che.dcm4chee-arc</groupId>
       <artifactId>dcm4chee-arc-core</artifactId>
       <version>${dcm4chee-arc.version}</version>
     </dependency>
@@ -33,15 +27,4 @@
       <version>${dcm4chee-arc.version}</version>
     </dependency>
   </dependencies>
-  <build>
-    <plugins>
-      <plugin>
-        <artifactId>maven-war-plugin</artifactId>
-        <configuration>
-          <classifier>${db}</classifier>
-          <webappDirectory>${project.build.directory}/${project.build.finalName}-${db}</webappDirectory>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
 </project>

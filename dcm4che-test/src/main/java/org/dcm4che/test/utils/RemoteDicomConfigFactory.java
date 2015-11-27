@@ -193,8 +193,11 @@ public class RemoteDicomConfigFactory {
 
             try {
                 remoteEndpoint.modifyDeviceConfig(null, DicomPath.DeviceByName.parse(path).getParam("deviceName"), configNode);
-            } catch (Exception e) {
-                throw new ConfigurationException("This action is not supported when using the remote config", e);
+            } catch (WebApplicationException e) {
+                throw new ConfigurationException("The server was not able to accept configuration changes.\n" +
+                        "Reason: "+e.getResponse().toString());
+            } catch (RuntimeException e) {
+                throw new ConfigurationException("Unexpected error while using the remote config", e);
             }
         }
 

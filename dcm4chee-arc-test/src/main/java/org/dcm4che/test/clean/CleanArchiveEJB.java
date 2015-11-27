@@ -77,7 +77,7 @@ public class CleanArchiveEJB implements CleanArchive{
         "DELETE FROM code", "DELETE FROM dicomattrs",
         "DELETE FROM study_update_session"};
 
-    @PersistenceContext(name="dcm4chee-arc")
+    @PersistenceContext(unitName="dcm4chee-arc-cleanup")
     EntityManager em;
 
     @Inject
