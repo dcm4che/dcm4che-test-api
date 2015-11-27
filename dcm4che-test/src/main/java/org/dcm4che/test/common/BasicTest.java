@@ -46,7 +46,10 @@ import org.dcm4che.test.utils.RemoteDicomConfigFactory;
 import org.dcm4che.test.utils.TestingProperties;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
+import org.dcm4che3.conf.core.api.Configuration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
+import org.dcm4che3.conf.core.storage.InMemoryConfiguration;
+import org.dcm4che3.conf.dicom.CommonDicomConfigurationWithHL7;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.tool.common.test.TestResult;
@@ -58,6 +61,8 @@ import org.dcm4che3.tool.movescu.test.MoveTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
 import org.dcm4che3.tool.storescu.test.StoreResult;
 import org.dcm4che3.tool.storescu.test.StoreTool;
+import org.dcm4chee.archive.conf.defaults.DefaultArchiveConfigurationFactory;
+import org.dcm4chee.archive.conf.defaults.DefaultDicomConfigInitializer;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.slf4j.Logger;
@@ -133,8 +138,6 @@ public abstract class BasicTest {
                 System.setProperty("defaultLocalConfig", ((TestLocalConfig)
                         this.getParams().get("defaultLocalConfig")).configFile());
 
-            this.setLocalConfig(System.getProperty("defaultLocalConfig"));
-
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
@@ -172,7 +175,7 @@ public abstract class BasicTest {
         queryTool.setExpectedMatches(expectedMatches);
         queryTool.addAll(keys);
             try {
-                    queryTool.query(description,fuzzy,datatimeCombine);
+                    queryTool.query(description, fuzzy, datatimeCombine);
             } catch (Exception e) {
                 throw new TestToolException(e);
             }
@@ -245,27 +248,33 @@ public abstract class BasicTest {
         return storeResult;
     }
 
-    public void setLocalConfig(String defaultLocalConfigSystemProperty) throws ConfigurationException {
-        File LocalConfigFile = null;
-        if(defaultLocalConfigSystemProperty == null) {
-                try {
-                    LocalConfigFile = Files.createTempFile("tempdefaultconfig", "json").toFile();
-                    
-                    Files.copy(TestToolFactory.class.getClassLoader()
-                            .getResourceAsStream("defaultConfig.json")
-                            , LocalConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-                    LocalConfigFile.deleteOnExit();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-        }
-        else {
-            LocalConfigFile = new File (defaultLocalConfigSystemProperty);
-        }
-        this.localConfig = DicomConfigurationBuilder.newJsonConfigurationBuilder(LocalConfigFile.getPath()).build();
-    }
-
     public DicomConfiguration getLocalConfig() {
+        if (localConfig == null) {
+
+            Configuration configuration = new InMemoryConfiguration();
+            HashMap extensionsByClass = new HashMap();
+
+            CommonDicomConfigurationWithHL7 dicomConfig = new CommonDicomConfigurationWithHL7(configuration, extensionsByClass);
+
+            DefaultArchiveConfigurationFactory.FactoryParams params = new DefaultArchiveConfigurationFactory.FactoryParams();
+
+            params.useGroupBasedTCConfig = false;
+
+            // rely on timeouts in the archive
+            // and set it to unlimited for tools for easy debugging
+            params.socketTimeout = 0;
+
+            new DefaultDicomConfigInitializer().persistDefaultConfig(
+                dicomConfig,
+                    dicomConfig,
+                    params
+            );
+
+
+            localConfig = dicomConfig;
+
+        }
+
         return localConfig;
     }
 

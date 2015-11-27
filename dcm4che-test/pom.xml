@@ -186,6 +186,11 @@
             <version>${dcm4chee-arc.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.dcm4che.dcm4chee-arc</groupId>
+            <artifactId>dcm4chee-arc-conf-default</artifactId>
+            <version>${dcm4chee-arc.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.dcm4che.dcm4chee-storage</groupId>
             <artifactId>dcm4chee-storage-conf</artifactId>
             <version>${dcm4chee-storage.version}</version>
