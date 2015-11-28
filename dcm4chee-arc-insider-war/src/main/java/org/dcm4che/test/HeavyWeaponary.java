@@ -42,7 +42,6 @@
 
 package org.dcm4che.test;
 
-import org.dcm4chee.archive.test.Tester;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -73,17 +72,17 @@ public class HeavyWeaponary {
         MyClassLoader classLoader = new MyClassLoader(parentClassLoader, "org.dcm4che.test.CustomTester");
         Class myObjectClass = classLoader.loadClass("org.dcm4che.test.CustomTester");
 
-        Tester object1 = (Tester) myObjectClass.newInstance();
+//        Insider object1 = (Insider) myObjectClass.newInstance();
 
 
 
-        CreationalContext<Tester> creationalContext = beanManager.createCreationalContext(null);
-
-        AnnotatedType annotatedType = beanManager.createAnnotatedType(object1.getClass());
-        beanManager.createInjectionTarget(annotatedType).inject(object1, creationalContext);
-
-
-        object1.doTest();
+//        CreationalContext<Insider> creationalContext = beanManager.createCreationalContext(null);
+//
+//        AnnotatedType annotatedType = beanManager.createAnnotatedType(object1.getClass());
+//        beanManager.createInjectionTarget(annotatedType).inject(object1, creationalContext);
+//
+//
+//        object1.doTest();
 
 
         return Response.ok().build();

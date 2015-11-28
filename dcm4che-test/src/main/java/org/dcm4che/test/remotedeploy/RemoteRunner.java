@@ -40,11 +40,10 @@
  *
  */
 
-package org.dcm4chee.archive.test;
+package org.dcm4che.test.remotedeploy;
 
 /**
- * Created by player on 27-Nov-15.
+ * Created by player on 28-Nov-15.
  */
-public interface Tester {
-    void doTest();
+public class RemoteRunner {
 }

@@ -40,40 +40,39 @@
  *
  */
 
-package org.dcm4che.test;
+package org.dcm4che.test.remotedeploy;
 
-import org.dcm4chee.archive.test.Tester;
-import org.junit.Test;
-
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
 
 /**
- * Created by player on 27-Nov-15.
+ * Created by player on 28-Nov-15.
  */
-public class ClassLTest {
+public class PortalToServer {
+
+    public static <T> T warp(Class<T> classToRunOnTheServer) {
 
 
-    @Test
-    public void doSomeRealMagic() throws
-            ClassNotFoundException,
-            IllegalAccessException,
-            InstantiationException {
-
-        ClassLoader parentClassLoader = MyClassLoader.class.getClassLoader();
-        MyClassLoader classLoader = new MyClassLoader(parentClassLoader, "org.dcm4che.test.CustomTester");
-        Class myObjectClass = classLoader.loadClass("org.dcm4che.test.CustomTester");
-
-        Tester object1 = (Tester) myObjectClass.newInstance();
-
-        //object1.doTest();
+        for (Class<?> aClass : classToRunOnTheServer.getDeclaredClasses()) {
+            System.out.println("decl class "+aClass.getName());
+        }
 
 
+        //classToRunOnTheServer.getResource("")
+
+        Object o = Proxy.newProxyInstance(classToRunOnTheServer.getClassLoader(), new Class[]{classToRunOnTheServer}, new InvocationHandler() {
+            @Override
+            public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
+
+
+
+                return null;
+            }
+
+        });
+
+        return (T) o;
     }
-
 
 }
