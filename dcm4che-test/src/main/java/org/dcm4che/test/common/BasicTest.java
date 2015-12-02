@@ -258,9 +258,8 @@ public abstract class BasicTest {
 
             params.useGroupBasedTCConfig = false;
 
-            // rely on timeouts in the archive
-            // and set it to unlimited for tools for easy debugging
-            params.socketTimeout = 0;
+            // uncomment to set unlimited timeout for tools for easy debugging
+            // params.socketTimeout = 0;
 
             new DefaultDicomConfigInitializer().persistDefaultConfig(
                 dicomConfig,
