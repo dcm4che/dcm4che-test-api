@@ -95,6 +95,19 @@ public class TestParametersRule implements TestRule {
                 boolean skipReportedIssueTests = System.getProperty("org.dcm4che.test.skipReportedIssueTests") != null;
                 boolean onlyReportedIssueTests = System.getProperty("org.dcm4che.test.onlyReportedIssueTests") != null;
 
+                // OVERRIDE for IDE
+                // let everything be executed
+                if (parametrizedTest.isRunningInsideIDE()) {
+                    if (!runHeavyTests) {
+                        System.out.println("Overriding 'runHeavyTests' to true, because running from within IDE");
+                        runHeavyTests = true;
+                    }
+                    if (skipReportedIssueTests) {
+                        System.out.println("Overriding 'skipReportedIssueTests' to false, because running from within IDE");
+                        skipReportedIssueTests = false;
+                    }
+                }
+
                 if (isHeavy && !runHeavyTests && !onlyHeavyTests) {
                     log.info("Skipping Heavy Test {} {}", description.getTestClass().getName(), description.getMethodName());
                     throw new AssumptionViolatedException("Skipping Heavy Test " + description.getTestClass().getName() + " " + description.getMethodName());

@@ -96,10 +96,11 @@ public abstract class BasicTest {
     private DicomConfiguration localConfig;
 
     private DicomConfigurationManager remoteConfig = null;
+    private Boolean isRunningInIDE;
 
     public DicomConfigurationManager getRemoteConfig() {
         if (remoteConfig == null) {
-            String baseURL = getProperties().getProperty("remoteConn.url")+"/config/data";
+            String baseURL = getProperties().getProperty("remoteConn.url") + "/config/data";
             remoteConfig = RemoteDicomConfigFactory.createRemoteDicomConfiguration(baseURL);
         }
         return remoteConfig;
@@ -115,9 +116,10 @@ public abstract class BasicTest {
         return TestingProperties.get();
     }
 
-    protected void addParam( String key, Annotation anno) {
+    protected void addParam(String key, Annotation anno) {
         params.put(key, anno);
     }
+
     protected void clearParams() {
         params.clear();
     }
@@ -127,11 +129,11 @@ public abstract class BasicTest {
         this.currentMethodName = currentMethod;
 
         try {
-            if(this.getParams().containsKey("defaultParams") 
+            if (this.getParams().containsKey("defaultParams")
                     && this.getParams().get("defaultParams") != null)
                 System.setProperty("defaultParams", ((TestParamDefaults)
                         this.getParams().get("defaultParams")).propertiesFile());
-            if(this.getParams().containsKey("defaultLocalConfig")
+            if (this.getParams().containsKey("defaultLocalConfig")
                     && this.getParams().get("defaultLocalConfig") != null)
                 System.setProperty("defaultLocalConfig", ((TestLocalConfig)
                         this.getParams().get("defaultLocalConfig")).configFile());
@@ -140,6 +142,33 @@ public abstract class BasicTest {
             throw new TestToolException(e);
         }
     }
+
+    /**
+     * Use this method to differentiate between tests running on a CI and test being debugged/implemented by devs/testers,
+     * to auto-set things like timeouts, enabling all tests (e.g. heavy tests) by default, etc.
+     *
+     * @return true if running a test inside an IDE like eclipse or IDEA
+     */
+    public boolean isRunningInsideIDE() {
+        if (isRunningInIDE == null)
+            try {
+                throw new RuntimeException();
+            } catch (RuntimeException e) {
+                String firstStackElemClassName = e.getStackTrace()[e.getStackTrace().length - 1].getClassName();
+                isRunningInIDE = firstStackElemClassName.contains("intellij") || firstStackElemClassName.contains("eclipse");
+
+                if (isRunningInIDE)
+                    System.out.println(" **************************************************************" +
+                            "\n Detected that the test started from within an IDE. DEV mode activated: " +
+                            "\n - all filters disabled (e.g. reported issue, heavy, etc)" +
+                            "\n - unlimited timeouts " +
+                            "\n **************************************************************");
+                else
+                    System.out.println("Detected that the test is started as standalone (DEV mode is NOT active)");
+            }
+        return isRunningInIDE;
+    }
+
 
     public StoreResult store(String description, String fileName) {
         StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
@@ -156,7 +185,7 @@ public abstract class BasicTest {
     public TestResult storeResource(String description, String fileName) throws MissingArgumentException {
         StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
         File f = new File(fileName);
-        storeTool.setbaseDir(f.getParent()==null?"target/test-classes/":f.getParent());
+        storeTool.setbaseDir(f.getParent() == null ? "target/test-classes/" : f.getParent());
         try {
             storeTool.store(description, fileName);
         } catch (Exception e) {
@@ -165,18 +194,19 @@ public abstract class BasicTest {
         StoreResult storeResult = storeTool.getResult();
         Assert.assertTrue("Store", storeResult.getFilesSent() > 0 && storeResult.getFailures() == 0);
         return storeResult;
-    }   
+    }
+
     public TestResult query(String description, Attributes keys, boolean fuzzy
             , boolean datatimeCombine, int expectedMatches) throws MissingArgumentException {
         QueryTool queryTool = (QueryTool) TestToolFactory.createToolForTest(TestToolType.QueryTool, this);
-        if(expectedMatches > -1)
-        queryTool.setExpectedMatches(expectedMatches);
+        if (expectedMatches > -1)
+            queryTool.setExpectedMatches(expectedMatches);
         queryTool.addAll(keys);
-            try {
-                    queryTool.query(description, fuzzy, datatimeCombine);
-            } catch (Exception e) {
-                throw new TestToolException(e);
-            }
+        try {
+            queryTool.query(description, fuzzy, datatimeCombine);
+        } catch (Exception e) {
+            throw new TestToolException(e);
+        }
         return queryTool.getResult();
     }
 
@@ -192,6 +222,7 @@ public abstract class BasicTest {
         MoveResult result = (MoveResult) tool.getResult();
         return result;
     }
+
     public TestResult mpps(String description, String fileName) throws MissingArgumentException {
         MppsTool mppsTool = (MppsTool) TestToolFactory.createToolForTest(TestToolType.MppsTool, this);
         try {
@@ -221,8 +252,7 @@ public abstract class BasicTest {
             for (int i = 0; i < file.listFiles().length; i++) {
                 deleteDirectory(file.listFiles()[i]);
             }
-        }
-        else {
+        } else {
             file.delete();
         }
 
@@ -258,11 +288,12 @@ public abstract class BasicTest {
 
             params.useGroupBasedTCConfig = false;
 
-            // uncomment to set unlimited timeout for tools for easy debugging
-            // params.socketTimeout = 0;
+            // unlimited timeout for tools for easy debugging if inside IDE
+            if (isRunningInsideIDE())
+                params.socketTimeout = 0;
 
             new DefaultDicomConfigInitializer().persistDefaultConfig(
-                dicomConfig,
+                    dicomConfig,
                     dicomConfig,
                     params
             );
@@ -278,17 +309,15 @@ public abstract class BasicTest {
     /**
      * @return Directory containing test data (mesa).
      */
-    public Path getTestdataDirectory()
-    {
+    public Path getTestdataDirectory() {
         return Paths.get(getProperties().getProperty("testdata.directory")).toAbsolutePath().normalize();
     }
 
     /**
      * @return Directory which should be used to store temporary files created
-     *         within a test. Will be cleaned before every test.
+     * within a test. Will be cleaned before every test.
      */
-    public Path getBaseTemporaryDirectory()
-    {
+    public Path getBaseTemporaryDirectory() {
         Path tmpDir = Paths.get(getProperties().getProperty("base.tmp.directory"), this.getClass().getName(), currentMethodName).toAbsolutePath().normalize();
         if (!Files.isDirectory(tmpDir)) {
             try {
@@ -303,12 +332,11 @@ public abstract class BasicTest {
     /**
      * Create a new temporary directory for this test that is guaranteed to be
      * unique.
-     * 
+     * <p/>
      * Useful for storing temporary files generated within the test.
-     * 
-     * @param prefix
-     *            arbitrary string which will be used as a prefix for the
-     *            temporary directory
+     *
+     * @param prefix arbitrary string which will be used as a prefix for the
+     *               temporary directory
      * @return path to newly created temporary directory
      */
     public Path createTempDirectory(String prefix) {
