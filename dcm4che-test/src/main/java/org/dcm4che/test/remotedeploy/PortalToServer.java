@@ -68,6 +68,32 @@ public class PortalToServer {
 
     private static InsiderREST remoteEndpoint;
 
+    /**
+     * Creates a proxy of type <code>insiderInterface</code> that will do the following when one of its methods is called:
+     * <ul>
+     *     <li>Collect all the bytecodes of the <code>insiderClass</code> itself and any inner classes</li>
+     *     <li>Send them to the server, along with the info of which method has been called</li>
+     *     <li>On the server,  inside the main EAR of the archive:<ul>
+     *
+     *         <li>Feed the received bytecodes to a classloader</li>
+     *         <li>Create a bean of class <code>insiderClass</code></li>
+     *         <li>Run CDI injection upon this bean</li>
+     *         <li>Execute the method, which the user called on the proxy, upon the newly created bean on the server</li>
+     *         <li>Serialize the response, respond with it to the caller</li>
+     *     </ul></li>
+     *     <li> Return the received response as a return value of the proxy</li>
+     *
+     * </ul>
+     *
+     * The methods of <code>insiderInterface</code> for now must not have any arguments
+     * @param insiderInterface An interface that is used to create a proxy. It should contain the method that you would like to run on the server.
+     * @param insiderClass A class that will be executed on the server. The implementation can use any injections/resources that are available for the classes in the EAR.
+     *                     The class must not reference any other classes that are not expected to be accessible in the deployment already.
+     *                     Anonymous classes are not allowed for now.
+     *                     Inner classes (1 lvl) are allowed.
+     * @param <T> Result of execution of the called method on <code>insiderClass</code> on the server
+     * @return
+     */
     public static <T> T warp(Class<T> insiderInterface, final Class<? extends T> insiderClass) {
 
         Object o = Proxy.newProxyInstance(insiderInterface.getClassLoader(), new Class[]{insiderInterface}, new InvocationHandler() {
