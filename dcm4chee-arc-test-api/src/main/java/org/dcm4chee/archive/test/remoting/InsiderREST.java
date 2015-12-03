@@ -55,12 +55,8 @@ import javax.ws.rs.core.MediaType;
 public interface InsiderREST {
 
     /**
-     *
      * @param requestJSON
      * @return base64'ed java serialized response
-     * @throws ClassNotFoundException
-     * @throws IllegalAccessException
-     * @throws InstantiationException
      */
 
     @POST
