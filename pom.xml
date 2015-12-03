@@ -122,6 +122,8 @@
     <module>dcm4chee-arc-test-api</module>
     <module>dcm4chee-arc-test</module>
     <module>dcm4chee-arc-test-war</module>
+    <module>dcm4chee-arc-insider-war</module>
+
   </modules>
   <distributionManagement>
     <repository>
@@ -175,6 +177,9 @@
         <artifactId>junit</artifactId>
         <version>4.11</version>
       </dependency>
+
+
+
     </dependencies>
   </dependencyManagement>
 </project>
