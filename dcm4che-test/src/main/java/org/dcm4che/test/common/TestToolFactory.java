@@ -60,6 +60,7 @@ import org.dcm4che.test.annotations.WadoRSParameters;
 import org.dcm4che.test.annotations.WadoURIParameters;
 import org.dcm4che.test.tool.EchoTool;
 import org.dcm4che.test.tool.externaldevice.ExternalDeviceToolConfig;
+import org.dcm4che.test.tool.ianscp.IanSCPTestTool;
 import org.dcm4che.test.utils.TestUtils;
 import org.dcm4che3.conf.api.DicomConfiguration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
@@ -107,7 +108,8 @@ public class TestToolFactory {
         DcmGenTool,
         QCTool,
         EchoTool,
-        MppsScpTool
+        MppsScpTool,
+        IanScpTool
     }
 
     public static TestTool createToolForTest(TestToolType type, BasicTest test) {
@@ -196,10 +198,27 @@ public class TestToolFactory {
                 throw new RuntimeException(e);
             }
 
+        case IanScpTool:
+
+            return createIanScpTestTool(test);
+
         default:
             throw new IllegalArgumentException("Unsupported TestToolType specified"
                     + ", unable to create tool");
         }
+    }
+
+    private static IanSCPTestTool createIanScpTestTool(BasicTest test) {
+        Device ianscp;
+        try {
+            ianscp = getDicomConfiguration(test).findDevice("ianscp");
+        } catch (ConfigurationException e) {
+            throw new RuntimeException(e);
+        }
+
+        Path storageDirectory = test.createTempDirectory("IanSCP");
+
+        return new IanSCPTestTool(ianscp, storageDirectory);
     }
 
     private static String getBaseURL(BasicTest test) {
