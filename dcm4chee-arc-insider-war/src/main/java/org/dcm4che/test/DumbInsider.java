@@ -110,9 +110,9 @@ public class DumbInsider implements InsiderREST {
         for (Method method : myObjectClass.getMethods()) {
             if (method.getName().equals(requestJSON.methodName)) {
                 try {
-                    result = method.invoke(object, null);
+                    result = method.invoke(object, (Object[])DeSerializer.deserialize(Base64.fromBase64(requestJSON.args)));
                 } catch (Exception e) {
-                    throw new RuntimeException("invocation issue", e);
+                    result = e;
                 }
                 foundMethod = true;
                 break;

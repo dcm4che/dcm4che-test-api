@@ -50,6 +50,10 @@ public class RemoteRequestJSON {
 
     public String mainClassName;
     public String methodName;
+    /**
+     * Base64'ed Object[] of args
+     */
+    public String args;
 
     /**
      * full class name to Base64'ed bytecode

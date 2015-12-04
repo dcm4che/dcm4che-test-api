@@ -81,18 +81,18 @@ public class PortalToServer {
      *         <li>Execute the method, which the user called on the proxy, upon the newly created bean on the server</li>
      *         <li>Serialize the response, respond with it to the caller</li>
      *     </ul></li>
-     *     <li> Return the received response as a return value of the proxy</li>
+     *     <li> Return the received response as a return value of the proxy/
+     *          throw an exception that was thrown during execution of the class method
+     *     </li>
      *
      * </ul>
-     *
-     * The methods of <code>insiderInterface</code> for now must not have any arguments
+
      * @param insiderInterface An interface that is used to create a proxy. It should contain the method that you would like to run on the server.
      * @param insiderClass A class that will be executed on the server. The implementation can use any injections/resources that are available for the classes in the EAR.
      *                     The class must not reference any other classes that are not expected to be accessible in the deployment already.
      *                     Anonymous classes are not allowed for now.
      *                     Inner classes (1 lvl) are allowed.
-     * @param <T> Result of execution of the called method on <code>insiderClass</code> on the server
-     * @return
+     * @return A proxy that allows to execute <code>insiderClass</code>'s methods on the server
      */
     public static <T> T warp(Class<T> insiderInterface, final Class<? extends T> insiderClass) {
 
@@ -104,6 +104,7 @@ public class PortalToServer {
 
                 requestJSON.methodName = method.getName();
                 requestJSON.mainClassName = insiderClass.getName();
+                requestJSON.args = Base64.toBase64(DeSerializer.serialize(args));
                 requestJSON.classes = new HashMap<String, String>();
 
                 // main class
@@ -126,7 +127,12 @@ public class PortalToServer {
 
                 String base64resp = getRemoteEndpoint().warpAndRun(requestJSON);
 
-                return DeSerializer.deserialize(Base64.fromBase64(base64resp));
+                Object returned = DeSerializer.deserialize(Base64.fromBase64(base64resp));
+
+                if (returned instanceof Exception)
+                    throw (Throwable) returned;
+
+                return returned;
             }
         });
 
@@ -149,7 +155,7 @@ public class PortalToServer {
         return buffer.toByteArray();
     }
 
-    public synchronized static InsiderREST getRemoteEndpoint() {
+    private synchronized static InsiderREST getRemoteEndpoint() {
         if (remoteEndpoint == null) {
             // create jax-rs client
             Client client = ClientBuilder.newBuilder().build();
