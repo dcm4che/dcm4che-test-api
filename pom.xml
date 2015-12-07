@@ -37,149 +37,149 @@
    - the terms of any one of the MPL, the GPL or the LGPL.
    -
    - ***** END LICENSE BLOCK *****  -->
-   
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>org.dcm4che</groupId>
-  <artifactId>dcm4che-test-api-parent</artifactId>
-  <version>3.3.8-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>dcm4che test api</name>
-  <description>dcm4che test api for junit tests</description>
-  <url>http://dcm4che.org</url>
-  <licenses>
-    <license>
-      <name>Mozilla Public License Version 1.1</name>
-      <url>https://www.mozilla.org/MPL/1.1/</url>
-    </license>
-    <license>
-      <name>GNU General Public License, version 2</name>
-      <url>http://www.gnu.org/licenses/gpl-2.0-standalone.html</url>
-    </license>
-    <license>
-      <name>GNU Lesser General Public License, version 2.1</name>
-      <url>https://www.gnu.org/licenses/lgpl-2.1-standalone.html</url>
-    </license>
-  </licenses>
-  <developers>
-  <developer>
-      <name>Hesham Elbadawi</name>
-      <email>bsdreko@gmail.com</email>
-      <organization>dcm4che.org</organization>
-      <organizationUrl>http://dcm4che.org</organizationUrl>
-    </developer>
-    <developer>
-      <name>Gunter Zeilinger</name>
-      <email>gunterze@gmail.com</email>
-      <organization>dcm4che.org</organization>
-      <organizationUrl>http://dcm4che.org</organizationUrl>
-    </developer>
-  </developers>
-  <scm>
-    <connection>scm:git:ssh://git@ssh.github.com/dcm4che/dcm4che-test-api.git</connection>
-    <developerConnection>scm:git:ssh://git@ssh.github.com/dcm4che/dcm4che-test-api.git</developerConnection>
-    <url>http://github.com/dcm4che/dcm4che-test-api</url>
-  </scm>
-  <issueManagement>
-    <system>JIRA</system>
-    <url>http://dcm4che.org/jira</url>
-  </issueManagement>
-  <organization>
-    <name>dcm4che.org</name>
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.dcm4che</groupId>
+    <artifactId>dcm4che-test-api-parent</artifactId>
+    <version>3.3.8-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    <name>dcm4che test api</name>
+    <description>dcm4che test api for junit tests</description>
     <url>http://dcm4che.org</url>
-  </organization>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <db>mysql</db>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <dcm4che.version>3.3.8-SNAPSHOT</dcm4che.version>
-    <dcm4chee-arc.version>4.5.0-SNAPSHOT</dcm4chee-arc.version>
-    <dcm4chee-storage.version>2.1.0-SNAPSHOT</dcm4chee-storage.version>
-  </properties>
-  <build>
-    <extensions>
-      <extension>
-        <groupId>org.apache.maven.wagon</groupId>
-        <artifactId>wagon-ssh</artifactId>
-        <version>2.2</version>
-      </extension>
-    </extensions>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-compiler-plugin</artifactId>
-          <version>3.1</version>
-          <configuration>
-            <source>1.7</source>
-            <target>1.7</target>
-          </configuration>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-  </build>
-  <modules>
-    <module>dcm4che-test</module>
-    <module>dcm4chee-arc-test-api</module>
-    <module>dcm4chee-arc-test</module>
-    <module>dcm4chee-arc-test-war</module>
-    <module>dcm4chee-arc-insider-war</module>
+    <licenses>
+        <license>
+            <name>Mozilla Public License Version 1.1</name>
+            <url>https://www.mozilla.org/MPL/1.1/</url>
+        </license>
+        <license>
+            <name>GNU General Public License, version 2</name>
+            <url>http://www.gnu.org/licenses/gpl-2.0-standalone.html</url>
+        </license>
+        <license>
+            <name>GNU Lesser General Public License, version 2.1</name>
+            <url>https://www.gnu.org/licenses/lgpl-2.1-standalone.html</url>
+        </license>
+    </licenses>
+    <developers>
+        <developer>
+            <name>Hesham Elbadawi</name>
+            <email>bsdreko@gmail.com</email>
+            <organization>dcm4che.org</organization>
+            <organizationUrl>http://dcm4che.org</organizationUrl>
+        </developer>
+        <developer>
+            <name>Gunter Zeilinger</name>
+            <email>gunterze@gmail.com</email>
+            <organization>dcm4che.org</organization>
+            <organizationUrl>http://dcm4che.org</organizationUrl>
+        </developer>
+    </developers>
+    <scm>
+        <connection>scm:git:ssh://git@ssh.github.com/dcm4che/dcm4che-test-api.git</connection>
+        <developerConnection>scm:git:ssh://git@ssh.github.com/dcm4che/dcm4che-test-api.git</developerConnection>
+        <url>http://github.com/dcm4che/dcm4che-test-api</url>
+    </scm>
+    <issueManagement>
+        <system>JIRA</system>
+        <url>http://dcm4che.org/jira</url>
+    </issueManagement>
+    <organization>
+        <name>dcm4che.org</name>
+        <url>http://dcm4che.org</url>
+    </organization>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <db>mysql</db>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <dcm4che.version>3.3.8-SNAPSHOT</dcm4che.version>
+        <dcm4chee-arc.version>4.5.0-SNAPSHOT</dcm4chee-arc.version>
+        <dcm4chee-storage.version>2.1.0-SNAPSHOT</dcm4chee-storage.version>
+    </properties>
+    <build>
+        <extensions>
+            <extension>
+                <groupId>org.apache.maven.wagon</groupId>
+                <artifactId>wagon-ssh</artifactId>
+                <version>2.2</version>
+            </extension>
+        </extensions>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>3.1</version>
+                    <configuration>
+                        <source>1.7</source>
+                        <target>1.7</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <modules>
+        <module>dcm4che-test</module>
+        <module>dcm4chee-arc-test-api</module>
+        <module>dcm4chee-arc-test</module>
+        <module>dcm4chee-arc-test-war</module>
+        <module>dcm4chee-arc-insider-war</module>
 
-  </modules>
-  <distributionManagement>
-    <repository>
-      <id>www.dcm4che.org</id>
-      <name>dcm4che Repository</name>
-      <url>scp://www.dcm4che.org:443/home/maven2</url>
-    </repository>
-  </distributionManagement>
-  <repositories>
-    <repository>
-      <id>www.dcm4che.org</id>
-      <name>dcm4che Repository</name>
-      <url>http://www.dcm4che.org/maven2</url>
-    </repository>
-    <repository>
-      <id>jboss</id>
-      <url>http://repository.jboss.org/nexus/content/groups/public</url>
-    </repository>
-  </repositories>
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.jboss.resteasy</groupId>
-        <artifactId>jaxrs-api</artifactId>
-        <version>3.0.4.Final</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-api</artifactId>
-        <version>1.7.5</version>
-      </dependency>
-      <dependency>
-        <groupId>org.slf4j</groupId>
-        <artifactId>slf4j-log4j12</artifactId>
-        <version>1.7.5</version>
-        <scope>runtime</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.glassfish</groupId>
-        <artifactId>javax.json</artifactId>
-        <version>1.0.4</version>
-      </dependency>
-      <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-6.0</artifactId>
-            <version>3.0.2.Final</version>
-            <type>pom</type>
-        </dependency>
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>4.11</version>
-      </dependency>
+    </modules>
+    <distributionManagement>
+        <repository>
+            <id>www.dcm4che.org</id>
+            <name>dcm4che Repository</name>
+            <url>scp://www.dcm4che.org:443/home/maven2</url>
+        </repository>
+    </distributionManagement>
+    <repositories>
+        <repository>
+            <id>www.dcm4che.org</id>
+            <name>dcm4che Repository</name>
+            <url>http://www.dcm4che.org/maven2</url>
+        </repository>
+        <repository>
+            <id>jboss</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public</url>
+        </repository>
+    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.resteasy</groupId>
+                <artifactId>jaxrs-api</artifactId>
+                <version>3.0.4.Final</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>1.7.5</version>
+            </dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-log4j12</artifactId>
+                <version>1.7.5</version>
+                <scope>runtime</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.glassfish</groupId>
+                <artifactId>javax.json</artifactId>
+                <version>1.0.4</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jboss.spec</groupId>
+                <artifactId>jboss-javaee-6.0</artifactId>
+                <version>3.0.2.Final</version>
+                <type>pom</type>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>4.11</version>
+            </dependency>
 
 
-
-    </dependencies>
-  </dependencyManagement>
+        </dependencies>
+    </dependencyManagement>
 </project>

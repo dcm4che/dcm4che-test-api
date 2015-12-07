@@ -13,24 +13,24 @@
     <dependency>
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4chee-arc-test-api</artifactId>
-      <version>${project.version}</version>
+      <version>${dcm4che.version}</version>
     </dependency>
     <dependency>
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-ws-rs</artifactId>
-      <version>${project.version}</version>
+      <version>${dcm4che.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-conf-api</artifactId>
-      <version>${project.version}</version>
+      <version>${dcm4che.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-conf-dicom</artifactId>
-      <version>${project.version}</version>
+      <version>${dcm4che.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
