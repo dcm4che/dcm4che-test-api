@@ -159,7 +159,7 @@
         <dependency>
             <groupId>org.dcm4che.tool</groupId>
             <artifactId>dcm4che-tool-ianscp</artifactId>
-            <version>${project.version}</version>
+            <version>${dcm4che.version}</version>
         </dependency>
 
         <dependency>
