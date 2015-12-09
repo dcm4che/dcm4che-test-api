@@ -57,13 +57,14 @@ public class FileUtil {
         int unit = si ? 1000 : 1024;
         if (bytes < unit) return bytes + " B";
         int exp = (int) (Math.log(bytes) / Math.log(unit));
-        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp-1) + (si ? "" : "i");
+        String pre = (si ? "kMGTPE" : "KMGTPE").charAt(exp - 1) + (si ? "" : "i");
         return String.format("%.1f %sB", bytes / Math.pow(unit, exp), pre);
     }
-    
+
     /**
      * Pauses the calling thread until a specified file exists / is created
-     * @param timeout Maximum time to wait before giving up
+     *
+     * @param timeout  Maximum time to wait before giving up
      * @param filePath The observed filepath
      * @return Returns <code>true</code> if the file exists, returns <code>false</code> otherwise
      * @throws IOException
@@ -71,30 +72,30 @@ public class FileUtil {
      */
     public static boolean waitUntilFileExists(long timeout, Path filePath) throws IOException,
             InterruptedException {
-        if(Files.exists(filePath)) {
+        if (Files.exists(filePath)) {
             return true;
         }
-        
+
         Path parentDir = filePath.getParent();
         long timeoutLeft = timeout;
         try (WatchService fsWatcher = filePath.getFileSystem().newWatchService()) {
             WatchKey key = parentDir.register(fsWatcher, StandardWatchEventKinds.ENTRY_CREATE);
-            for (;;) {
-                if(timeoutLeft <= 0) {
+            for (; ; ) {
+                if (timeoutLeft <= 0) {
                     break;
                 }
-                
+
                 long start = System.currentTimeMillis();
                 key = fsWatcher.poll(timeoutLeft, TimeUnit.MILLISECONDS);
-                
+
                 // poll() returns null if timeout happened
-                if(key == null) {
+                if (key == null) {
                     break;
                 }
-                
+
                 // subtract time already spent for waiting from left timeout
                 timeoutLeft -= System.currentTimeMillis() - start;
-                
+
                 for (WatchEvent<?> fsEvent : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = fsEvent.kind();
 
@@ -108,7 +109,7 @@ public class FileUtil {
                     }
 
                     // The filename is the context of the event.
-                    Path createdFilePath = ((WatchEvent<Path>)fsEvent).context();
+                    Path createdFilePath = ((WatchEvent<Path>) fsEvent).context();
                     Path absCreatedFilePath = parentDir.resolve(createdFilePath);
                     if (filePath.equals(absCreatedFilePath)) {
                         return true;
@@ -121,9 +122,40 @@ public class FileUtil {
                     break;
                 }
             }
-            
+
             return false;
         }
     }
 
+    /**
+     * Pauses the calling thread until a specified file is fully created
+     *
+     * @param stableTime  Maximum time to wait before returning, considering the file creation complete
+     * @param filePath The observed filepath
+     * @return Returns when the file size doesn't change after timeout mills
+     * @throws IOException
+     * @throws InterruptedException
+     */
+    public static void waitUntilFileFullyCreated(long stableTime, Path filePath) throws IOException, InterruptedException {
+        long timeoutLeft = stableTime;
+        long lastRead = Files.size(filePath);
+        long currentRead, start;
+
+        // if the timeout expired size can be consider stable since it didn't change for timeout millis
+        while (timeoutLeft > 0) {
+            start = System.currentTimeMillis();
+
+            // Sleep for 10 mills then check the file size
+            Thread.sleep(10);
+
+            currentRead = Files.size(filePath);
+            if (currentRead == lastRead) {
+                // subtract time already spent for waiting from left timeout
+                timeoutLeft -= System.currentTimeMillis() - start;
+            } else {
+                lastRead = currentRead;
+                timeoutLeft = stableTime;
+            }
+        }
+    }
 }
