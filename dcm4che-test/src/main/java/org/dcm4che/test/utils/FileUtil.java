@@ -123,7 +123,7 @@ public class FileUtil {
                 }
             }
 
-            return false;
+            return Files.exists(filePath);
         }
     }
 
