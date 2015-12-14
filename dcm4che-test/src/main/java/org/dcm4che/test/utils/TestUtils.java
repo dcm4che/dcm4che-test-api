@@ -2,6 +2,7 @@ package org.dcm4che.test.utils;
 
 import org.dcm4che.test.annotations.RemoteConnectionParameters;
 import org.dcm4che.test.common.BasicTest;
+import org.dcm4che.test.remotedeploy.PortalToServer;
 import org.dcm4che3.conf.api.AttributeCoercion;
 import org.dcm4che3.conf.api.AttributeCoercions;
 import org.dcm4che3.conf.api.DicomConfiguration;
@@ -31,6 +32,8 @@ import java.util.Properties;
 public class TestUtils {
 
     private static final Logger LOG = LoggerFactory.getLogger(TestUtils.class);
+    
+    private static final String CONFIG_NOTIFICATIONS_ENABLED_PROPERTY = "org.dcm4che.conf.notifications";
 
     /**
      *
@@ -270,4 +273,32 @@ public class TestUtils {
         arcAEExt.setRetrieveSuppressionCriteria(suppress);
         remoteConfig.merge(arcDevice);
     }
+    
+    public static void enableConfigNotificationsOnServer() {
+        setServerSystemProperty(CONFIG_NOTIFICATIONS_ENABLED_PROPERTY, "true");
+    }
+    
+    public static void disableConfigNotificationsOnServer() {
+        setServerSystemProperty(CONFIG_NOTIFICATIONS_ENABLED_PROPERTY, "false");
+    }
+    
+    public static void setServerSystemProperty(String systemProperty, String value) {
+        PortalToServer.warp(ServerSystemPropertySetter.class, ServerSystemPropertySetterImpl.class, true)
+            .setSystemProperty(systemProperty, value);
+    }
+    
+    
+    public interface ServerSystemPropertySetter {
+        public void setSystemProperty(String systemProperty, String value);
+    }
+    
+    public static class ServerSystemPropertySetterImpl implements ServerSystemPropertySetter {
+      
+        @Override
+        public void setSystemProperty(String systemProperty, String value) {
+            System.setProperty(systemProperty, value);
+        }
+
+    }
+    
 }
