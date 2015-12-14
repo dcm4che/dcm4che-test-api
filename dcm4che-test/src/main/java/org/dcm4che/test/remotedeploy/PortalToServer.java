@@ -92,9 +92,10 @@ public class PortalToServer {
      *                     The class must not reference any other classes that are not expected to be accessible in the deployment already.
      *                     Anonymous classes are not allowed for now.
      *                     Inner classes (1 lvl) are allowed.
+     * @param warpInterface
      * @return A proxy that allows to execute <code>insiderClass</code>'s methods on the server
      */
-    public static <T> T warp(Class<T> insiderInterface, final Class<? extends T> insiderClass) {
+    public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass, final boolean warpInterface) {
 
         Object o = Proxy.newProxyInstance(insiderInterface.getClassLoader(), new Class[]{insiderInterface}, new InvocationHandler() {
             @Override
@@ -107,9 +108,15 @@ public class PortalToServer {
                 requestJSON.args = Base64.toBase64(DeSerializer.serialize(args));
                 requestJSON.classes = new HashMap<String, String>();
 
-                // main class
-                URL insiderClassResource = insiderClass.getResource(insiderClass.getSimpleName() + ".class");
+                String insiderClassResourceName = getClassResourceName(insiderClass);
+                URL insiderClassResource = insiderClass.getResource(insiderClassResourceName);
                 requestJSON.classes.put(insiderClass.getName(), Base64.toBase64(getBytes(insiderClassResource)));
+                
+                if (warpInterface) {
+                    String insiderInterfaceResourceName = getClassResourceName(insiderInterface);
+                    URL insiderInterfaceResource = insiderInterface.getResource(insiderInterfaceResourceName);
+                    requestJSON.classes.put(insiderInterface.getName(), Base64.toBase64(getBytes(insiderInterfaceResource)));
+                }
 
                 // inner classes
                 try {
@@ -119,7 +126,6 @@ public class PortalToServer {
                         String classFileName = splitClassName[splitClassName.length - 1] + ".class";
                         URL resource = insiderClass.getResource(classFileName);
                         requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(resource)));
-
                     }
                 } catch (IOException e) {
                     throw new RuntimeException("trouble reading bytecode", e);
@@ -137,6 +143,22 @@ public class PortalToServer {
         });
 
         return (T) o;
+    }
+    
+    public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass) {
+        return warp(insiderInterface, insiderClass, false);
+    }
+    
+    private static String getClassResourceName(Class<?> clazz) {
+        StringBuffer classResourceName = new StringBuffer();
+        Class<?> declaringClass = clazz.getDeclaringClass();
+        if(declaringClass != null) {
+            classResourceName.append(declaringClass.getSimpleName()).append("$");
+        }
+        
+        classResourceName.append(clazz.getSimpleName()).append(".class");
+        
+        return classResourceName.toString();
     }
 
     private static byte[] getBytes(URL resource) throws IOException {
