@@ -56,4 +56,6 @@ public @interface WadoRSParameters {
      * it.
      */
     public String retrieveDir() default "";
+
+    public String aeTitle() default "DCM4CHEE";
 }

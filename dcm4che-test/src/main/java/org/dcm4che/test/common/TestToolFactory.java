@@ -302,6 +302,7 @@ public class TestToolFactory {
             throw new IllegalArgumentException("WadoRSParameters annotation"
                     + " must be used to create a WadoRS tool");
         String url = wadoRSParams.url();
+        String aeTitle = wadoRSParams.aeTitle();
 
         String retrieveDirString = wadoRSParams.retrieveDir();
         File retrieveDir;
@@ -311,7 +312,7 @@ public class TestToolFactory {
             retrieveDir = new File(retrieveDirString);
         }
 
-        return new WadoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), retrieveDir);
+        return new WadoRSTool(baseURL + "/" + webContext + "/" + aeTitle + (url.startsWith("/") ? url : "/" + url), retrieveDir);
     }
 
     private static TestTool createWadoURITool(BasicTest test, Properties defaultParams, String baseURL, String webContext) throws IllegalArgumentException {
@@ -320,7 +321,7 @@ public class TestToolFactory {
         if(wadoUriParams == null)
             throw new IllegalArgumentException("WadoURIParameters annotation"
                     + " must be used to create a WadoURI tool");
-        String url = wadoUriParams.url();
+        String aeTitle = wadoUriParams.aeTitle();
         String studyUID = wadoUriParams.studyUID() != null ? wadoUriParams.studyUID() : null;
         String seriesUID = wadoUriParams.seriesUID() != null ? wadoUriParams.seriesUID() : null;
         String objectUID = wadoUriParams.objectUID() != null ? wadoUriParams.objectUID() : null;
@@ -347,7 +348,7 @@ public class TestToolFactory {
             retrieveDir = new File(wadoUriParams.retrieveDir());
         }
 
-        return new WadoURITool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url)
+        return new WadoURITool(baseURL + "/" + webContext + "/" + aeTitle
                 ,studyUID, seriesUID, objectUID
                 , contentType, charset, anonymize
                 , annotation, rows, columns
@@ -367,7 +368,9 @@ public class TestToolFactory {
         boolean timezone = qidoParams != null && qidoParams.timezoneAdjustment() ? qidoParams.timezoneAdjustment() : false;
         boolean returnAll = qidoParams != null ? qidoParams.returnAll() : false;
         String offset = qidoParams != null ? qidoParams.offset() : "0";
-        return new QidoRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url), limit, fuzzy, timezone, returnAll, offset);
+        String aeTitle = qidoParams.aeTitle();
+
+        return new QidoRSTool(baseURL + "/" + webContext + "/" + aeTitle + (url.startsWith("/") ? url : "/" + url), limit, fuzzy, timezone, returnAll, offset);
     }
 
     private static TestTool createStowTool(BasicTest test, String baseURL, String webContext) {
@@ -379,7 +382,8 @@ public class TestToolFactory {
         if (url == null)
             throw new IllegalArgumentException("To create a StowRS Tool a url must be specified"
                     + " in the StowParameters annotation");
-        tool = new StowRSTool(baseURL + "/" + webContext + (url.startsWith("/") ? url : "/" + url));
+        String aeTitle = stowParams.aeTitle();
+        tool = new StowRSTool(baseURL + "/" + webContext + "/" + aeTitle + (url.startsWith("/") ? url : "/" + url));
         return tool;
     }
 

@@ -66,4 +66,5 @@ public @interface QidoRSParameters {
 
     public String limit() default "-1";
     public String offset() default "0";
+    public String aeTitle() default "DCM4CHEE";
 }

@@ -49,7 +49,6 @@ import org.dcm4che3.tool.wadouri.test.WadoURITool;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WadoURIParameters {
     //no defaults
-    public String url();
     public String studyUID();
     public String seriesUID();
     public String objectUID();
@@ -88,4 +87,6 @@ public @interface WadoURIParameters {
      * it.
      */
     public String retrieveDir() default "";
+    public String aeTitle() default "DCM4CHEE";
+
 }
