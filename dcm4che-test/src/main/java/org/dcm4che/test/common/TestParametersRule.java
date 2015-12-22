@@ -157,13 +157,13 @@ public class TestParametersRule implements TestRule {
                 Path tmpDir = getInstance().getBaseTemporaryDirectory();
                 FileUtils.cleanDirectory(tmpDir.toFile());
 
+                notifyServerOfNewtest(description.getMethodName() + "(" + description.getTestClass().getName() + ")");
+
                 // Clean DB before each test
                 Assert.assertTrue("Database could not be cleaned successfully.", DBUtils.cleanDB(getInstance()));
 
                 // Reset config before each test
                 ConfigUtils.restoreConfig(getInstance());
-
-                notifyServerOfNewtest(description.getMethodName() + "(" + description.getTestClass().getName() + ")");
 
                 base.evaluate();
             }
