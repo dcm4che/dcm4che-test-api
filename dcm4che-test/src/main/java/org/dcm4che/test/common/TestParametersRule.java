@@ -37,18 +37,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.dcm4che.test.common;
 
-import java.io.UnsupportedEncodingException;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Method;
-import java.net.URLEncoder;
-import java.nio.file.Path;
-import java.util.Arrays;
-
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Response;
-
 import org.apache.commons.io.FileUtils;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
@@ -64,6 +52,17 @@ import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.ws.rs.client.Client;
+import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Response;
+import java.io.UnsupportedEncodingException;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Method;
+import java.net.URLEncoder;
+import java.nio.file.Path;
+import java.util.Arrays;
 
 /**
  * @author Hesham elbadawi <bsdreko@gmail.com>
@@ -128,11 +127,16 @@ public class TestParametersRule implements TestRule {
                     throw new AssumptionViolatedException("Skipping Non-ReportedIssue Test " + description.getTestClass().getName() + " " + description.getMethodName());
                 }
 
+                org.dcm4che.test.annotations.markers.Description descriptionAnnotation = getAnnotation(description, org.dcm4che.test.annotations.markers.Description.class);
+
+                String testDescription = descriptionAnnotation != null ? descriptionAnnotation.value() : "no test description available";
+
                 log.info("\n\n------------------------------------ \n" +
-                             "Running test {}({}) \n" +
-                             "------------------------------------ \n\n",
+                                "Running test {}({})\nDescription: {} \n" +
+                                "------------------------------------ \n\n",
                         description.getMethodName(),
-                        description.getTestClass().getName());
+                        description.getTestClass().getName(),
+                        testDescription);
 
                 if (reportedIssue != null) {
                     log.info("Issue(s) reported for this test: {}", Arrays.toString(reportedIssue.value()));
