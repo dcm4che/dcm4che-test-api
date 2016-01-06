@@ -52,9 +52,11 @@ import org.dcm4che3.conf.core.storage.InMemoryConfiguration;
 import org.dcm4che3.conf.dicom.CommonDicomConfigurationWithHL7;
 import org.dcm4che3.data.Attributes;
 import org.dcm4che3.tool.common.test.TestResult;
+import org.dcm4che3.tool.common.test.TestTool;
 import org.dcm4che3.tool.dcmgen.test.DcmGenResult;
 import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
 import org.dcm4che3.tool.findscu.test.QueryTool;
+import org.dcm4che3.tool.getscu.test.RetrieveTool;
 import org.dcm4che3.tool.movescu.test.MoveResult;
 import org.dcm4che3.tool.movescu.test.MoveTool;
 import org.dcm4che3.tool.mppsscu.test.MppsTool;
@@ -355,4 +357,16 @@ public abstract class BasicTest {
 
         return subTempDirectory;
     }
+
+    public <T extends TestTool> T createTool(Class<T> clazz) {
+
+        TestToolType type = null;
+        if (clazz.isAssignableFrom(RetrieveTool.class))
+            type = TestToolType.GetTool;
+
+        //TODO: finish
+
+        return (T) TestToolFactory.createToolForTest(type, this);
+    }
+
 }
