@@ -41,23 +41,35 @@ package org.dcm4che.test.tool.externaldevice;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 
+import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
+import org.dcm4che3.conf.core.api.ConfigurationException;
 import org.dcm4che3.media.DicomDirWriter;
 import org.dcm4che3.media.RecordFactory;
+import org.dcm4che3.net.ApplicationEntity;
 import org.dcm4che3.net.Connection;
 import org.dcm4che3.net.Device;
+import org.dcm4che3.net.TCGroupConfigAEExtension;
 import org.dcm4che3.tool.common.FilesetInfo;
 import org.dcm4che3.util.UIDUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Alexander Hoermandinger <alexander.hoermandinger@agfa.com>
  *
  */
 public class ExternalDeviceToolConfig {
+
+    private static final Logger log = LoggerFactory.getLogger(ExternalDeviceToolConfig.class);
+
     private final HashMap<String, Connection> remoteConnections = new HashMap<String, Connection>();
     private boolean stgCmtOnSameAssoc;
     private Executor executor = Executors.newCachedThreadPool();
@@ -68,7 +80,48 @@ public class ExternalDeviceToolConfig {
     private int port;
     private RecordFactory recordFactory = new RecordFactory();
     private String filePathFormat = "DICOM/{0020000D,hash}/{0020000E,hash}/{00080018,hash}";
-    
+
+    /**
+     * Quick config to use in tests
+     * @param newDevice
+     * @param aet
+     * @param hostname
+     * @param port
+     * @param remoteConfig
+     * @throws ConfigurationException
+     */
+    public static void remoteConfigureSimpleExtArc(String newDevice, String aet, String hostname, int port, DicomConfigurationManager remoteConfig) throws ConfigurationException {
+
+        log.debug("Create Connection dicom");
+        Connection dicom = new Connection("dicom", hostname, port);
+        dicom.setProtocol(Connection.Protocol.DICOM);
+        dicom.setConnectionInstalled(true);
+        dicom.setTlsProtocols(new String[] { "TLSv1", "SSLv3" });
+        log.debug("Connection dicom:\n{}", dicom);
+
+        log.debug("Create ApplicationEntity {}", hostname);
+        ApplicationEntity applicationEntity = new ApplicationEntity(aet);
+        applicationEntity.setAssociationAcceptor(true);
+        applicationEntity.setAssociationInitiator(true);
+        List<Connection> listConnections = new ArrayList<Connection>();
+        listConnections.add(dicom);
+        applicationEntity.setConnections(listConnections);
+        EnumSet<TCGroupConfigAEExtension.DefaultGroup> scpGroups = EnumSet.of(TCGroupConfigAEExtension.DefaultGroup.QUERY, TCGroupConfigAEExtension.DefaultGroup.RETRIEVE, TCGroupConfigAEExtension.DefaultGroup.STORAGE,
+                TCGroupConfigAEExtension.DefaultGroup.STORAGE_COMMITMENT);
+        EnumSet<TCGroupConfigAEExtension.DefaultGroup> scuGroups = EnumSet.of(TCGroupConfigAEExtension.DefaultGroup.STORAGE, TCGroupConfigAEExtension.DefaultGroup.STORAGE_COMMITMENT);
+        TCGroupConfigAEExtension tCGroupConfigAEExtension = new TCGroupConfigAEExtension(scpGroups, scuGroups);
+        applicationEntity.addAEExtension(tCGroupConfigAEExtension);
+        log.debug("ApplicationEntity {}:\n{}", newDevice.toUpperCase(), applicationEntity);
+
+        log.debug("Create Device {}", newDevice);
+        Device extDevice = new Device(newDevice);
+        extDevice.addConnection(dicom);
+        extDevice.addApplicationEntity(applicationEntity);
+        log.debug("Device {}:\n{}", newDevice, extDevice);
+
+        remoteConfig.merge(extDevice);
+    }
+
     public ExternalDeviceToolConfig dicomDirWriter(DicomDirWriter dicomDirWriter) {
         this.dicomDirWriter = dicomDirWriter;
         return this;
