@@ -60,6 +60,7 @@ public class CleanArchiveEJB implements CleanArchive{
 
     private static final String[] DELETE_QUERIES = {
         "DELETE FROM study_on_stg_sys",
+        "DELETE FROM study_availability",
         "DELETE FROM rel_instance_location", "DELETE FROM location",
         "DELETE FROM content_item", "DELETE FROM verify_observer",
         "DELETE FROM mpps", "DELETE FROM archiving_task",
