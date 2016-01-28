@@ -66,32 +66,33 @@ public class PortalToServer {
 
     public static String REMOTE_ENDPOINT_URL = "http://localhost:8080/dcm4chee-arc-insider";
 
-    private static InsiderREST remoteEndpoint;
+    // useful when running against a cluster
+    public static ThreadLocal<String> REMOTE_ENDPOINT_URL_LOCAL = new ThreadLocal<>();
 
     /**
      * Creates a proxy of type <code>insiderInterface</code> that will do the following when one of its methods is called:
      * <ul>
-     *     <li>Collect all the bytecodes of the <code>insiderClass</code> itself and any inner classes</li>
-     *     <li>Send them to the server, along with the info of which method has been called</li>
-     *     <li>On the server,  inside the main EAR of the archive:<ul>
-     *
-     *         <li>Feed the received bytecodes to a classloader</li>
-     *         <li>Create a bean of class <code>insiderClass</code></li>
-     *         <li>Run CDI injection upon this bean</li>
-     *         <li>Execute the method, which the user called on the proxy, upon the newly created bean on the server</li>
-     *         <li>Serialize the response, respond with it to the caller</li>
-     *     </ul></li>
-     *     <li> Return the received response as a return value of the proxy/
-     *          throw an exception that was thrown during execution of the class method
-     *     </li>
-     *
+     * <li>Collect all the bytecodes of the <code>insiderClass</code> itself and any inner classes</li>
+     * <li>Send them to the server, along with the info of which method has been called</li>
+     * <li>On the server,  inside the main EAR of the archive:<ul>
+     * <p/>
+     * <li>Feed the received bytecodes to a classloader</li>
+     * <li>Create a bean of class <code>insiderClass</code></li>
+     * <li>Run CDI injection upon this bean</li>
+     * <li>Execute the method, which the user called on the proxy, upon the newly created bean on the server</li>
+     * <li>Serialize the response, respond with it to the caller</li>
+     * </ul></li>
+     * <li> Return the received response as a return value of the proxy/
+     * throw an exception that was thrown during execution of the class method
+     * </li>
+     * <p/>
      * </ul>
-
+     *
      * @param insiderInterface An interface that is used to create a proxy. It should contain the method that you would like to run on the server.
-     * @param insiderClass A class that will be executed on the server. The implementation can use any injections/resources that are available for the classes in the EAR.
-     *                     The class must not reference any other classes that are not expected to be accessible in the deployment already.
-     *                     Anonymous classes are not allowed for now.
-     *                     Inner classes (1 lvl) are allowed.
+     * @param insiderClass     A class that will be executed on the server. The implementation can use any injections/resources that are available for the classes in the EAR.
+     *                         The class must not reference any other classes that are not expected to be accessible in the deployment already.
+     *                         Anonymous classes are not allowed for now.
+     *                         Inner classes (1 lvl) are allowed.
      * @param warpInterface
      * @return A proxy that allows to execute <code>insiderClass</code>'s methods on the server
      */
@@ -111,7 +112,7 @@ public class PortalToServer {
                 String insiderClassResourceName = getClassResourceName(insiderClass);
                 URL insiderClassResource = insiderClass.getResource(insiderClassResourceName);
                 requestJSON.classes.put(insiderClass.getName(), Base64.toBase64(getBytes(insiderClassResource)));
-                
+
                 if (warpInterface) {
                     String insiderInterfaceResourceName = getClassResourceName(insiderInterface);
                     URL insiderInterfaceResource = insiderInterface.getResource(insiderInterfaceResourceName);
@@ -144,20 +145,20 @@ public class PortalToServer {
 
         return (T) o;
     }
-    
+
     public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass) {
         return warp(insiderInterface, insiderClass, false);
     }
-    
+
     private static String getClassResourceName(Class<?> clazz) {
         StringBuffer classResourceName = new StringBuffer();
         Class<?> declaringClass = clazz.getDeclaringClass();
-        if(declaringClass != null) {
+        if (declaringClass != null) {
             classResourceName.append(declaringClass.getSimpleName()).append("$");
         }
-        
+
         classResourceName.append(clazz.getSimpleName()).append(".class");
-        
+
         return classResourceName.toString();
     }
 
@@ -177,14 +178,17 @@ public class PortalToServer {
         return buffer.toByteArray();
     }
 
-    private synchronized static InsiderREST getRemoteEndpoint() {
-        if (remoteEndpoint == null) {
-            // create jax-rs client
-            Client client = ClientBuilder.newBuilder().build();
-            WebTarget target = client.target(REMOTE_ENDPOINT_URL);
-            ResteasyWebTarget rtarget = (ResteasyWebTarget) target;
-            remoteEndpoint = rtarget.proxy(InsiderREST.class);
-        }
-        return remoteEndpoint;
+    private static InsiderREST getRemoteEndpoint() {
+        // create jax-rs client
+        Client client = ClientBuilder.newBuilder().build();
+        String remoteEndpointUrl = REMOTE_ENDPOINT_URL_LOCAL.get();
+
+        // fallback if no local
+        if (remoteEndpointUrl == null)
+            remoteEndpointUrl = REMOTE_ENDPOINT_URL;
+
+        WebTarget target = client.target(remoteEndpointUrl);
+        ResteasyWebTarget rtarget = (ResteasyWebTarget) target;
+        return rtarget.proxy(InsiderREST.class);
     }
 }
