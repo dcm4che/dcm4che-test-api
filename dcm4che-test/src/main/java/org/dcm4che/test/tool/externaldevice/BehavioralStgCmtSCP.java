@@ -129,7 +129,9 @@ public class BehavioralStgCmtSCP {
     }
     
     public static class BehavioralStgCmtSCPImpl extends InterceptableStgCmtSCPImpl {
-        private final Map<String,Integer> verifiedInstances = new HashMap<String, Integer>();
+
+        // I own Alex a beer for making this public ;)
+        public final Map<String,Integer> verifiedInstances = new HashMap<String, Integer>();
         private final Map<String,ReturnState> instanceStatusMap;
         
         
