@@ -170,7 +170,7 @@ public class DicomAssert {
      */
     public static void assertValueForTag(Attributes dataset, int tag, String value) {
 
-        String tagKeyword = ElementDictionary.keywordOf(tag, null);
+        String tagKeyword = appendParent(dataset, ElementDictionary.keywordOf(tag, null));
         Assert.assertTrue("Dataset should contain tag " + tagKeyword, dataset.contains(tag));
         Assert.assertEquals("Value of tag " + tagKeyword + " should be equal", value, dataset.getString(tag));
     }
@@ -186,8 +186,30 @@ public class DicomAssert {
      */
     public static void assertValueContained(Attributes dataset, int tag) {
 
-        String tagKeyword = ElementDictionary.keywordOf(tag, null);
+        String tagKeyword = appendParent(dataset, ElementDictionary.keywordOf(tag, null));
         Assert.assertTrue("Dataset should contain a value for tag " + tagKeyword, dataset.containsValue(tag));
+    }
+
+    /**
+     * Check that dataset contains the given tag and has exactly one code item with given code value and designator.
+     * 
+     * @param dataset
+     *            dataset
+     * @param tag
+     *            tag to check for
+     * @param codeValue
+     *            expected CodeValue
+     * @param designator
+     *            expected CodingSchemeDesignator
+     */
+    public static void assertCode(Attributes dataset, int tag, String codeValue, String designator) {
+
+        String tagKeyword = appendParent(dataset, ElementDictionary.keywordOf(tag, null));
+        Assert.assertTrue("Dataset should contain a value for tag " + tagKeyword, dataset.containsValue(tag));
+        Assert.assertTrue("Only one item schould be in the code sequence " + tagKeyword,dataset.getSequence(tag).size() == 1);
+        Attributes item = dataset.getNestedDataset(tag);
+        Assert.assertEquals("CodeValue of " + tagKeyword, codeValue, item.getString(Tag.CodeValue));
+        Assert.assertEquals("CodingSchemeDesignator of " + tagKeyword, designator, item.getString(Tag.CodingSchemeDesignator));
     }
 
     /**
@@ -253,6 +275,13 @@ public class DicomAssert {
         Assert.assertEquals("Expecting exactly one dataset matching " + referenceDataset.toString(), 1, matches.size());
 
         return matches.get(0);
+    }
+    
+    private static String appendParent(Attributes dataset, String str) {
+        if (dataset.getParent() != null) {
+            return appendParent(dataset.getParent(), ElementDictionary.keywordOf(dataset.getParentSequenceTag(), dataset.getParentSequencePrivateCreator())+"/"+str);
+        }
+        return "/"+str;
     }
 
 }
