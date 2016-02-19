@@ -135,6 +135,11 @@ public class ExternalDeviceTool implements TestTool {
     }
     
     public void stop() {
+        try {
+            qrscp.getDevice().waitForNoOpenConnections();
+        } catch (InterruptedException e) {
+            //ignore and go ahead and unbind
+        }
         qrscp.getDevice().unbindConnections();
     }
     
