@@ -283,7 +283,7 @@ public class TestUtils {
     }
     
     public static void setServerSystemProperty(String systemProperty, String value) {
-        PortalToServer.warp(ServerSystemPropertySetter.class, ServerSystemPropertySetterImpl.class, true)
+        PortalToServer.warp(ServerSystemPropertySetter.class, ServerSystemPropertySetterImpl.class, true, null)
             .setSystemProperty(systemProperty, value);
     }
     

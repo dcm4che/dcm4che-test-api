@@ -75,7 +75,7 @@ public class PortalToServer {
      * <li>Collect all the bytecodes of the <code>insiderClass</code> itself and any inner classes</li>
      * <li>Send them to the server, along with the info of which method has been called</li>
      * <li>On the server,  inside the main EAR of the archive:<ul>
-     * <p/>
+     * <p>
      * <li>Feed the received bytecodes to a classloader</li>
      * <li>Create a bean of class <code>insiderClass</code></li>
      * <li>Run CDI injection upon this bean</li>
@@ -85,7 +85,7 @@ public class PortalToServer {
      * <li> Return the received response as a return value of the proxy/
      * throw an exception that was thrown during execution of the class method
      * </li>
-     * <p/>
+     * <p>
      * </ul>
      *
      * @param insiderInterface An interface that is used to create a proxy. It should contain the method that you would like to run on the server.
@@ -94,9 +94,10 @@ public class PortalToServer {
      *                         Anonymous classes are not allowed for now.
      *                         Inner classes (1 lvl) are allowed.
      * @param warpInterface
+     * @param url
      * @return A proxy that allows to execute <code>insiderClass</code>'s methods on the server
      */
-    public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass, final boolean warpInterface) {
+    public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass, final boolean warpInterface, String url) {
 
         Object o = Proxy.newProxyInstance(insiderInterface.getClassLoader(), new Class[]{insiderInterface}, new InvocationHandler() {
             @Override
@@ -132,7 +133,7 @@ public class PortalToServer {
                     throw new RuntimeException("trouble reading bytecode", e);
                 }
 
-                String base64resp = getRemoteEndpoint().warpAndRun(requestJSON);
+                String base64resp = getRemoteEndpoint(url).warpAndRun(requestJSON);
 
                 Object returned = DeSerializer.deserialize(Base64.fromBase64(base64resp));
 
@@ -146,8 +147,9 @@ public class PortalToServer {
         return (T) o;
     }
 
+
     public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass) {
-        return warp(insiderInterface, insiderClass, false);
+        return warp(insiderInterface, insiderClass, false, null);
     }
 
     private static String getClassResourceName(Class<?> clazz) {
@@ -178,17 +180,25 @@ public class PortalToServer {
         return buffer.toByteArray();
     }
 
-    private static InsiderREST getRemoteEndpoint() {
+    private static InsiderREST getRemoteEndpoint(String url) {
         // create jax-rs client
         Client client = ClientBuilder.newBuilder().build();
-        String remoteEndpointUrl = REMOTE_ENDPOINT_URL_LOCAL.get();
 
-        // fallback if no local
-        if (remoteEndpointUrl == null)
-            remoteEndpointUrl = REMOTE_ENDPOINT_URL;
+        String remoteEndpointUrl;
+        if (url != null) {
+            remoteEndpointUrl = url;
+        } else {
+            remoteEndpointUrl = REMOTE_ENDPOINT_URL_LOCAL.get();
+
+            // fallback if no local
+            if (remoteEndpointUrl == null)
+                remoteEndpointUrl = REMOTE_ENDPOINT_URL;
+        }
 
         WebTarget target = client.target(remoteEndpointUrl);
         ResteasyWebTarget rtarget = (ResteasyWebTarget) target;
         return rtarget.proxy(InsiderREST.class);
     }
+
+
 }

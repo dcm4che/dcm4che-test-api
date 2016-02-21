@@ -138,23 +138,6 @@ public class RemoteDicomConfigFactory {
         @Override
         public Object getConfigurationNode(String path, Class configurableClass) throws ConfigurationException {
 
-            // if connection
-            try {
-                String deviceName = DicomPath.ConnectionByCnRef.parse(path).getParam("deviceName");
-                Map<String, Object> deviceConfig = remoteEndpoint.getDeviceConfig(deviceName);
-
-                // make dummy config tree with this one device
-                Map<String, Object> dummyRoot = new DefaultBeanVitalizer().createConfigNodeFromInstance(new CommonDicomConfiguration.DicomConfigurationRootNode());
-                ConfigNodeUtil.replaceNode(dummyRoot, DicomPath.DeviceByName.set("deviceName", deviceName).path(), deviceConfig);
-
-                // get connection from dummy
-                return ConfigNodeUtil.getNode(dummyRoot, path);
-
-            } catch (IllegalArgumentException e) {
-                //noop
-            }
-
-
             // if TCConfig
             try {
 
