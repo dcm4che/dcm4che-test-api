@@ -64,10 +64,12 @@ import java.util.HashMap;
 
 public class PortalToServer {
 
-    public static String REMOTE_ENDPOINT_URL = "http://localhost:8080/dcm4chee-arc-insider";
 
-    // useful when running against a cluster
-    public static ThreadLocal<String> REMOTE_ENDPOINT_URL_LOCAL = new ThreadLocal<>();
+    public static String DEFAULT_REMOTE_ENDPOINT_URL = makeURL("localhost", "8080");
+
+    public static String makeURL(String host, String port) {
+        return "http://" + host + ":" + port + "/dcm4chee-arc-insider";
+    }
 
     /**
      * Creates a proxy of type <code>insiderInterface</code> that will do the following when one of its methods is called:
@@ -75,7 +77,7 @@ public class PortalToServer {
      * <li>Collect all the bytecodes of the <code>insiderClass</code> itself and any inner classes</li>
      * <li>Send them to the server, along with the info of which method has been called</li>
      * <li>On the server,  inside the main EAR of the archive:<ul>
-     * <p>
+     * <p/>
      * <li>Feed the received bytecodes to a classloader</li>
      * <li>Create a bean of class <code>insiderClass</code></li>
      * <li>Run CDI injection upon this bean</li>
@@ -85,7 +87,7 @@ public class PortalToServer {
      * <li> Return the received response as a return value of the proxy/
      * throw an exception that was thrown during execution of the class method
      * </li>
-     * <p>
+     * <p/>
      * </ul>
      *
      * @param insiderInterface An interface that is used to create a proxy. It should contain the method that you would like to run on the server.
@@ -97,7 +99,7 @@ public class PortalToServer {
      * @param url
      * @return A proxy that allows to execute <code>insiderClass</code>'s methods on the server
      */
-    public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass, final boolean warpInterface, String url) {
+    public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass, final boolean warpInterface, final String url) {
 
         Object o = Proxy.newProxyInstance(insiderInterface.getClassLoader(), new Class[]{insiderInterface}, new InvocationHandler() {
             @Override
@@ -188,11 +190,7 @@ public class PortalToServer {
         if (url != null) {
             remoteEndpointUrl = url;
         } else {
-            remoteEndpointUrl = REMOTE_ENDPOINT_URL_LOCAL.get();
-
-            // fallback if no local
-            if (remoteEndpointUrl == null)
-                remoteEndpointUrl = REMOTE_ENDPOINT_URL;
+            remoteEndpointUrl = DEFAULT_REMOTE_ENDPOINT_URL;
         }
 
         WebTarget target = client.target(remoteEndpointUrl);
