@@ -1,12 +1,10 @@
 package org.dcm4che.test.utils;
 
 import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
-import org.dcm4che3.conf.core.DefaultBeanVitalizer;
 import org.dcm4che3.conf.core.api.Configuration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
-import org.dcm4che3.conf.core.util.ConfigNodeUtil;
+import org.dcm4che3.conf.core.Nodes;
 import org.dcm4che3.conf.core.util.PathPattern;
-import org.dcm4che3.conf.dicom.CommonDicomConfiguration;
 import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.dcm4che3.conf.dicom.DicomPath;
 import org.dcm4che3.net.ExternalArchiveAEExtension;
@@ -151,7 +149,7 @@ public class RemoteDicomConfigFactory {
 
             try {
 
-                return remoteEndpoint.getDeviceConfig(DicomPath.DeviceByName.parse(path).getParam("deviceName"));
+                return remoteEndpoint.getDeviceConfig(DicomPath.DeviceByNameForWrite.parse(path).getParam("deviceName"));
 
             } catch (IllegalArgumentException e) {
                 throw new ConfigurationException("This action is not supported when using the remote config", e);
@@ -162,7 +160,7 @@ public class RemoteDicomConfigFactory {
         public boolean nodeExists(String path) throws ConfigurationException {
             if (path.equals(DicomPath.ConfigRoot.path())) return true;
 
-            return remoteEndpoint.getDeviceConfig(DicomPath.DeviceByName.parse(path).getParam("deviceName")) != null;
+            return remoteEndpoint.getDeviceConfig(DicomPath.DeviceByNameForWrite.parse(path).getParam("deviceName")) != null;
         }
 
         @Override
@@ -175,7 +173,7 @@ public class RemoteDicomConfigFactory {
             }
 
             try {
-                remoteEndpoint.modifyDeviceConfig(null, DicomPath.DeviceByName.parse(path).getParam("deviceName"), configNode);
+                remoteEndpoint.modifyDeviceConfig(null, DicomPath.DeviceByNameForWrite.parse(path).getParam("deviceName"), configNode);
             } catch (WebApplicationException e) {
                 throw new ConfigurationException("The server was not able to accept configuration changes.\n" +
                         "Reason: "+e.getResponse().toString());
@@ -195,7 +193,7 @@ public class RemoteDicomConfigFactory {
             // if its not a remove device operation - throw an exception
             PathPattern.PathParser parsedPath = null;
             try {
-                parsedPath = DicomPath.DeviceByName.parse(path);
+                parsedPath = DicomPath.DeviceByNameForWrite.parse(path);
             } catch (Exception e) {
                 throw new RuntimeException("Not supported");
             }
@@ -208,7 +206,7 @@ public class RemoteDicomConfigFactory {
         @Override
         public Iterator search(String liteXPathExpression) throws IllegalArgumentException, ConfigurationException {
             Map<String, Object> fullConfig = remoteEndpoint.getFullConfig();
-            return ConfigNodeUtil.search(fullConfig, liteXPathExpression);
+            return Nodes.search(fullConfig, liteXPathExpression);
         }
 
         @Override
