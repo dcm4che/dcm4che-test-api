@@ -38,13 +38,13 @@
  *  ***** END LICENSE BLOCK *****
  */
 
-package org.dcm4chee.archive.test.remoting;
+package org.dcm4che.test.remote;
 
 import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by aprvf on 03.12.2015.
+ * @author rawmahn
  */
 public class RemoteRequestJSON {
 

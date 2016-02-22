@@ -2,7 +2,7 @@ package org.dcm4che.test.utils;
 
 import org.dcm4che.test.annotations.RemoteConnectionParameters;
 import org.dcm4che.test.common.BasicTest;
-import org.dcm4che.test.remotedeploy.PortalToServer;
+import org.dcm4che.test.remote.WarpUnit;
 import org.dcm4che3.conf.api.AttributeCoercion;
 import org.dcm4che3.conf.api.AttributeCoercions;
 import org.dcm4che3.conf.api.DicomConfiguration;
@@ -311,7 +311,7 @@ public class TestUtils {
     }
     
     public static void setServerSystemProperty(String systemProperty, String value) {
-        PortalToServer.warp(ServerSystemPropertySetter.class, ServerSystemPropertySetterImpl.class, true, null)
+        WarpUnit.warp(ServerSystemPropertySetter.class, ServerSystemPropertySetterImpl.class, true, null)
             .setSystemProperty(systemProperty, value);
     }
     

@@ -38,37 +38,35 @@
  *  ***** END LICENSE BLOCK *****
  */
 
-package org.dcm4che.test.remotedeploy;
+package org.dcm4che.test.remote;
 
-import org.dcm4che3.net.Device;
+import org.junit.Ignore;
+import org.junit.Test;
 
-import javax.inject.Inject;
-import java.util.concurrent.Callable;
+import java.util.function.Function;
 
-/**
- * Created by aprvf on 03.12.2015.
- */
-public class SomeWarpable implements Callable<String> {
+public class PortalTest implements Runnable {
 
-
-    @Inject
-    Device device;
 
     @Override
-    public String call() throws Exception {
-        final SomeInnerClass someInnerClass = new SomeInnerClass();
+    public void run() {
 
-        return someInnerClass.getDeviceName(device);
+        System.out.println("hi");
+
     }
 
-    public static class SomeInnerClass {
-        String getDeviceName(Device d) {
-            return d.getDeviceName();
-        }
-    }
 
-    public static class SomeOtherClass {
-        int i = 5;
-    }
+    @Test
+    @Ignore
+    public void testWarp() throws Exception {
 
+        Function f = (s)->s+"!";
+
+        Runnable warped = WarpUnit.warp(Runnable.class, PortalTest.class, false, WarpUnit.makeURL("192.168.1.2","8080"));
+
+        warped.run();
+
+        System.out.println(f.apply("hey"));
+
+    }
 }

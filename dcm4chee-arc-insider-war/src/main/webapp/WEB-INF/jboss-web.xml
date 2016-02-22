@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jboss-web>
-    <context-root>dcm4chee-arc-insider</context-root>
+    <context-root>warpunit-insider</context-root>
 </jboss-web>

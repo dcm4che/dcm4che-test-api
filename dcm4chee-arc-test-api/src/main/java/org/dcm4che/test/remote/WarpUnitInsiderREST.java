@@ -38,29 +38,28 @@
  *  ***** END LICENSE BLOCK *****
  */
 
-package org.dcm4che.test.remotedeploy;
+package org.dcm4che.test.remote;
 
-import org.dcm4che.test.remotedeploy.PortalToServer;
-import org.junit.Test;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 
-import java.util.concurrent.Callable;
+/**
+ * @author rawmahn
+ */
+@Path("/insider")
+@Produces(MediaType.APPLICATION_JSON)
+@Consumes(MediaType.APPLICATION_JSON)
+public interface WarpUnitInsiderREST {
 
-public class PortalTest {
+    /**
+     * @param requestJSON
+     * @return base64'ed java serialized response
+     */
 
-
-//    @Test
-    public void testWarp() throws Exception {
-
-        Callable<String> warped = PortalToServer.warp(Callable.class, SomeWarpable.class);
-
-        try {
-            System.out.println(warped.call());
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-    }
-
-
-
+    @POST
+    @Path("/warpAndRun")
+    String warpAndRun(RemoteRequestJSON requestJSON);
 }

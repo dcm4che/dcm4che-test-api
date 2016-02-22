@@ -38,28 +38,60 @@
  *  ***** END LICENSE BLOCK *****
  */
 
-package org.dcm4chee.archive.test.remoting;
+package org.dcm4che.test.remote;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
+import java.io.*;
 
 /**
- * @author Roman K
+ * @author rawmahn
  */
-@Path("/insider")
-@Produces(MediaType.APPLICATION_JSON)
-@Consumes(MediaType.APPLICATION_JSON)
-public interface InsiderREST {
+public class DeSerializer {
 
-    /**
-     * @param requestJSON
-     * @return base64'ed java serialized response
-     */
+    public static Object deserialize(byte[] bytes) {
+        if (bytes == null) {
+            throw new IllegalArgumentException("The byte[] must not be null");
+        }
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
+        ObjectInputStream in = null;
+        try {
+            // stream closed in the finally
+            in = new ObjectInputStream(inputStream);
+            return in.readObject();
 
-    @POST
-    @Path("/warpAndRun")
-    String warpAndRun(RemoteRequestJSON requestJSON);
+        } catch (ClassNotFoundException | IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if (in != null) {
+                    in.close();
+                }
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
+
+    }
+
+    public static byte[] serialize(Object object) {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
+        ObjectOutputStream out = null;
+        try {
+            // stream closed in the finally
+            out = new ObjectOutputStream(baos);
+            out.writeObject(object);
+
+        } catch (IOException ex) {
+            throw new RuntimeException(ex);
+        } finally {
+            try {
+                if (out != null) {
+                    out.close();
+                }
+            } catch (IOException ex) {
+                // ignore close exception
+            }
+        }
+        return baos.toByteArray();
+    }
+
 }

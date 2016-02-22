@@ -40,7 +40,7 @@
  *
  */
 
-package org.dcm4che.test;
+package org.dcm4che.test.remote;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -52,13 +52,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * @author Roman K
+ * @author rawmahn
  */
-class MyClassLoader extends ClassLoader {
+class WarpUnitClassLoader extends ClassLoader {
 
     private Map<String, byte[]> classNameToByteCode;
 
-    public MyClassLoader(ClassLoader parent, Map<String, byte[]> classNameToByteCode) {
+    public WarpUnitClassLoader(ClassLoader parent, Map<String, byte[]> classNameToByteCode) {
         super(parent);
         this.classNameToByteCode = classNameToByteCode;
     }

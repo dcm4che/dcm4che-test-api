@@ -40,11 +40,8 @@
  *
  */
 
-package org.dcm4che.test;
+package org.dcm4che.test.remote;
 
-import org.dcm4chee.archive.test.remoting.DeSerializer;
-import org.dcm4chee.archive.test.remoting.InsiderREST;
-import org.dcm4chee.archive.test.remoting.RemoteRequestJSON;
 import org.dcm4che3.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,17 +56,19 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * @author rawmahn
+ */
+public class WarpUnitInsider implements WarpUnitInsiderREST {
 
-public class DumbInsider implements InsiderREST {
-
-    private static Logger log = LoggerFactory.getLogger(DumbInsider.class);
+    private static Logger log = LoggerFactory.getLogger(WarpUnitInsider.class);
 
     @Inject
     BeanManager beanManager;
 
     @SuppressWarnings("unchecked")
     @Override
-    public String warpAndRun(RemoteRequestJSON requestJSON)  {
+    public String warpAndRun(RemoteRequestJSON requestJSON) {
 
         // unbase64 the bytecode
         Map<String, byte[]> classNameToByteCode = new HashMap<>();
@@ -82,14 +81,14 @@ public class DumbInsider implements InsiderREST {
         }
 
         // prepare classloader
-        ClassLoader parentClassLoader = MyClassLoader.class.getClassLoader();
-        MyClassLoader classLoader = new MyClassLoader(parentClassLoader, classNameToByteCode);
+        ClassLoader parentClassLoader = WarpUnitClassLoader.class.getClassLoader();
+        WarpUnitClassLoader classLoader = new WarpUnitClassLoader(parentClassLoader, classNameToByteCode);
 
         // create main object
         Class myObjectClass = null;
         Object object = null;
         try {
-            // reflection magic
+            // classloading/reflection magic
             myObjectClass = classLoader.loadClass(requestJSON.mainClassName);
             object = myObjectClass.newInstance();
 
@@ -110,17 +109,18 @@ public class DumbInsider implements InsiderREST {
         for (Method method : myObjectClass.getMethods()) {
             if (method.getName().equals(requestJSON.methodName)) {
                 try {
-                    result = method.invoke(object, (Object[])DeSerializer.deserialize(Base64.fromBase64(requestJSON.args)));
+                    method.setAccessible(true);
+                    result = method.invoke(object, (Object[]) DeSerializer.deserialize(Base64.fromBase64(requestJSON.args)));
                 } catch (Exception e) {
                     // send the exception back to the caller - it will recognize it and rethrow on it's side
-                    result = e;
+                    result = new RemoteExecutionException(e.getStackTrace().toString());
                 }
                 foundMethod = true;
                 break;
             }
         }
 
-        if (!foundMethod) throw new RuntimeException("method " + requestJSON.methodName + " not found");
+        if (!foundMethod) result = new RuntimeException("method " + requestJSON.methodName + " not found");
 
         return Base64.toBase64(DeSerializer.serialize(result));
 

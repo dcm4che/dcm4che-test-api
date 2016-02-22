@@ -1,14 +1,11 @@
-package org.dcm4che.test;
-
-import org.dcm4chee.archive.test.remoting.PhaserBean;
+package org.dcm4che.test.remote;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
-import javax.enterprise.inject.Produces;
 import java.util.concurrent.Phaser;
 
 /**
- * @author Roman K <roman.khazankin@gmail.com>
+ * @author rawmahn
  */
 @ApplicationScoped
 public class PhaserProducer implements PhaserBean{

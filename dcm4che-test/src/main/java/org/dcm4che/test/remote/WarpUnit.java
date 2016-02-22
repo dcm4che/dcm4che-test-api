@@ -40,13 +40,11 @@
  *
  */
 
-package org.dcm4che.test.remotedeploy;
+package org.dcm4che.test.remote;
 
 import org.dcm4che3.util.Base64;
-import org.dcm4chee.archive.test.remoting.DeSerializer;
-import org.dcm4chee.archive.test.remoting.InsiderREST;
-import org.dcm4chee.archive.test.remoting.RemoteRequestJSON;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import sun.reflect.ConstantPool;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -55,6 +53,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
@@ -62,7 +61,7 @@ import java.net.URLConnection;
 import java.util.HashMap;
 
 
-public class PortalToServer {
+public class WarpUnit {
 
 
     public static String DEFAULT_REMOTE_ENDPOINT_URL = makeURL("localhost", "8080");
@@ -105,54 +104,76 @@ public class PortalToServer {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-                RemoteRequestJSON requestJSON = new RemoteRequestJSON();
-
-                requestJSON.methodName = method.getName();
-                requestJSON.mainClassName = insiderClass.getName();
-                requestJSON.args = Base64.toBase64(DeSerializer.serialize(args));
-                requestJSON.classes = new HashMap<String, String>();
-
-                String insiderClassResourceName = getClassResourceName(insiderClass);
-                URL insiderClassResource = insiderClass.getResource(insiderClassResourceName);
-                requestJSON.classes.put(insiderClass.getName(), Base64.toBase64(getBytes(insiderClassResource)));
-
+                Class iface = null;
                 if (warpInterface) {
-                    String insiderInterfaceResourceName = getClassResourceName(insiderInterface);
-                    URL insiderInterfaceResource = insiderInterface.getResource(insiderInterfaceResourceName);
-                    requestJSON.classes.put(insiderInterface.getName(), Base64.toBase64(getBytes(insiderInterfaceResource)));
+                    iface = insiderInterface;
                 }
 
-                // inner classes
-                try {
-                    for (Class<?> aClass : insiderClass.getDeclaredClasses()) {
-
-                        String[] splitClassName = aClass.getName().split("\\.");
-                        String classFileName = splitClassName[splitClassName.length - 1] + ".class";
-                        URL resource = insiderClass.getResource(classFileName);
-                        requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(resource)));
-                    }
-                } catch (IOException e) {
-                    throw new RuntimeException("trouble reading bytecode", e);
-                }
-
-                String base64resp = getRemoteEndpoint(url).warpAndRun(requestJSON);
-
-                Object returned = DeSerializer.deserialize(Base64.fromBase64(base64resp));
-
-                if (returned instanceof Exception)
-                    throw (Throwable) returned;
-
-                return returned;
+                return warpAndRun(method, args, insiderClass, iface, url);
             }
         });
 
         return (T) o;
     }
 
+    private static <T> Object warpAndRun(Method method, Object[] args, Class<? extends T> insiderClass, Class<T> insiderInterface, String url) throws Throwable {
+        RemoteRequestJSON requestJSON = new RemoteRequestJSON();
+
+        requestJSON.methodName = method.getName();
+        requestJSON.mainClassName = insiderClass.getName();
+        requestJSON.args = Base64.toBase64(DeSerializer.serialize(args));
+        requestJSON.classes = new HashMap<String, String>();
+
+        String insiderClassResourceName = getClassResourceName(insiderClass);
+        URL insiderClassResource = insiderClass.getResource(insiderClassResourceName);
+        requestJSON.classes.put(insiderClass.getName(), Base64.toBase64(getBytes(insiderClassResource)));
+
+        if (insiderInterface != null) {
+            String insiderInterfaceResourceName = getClassResourceName(insiderInterface);
+            URL insiderInterfaceResource = insiderInterface.getResource(insiderInterfaceResourceName);
+            requestJSON.classes.put(insiderInterface.getName(), Base64.toBase64(getBytes(insiderInterfaceResource)));
+        }
+
+        // inner classes
+        try {
+            for (Class<?> aClass : insiderClass.getDeclaredClasses()) {
+
+                String[] splitClassName = aClass.getName().split("\\.");
+                String classFileName = splitClassName[splitClassName.length - 1] + ".class";
+                URL resource = insiderClass.getResource(classFileName);
+                requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(resource)));
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("trouble reading bytecode", e);
+        }
+
+        String base64resp = getRemoteEndpoint(url).warpAndRun(requestJSON);
+
+        Object returned = DeSerializer.deserialize(Base64.fromBase64(base64resp));
+
+        if (returned instanceof Exception)
+            throw (Throwable) returned;
+
+        return returned;
+    }
+
 
     public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass) {
         return warp(insiderInterface, insiderClass, false, null);
     }
+
+    public static Object warp(Runnable r, String url) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method getConstantPool = Class.class.getDeclaredMethod("getConstantPool");
+        getConstantPool.setAccessible(true);
+        ConstantPool constantPool = (ConstantPool) getConstantPool.invoke(r.getClass());
+        String[] methodRefInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 2);
+
+        return null;
+
+
+    }
+
 
     private static String getClassResourceName(Class<?> clazz) {
         StringBuffer classResourceName = new StringBuffer();
@@ -182,7 +203,7 @@ public class PortalToServer {
         return buffer.toByteArray();
     }
 
-    private static InsiderREST getRemoteEndpoint(String url) {
+    private static WarpUnitInsiderREST getRemoteEndpoint(String url) {
         // create jax-rs client
         Client client = ClientBuilder.newBuilder().build();
 
@@ -195,7 +216,7 @@ public class PortalToServer {
 
         WebTarget target = client.target(remoteEndpointUrl);
         ResteasyWebTarget rtarget = (ResteasyWebTarget) target;
-        return rtarget.proxy(InsiderREST.class);
+        return rtarget.proxy(WarpUnitInsiderREST.class);
     }
 
 

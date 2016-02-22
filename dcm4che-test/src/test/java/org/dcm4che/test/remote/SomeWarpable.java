@@ -38,60 +38,37 @@
  *  ***** END LICENSE BLOCK *****
  */
 
-package org.dcm4chee.archive.test.remoting;
+package org.dcm4che.test.remote;
 
-import java.io.*;
+import org.dcm4che3.net.Device;
+
+import javax.inject.Inject;
+import java.util.concurrent.Callable;
 
 /**
  * Created by aprvf on 03.12.2015.
  */
-public class DeSerializer {
+public class SomeWarpable implements Callable<String> {
 
-    public static Object deserialize(byte[] bytes) {
-        if (bytes == null) {
-            throw new IllegalArgumentException("The byte[] must not be null");
-        }
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInputStream in = null;
-        try {
-            // stream closed in the finally
-            in = new ObjectInputStream(inputStream);
-            return in.readObject();
 
-        } catch (ClassNotFoundException | IOException ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                if (in != null) {
-                    in.close();
-                }
-            } catch (IOException ex) {
-                // ignore close exception
-            }
-        }
+    @Inject
+    Device device;
 
+    @Override
+    public String call() throws Exception {
+        final SomeInnerClass someInnerClass = new SomeInnerClass();
+
+        return someInnerClass.getDeviceName(device);
     }
 
-    public static byte[] serialize(Object object) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
-        ObjectOutputStream out = null;
-        try {
-            // stream closed in the finally
-            out = new ObjectOutputStream(baos);
-            out.writeObject(object);
-
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException ex) {
-                // ignore close exception
-            }
+    public static class SomeInnerClass {
+        String getDeviceName(Device d) {
+            return d.getDeviceName();
         }
-        return baos.toByteArray();
+    }
+
+    public static class SomeOtherClass {
+        int i = 5;
     }
 
 }
