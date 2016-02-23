@@ -234,7 +234,15 @@ public class WarpUnit {
             Method getConstantPool = Class.class.getDeclaredMethod("getConstantPool");
             getConstantPool.setAccessible(true);
             ConstantPool constantPool = (ConstantPool) getConstantPool.invoke(f.getClass());
-            String[] methodRefInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 2);
+
+            String[] methodRefInfo;
+
+            // hmm gotta look how to make it stable
+            try {
+                methodRefInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 2);
+            } catch (IllegalArgumentException e) {
+                methodRefInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 3);
+            }
 
 
             return (T) warpAndRun(methodRefInfo[1], args.toArray(), clazz, null, url);

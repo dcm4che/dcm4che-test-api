@@ -65,7 +65,7 @@ public class WaprUnitSampleTest {
     @Ignore
     public void testWarp() throws Exception {
 
-        WarpUnit.WarpGate gate = new WarpUnit.WarpGate(WaprUnitSampleTest.class, WarpUnit.makeURL("192.168.1.2", "8080"));
+        WarpUnit.WarpGate gate = new WarpUnit.WarpGate(WaprUnitSampleTest.class, WarpUnit.makeURL("10.231.162.21", "8080"));
 
         String closure = "BOOO!";
 
