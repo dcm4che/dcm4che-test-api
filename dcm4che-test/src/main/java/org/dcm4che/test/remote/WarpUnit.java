@@ -190,27 +190,46 @@ public class WarpUnit {
         return warp(insiderInterface, insiderClass, false, null);
     }
 
-    public static class WarpGate {
+    public static WarpGate createGate(Class clazz, String url) {
+        return new WarpGate0(clazz, url);
+    }
+
+    public static class WarpGate0 implements WarpGate {
 
         private Class clazz;
         private String url;
 
-        public WarpGate(Class clazz, String url) {
+        public WarpGate0(Class clazz, String url) {
             this.clazz = clazz;
             this.url = url;
         }
 
-        <R> R warp(Supplier<R> warpable) {
+        @Override
+        public <R> R warp(Supplier<R> warpable) {
             return WarpUnit.warp(warpable, clazz, url);
         }
 
-        <R> Future<R> warpAsync(Supplier<R> warpable) {
+        @Override
+        public void warp(Runnable warpable) {
+            WarpUnit.warp(warpable, clazz, url);
+        }
 
-            FutureTask<R> futureTask = new FutureTask<>(() -> WarpUnit.warp(warpable, clazz, url));
+        @Override
+        public <R> Future<R> warpAsync(Supplier<R> warpable) {
+            return warpAndMakeFuture(warpable);
+        }
+
+        @Override
+        public Future<Void> warpAsync(Runnable warpable) {
+            return warpAndMakeFuture(warpable);
+        }
+
+        private <R> Future<R> warpAndMakeFuture(Object warpable) {
+            FutureTask futureTask = new FutureTask<>(() -> WarpUnit.warp(warpable, clazz, url));
             getExecutor().execute(futureTask);
             return futureTask;
         }
-          
+
 
     };
 

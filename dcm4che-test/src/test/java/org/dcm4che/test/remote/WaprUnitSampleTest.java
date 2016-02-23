@@ -47,9 +47,6 @@ import org.junit.Test;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import java.util.function.Function;
-import java.util.function.Supplier;
 
 public class WaprUnitSampleTest {
 
@@ -65,7 +62,7 @@ public class WaprUnitSampleTest {
     @Ignore
     public void testWarp() throws Exception {
 
-        WarpUnit.WarpGate gate = new WarpUnit.WarpGate(WaprUnitSampleTest.class, WarpUnit.makeURL("10.231.162.21", "8080"));
+        WarpGate gate = WarpUnit.createGate(WaprUnitSampleTest.class, WarpUnit.makeURL("10.231.162.21", "8080"));
 
         String closure = "BOOO!";
 
@@ -85,7 +82,8 @@ public class WaprUnitSampleTest {
         });
 
 
-        System.out.println(res);
+        gate.warp(() -> System.out.println(d.getDeviceName()));
+
 
     }
 }

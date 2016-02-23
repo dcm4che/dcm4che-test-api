@@ -50,7 +50,9 @@ import javax.enterprise.context.spi.CreationalContext;
 import javax.enterprise.inject.spi.AnnotatedType;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.PrintStream;
 import java.lang.reflect.Method;
 import java.util.*;
 
@@ -119,7 +121,13 @@ public class WarpUnitInsider implements WarpUnitInsiderREST {
                     result = method.invoke(object, (Object[]) DeSerializer.deserialize(Base64.fromBase64(requestJSON.args)));
                 } catch (Exception e) {
                     // send the exception back to the caller - it will recognize it and rethrow on it's side
-                    result = new RemoteExecutionException(e.getStackTrace().toString());
+
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    PrintStream ps = new PrintStream(baos);
+                    e.printStackTrace(ps);
+                    String niceStackTrace = baos.toString();
+
+                    result = new RemoteExecutionException(niceStackTrace);
                 }
                 foundMethod = true;
                 break;
