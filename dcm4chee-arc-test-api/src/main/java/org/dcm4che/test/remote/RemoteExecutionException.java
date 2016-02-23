@@ -8,6 +8,10 @@ package org.dcm4che.test.remote;
  */
 public class RemoteExecutionException extends RuntimeException {
 
+    public RemoteExecutionException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
     public RemoteExecutionException(String message) {
         super(message);
     }

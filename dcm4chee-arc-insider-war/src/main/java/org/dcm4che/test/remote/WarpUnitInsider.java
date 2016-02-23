@@ -52,8 +52,7 @@ import javax.enterprise.inject.spi.BeanManager;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -106,10 +105,17 @@ public class WarpUnitInsider implements WarpUnitInsiderREST {
         // find and call appropriate method
         Object result = null;
         boolean foundMethod = false;
-        for (Method method : myObjectClass.getMethods()) {
+
+        List<Method> methods = new ArrayList<>();
+        methods.addAll(Arrays.asList(myObjectClass.getMethods()));
+        methods.addAll(Arrays.asList(myObjectClass.getDeclaredMethods()));
+
+        for (Method method : methods) {
             if (method.getName().equals(requestJSON.methodName)) {
                 try {
+                    // make sure we can do lambdas
                     method.setAccessible(true);
+
                     result = method.invoke(object, (Object[]) DeSerializer.deserialize(Base64.fromBase64(requestJSON.args)));
                 } catch (Exception e) {
                     // send the exception back to the caller - it will recognize it and rethrow on it's side

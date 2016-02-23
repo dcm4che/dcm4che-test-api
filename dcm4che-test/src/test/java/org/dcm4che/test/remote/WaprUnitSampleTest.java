@@ -40,33 +40,52 @@
 
 package org.dcm4che.test.remote;
 
+import org.dcm4che3.net.Device;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import javax.inject.Inject;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import java.util.ArrayList;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
-public class PortalTest implements Runnable {
+public class WaprUnitSampleTest {
 
 
-    @Override
-    public void run() {
+    @PersistenceContext(name = "dcm4chee-arc", unitName = "dcm4chee-arc")
+    private EntityManager em;
 
-        System.out.println("hi");
-
-    }
+    @Inject
+    Device d;
 
 
     @Test
     @Ignore
     public void testWarp() throws Exception {
 
-        Function f = (s)->s+"!";
+        WarpUnit.WarpGate gate = new WarpUnit.WarpGate(WaprUnitSampleTest.class, WarpUnit.makeURL("192.168.1.2", "8080"));
 
-        Runnable warped = WarpUnit.warp(Runnable.class, PortalTest.class, false, WarpUnit.makeURL("192.168.1.2","8080"));
+        String closure = "BOOO!";
 
-        warped.run();
+        String entity = "CODE";
 
-        System.out.println(f.apply("hey"));
+        // this stuff is run on the server
+        String res = gate.warp(() -> {
+
+            System.out.println("I'm inside! and I can see stuff here: e.g. the device name is " + d.getDeviceName());
+            System.out.println("Guess what, I am able to see the closure from the client: "+ closure);
+
+
+            System.out.println("I can do lots of stuff! Let's see how many of '"+entity+"' we have: "+ em.createNativeQuery("select count(*) from "+entity).getSingleResult());
+
+            return "And you can see this ret value in the client!";
+
+        });
+
+
+        System.out.println(res);
 
     }
 }

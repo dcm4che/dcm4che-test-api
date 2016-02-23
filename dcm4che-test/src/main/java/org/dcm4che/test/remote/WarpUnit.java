@@ -52,13 +52,17 @@ import javax.ws.rs.client.WebTarget;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 
 public class WarpUnit {
@@ -67,7 +71,7 @@ public class WarpUnit {
     public static String DEFAULT_REMOTE_ENDPOINT_URL = makeURL("localhost", "8080");
 
     public static String makeURL(String host, String port) {
-        return "http://" + host + ":" + port + "/dcm4chee-arc-insider";
+        return "http://" + host + ":" + port + "/warpunit-insider";
     }
 
     /**
@@ -109,17 +113,17 @@ public class WarpUnit {
                     iface = insiderInterface;
                 }
 
-                return warpAndRun(method, args, insiderClass, iface, url);
+                return warpAndRun(method.getName(), args, insiderClass, iface, url);
             }
         });
 
         return (T) o;
     }
 
-    private static <T> Object warpAndRun(Method method, Object[] args, Class<? extends T> insiderClass, Class<T> insiderInterface, String url) throws Throwable {
+    private static <T> Object warpAndRun(String methodName, Object[] args, Class<? extends T> insiderClass, Class<T> insiderInterface, String url) throws RemoteExecutionException {
         RemoteRequestJSON requestJSON = new RemoteRequestJSON();
 
-        requestJSON.methodName = method.getName();
+        requestJSON.methodName = methodName;
         requestJSON.mainClassName = insiderClass.getName();
         requestJSON.args = Base64.toBase64(DeSerializer.serialize(args));
         requestJSON.classes = new HashMap<String, String>();
@@ -135,24 +139,29 @@ public class WarpUnit {
         }
 
         // inner classes
-        try {
-            for (Class<?> aClass : insiderClass.getDeclaredClasses()) {
+        for (Class<?> aClass : insiderClass.getDeclaredClasses()) {
 
-                String[] splitClassName = aClass.getName().split("\\.");
-                String classFileName = splitClassName[splitClassName.length - 1] + ".class";
-                URL resource = insiderClass.getResource(classFileName);
-                requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(resource)));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException("trouble reading bytecode", e);
+            String[] splitClassName = aClass.getName().split("\\.");
+            String classFileName = splitClassName[splitClassName.length - 1] + ".class";
+            URL resource = insiderClass.getResource(classFileName);
+            requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(resource)));
         }
 
         String base64resp = getRemoteEndpoint(url).warpAndRun(requestJSON);
 
-        Object returned = DeSerializer.deserialize(Base64.fromBase64(base64resp));
+        Object returned;
+        try {
+            returned = DeSerializer.deserialize(Base64.fromBase64(base64resp));
+        } catch (IOException e) {
+            throw new RuntimeException("Error while deserializing the result of remotely executed code");
+        }
+
+
+        if (returned instanceof RemoteExecutionException)
+            throw (RemoteExecutionException) returned;
 
         if (returned instanceof Exception)
-            throw (Throwable) returned;
+            throw new RemoteExecutionException("Unexpected error while running code remotely", (Throwable) returned);
 
         return returned;
     }
@@ -162,16 +171,48 @@ public class WarpUnit {
         return warp(insiderInterface, insiderClass, false, null);
     }
 
-    public static Object warp(Runnable r, String url) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+    public static class WarpGate {
 
-        Method getConstantPool = Class.class.getDeclaredMethod("getConstantPool");
-        getConstantPool.setAccessible(true);
-        ConstantPool constantPool = (ConstantPool) getConstantPool.invoke(r.getClass());
-        String[] methodRefInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 2);
+        private Class clazz;
+        private String url;
 
-        return null;
+        public WarpGate(Class clazz, String url) {
+            this.clazz = clazz;
+            this.url = url;
+        }
+
+        <T extends Supplier<R>,R> R warp(T warpable) {
+            return WarpUnit.warp(warpable, clazz, url);
+        }
+    };
+
+    public static <T> T warp(Object f, Class clazz, String url) {
+
+        try {
+            List<Object> args = new ArrayList<>();
+            // figure out closure-parameters
+            for (Field field : f.getClass().getDeclaredFields()) {
+                field.setAccessible(true);
+
+                Object o = field.get(f);
+
+                // if it's the enclosing class then it's not interesting
+                if (clazz.equals(o.getClass())) continue;
+
+                args.add(o);
+            }
+
+            // get lambda's actual method name in parent class
+            Method getConstantPool = Class.class.getDeclaredMethod("getConstantPool");
+            getConstantPool.setAccessible(true);
+            ConstantPool constantPool = (ConstantPool) getConstantPool.invoke(f.getClass());
+            String[] methodRefInfo = constantPool.getMemberRefInfoAt(constantPool.getSize() - 2);
 
 
+            return (T) warpAndRun(methodRefInfo[1], args.toArray(), clazz, null, url);
+        } catch (Exception e) {
+            throw new RuntimeException("Warp failed", e);
+        }
     }
 
 
@@ -187,20 +228,24 @@ public class WarpUnit {
         return classResourceName.toString();
     }
 
-    private static byte[] getBytes(URL resource) throws IOException {
-        URLConnection connection = resource.openConnection();
-        InputStream input = connection.getInputStream();
-        ByteArrayOutputStream buffer = new ByteArrayOutputStream();
-        int data = input.read();
+    private static byte[] getBytes(URL resource) {
+        try {
+            URLConnection connection = resource.openConnection();
+            InputStream input = connection.getInputStream();
+            ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+            int data = input.read();
 
-        while (data != -1) {
-            buffer.write(data);
-            data = input.read();
+            while (data != -1) {
+                buffer.write(data);
+                data = input.read();
+            }
+
+            input.close();
+
+            return buffer.toByteArray();
+        } catch (IOException e) {
+            throw new RuntimeException("Error retrieving bytecode for resource "+resource, e);
         }
-
-        input.close();
-
-        return buffer.toByteArray();
     }
 
     private static WarpUnitInsiderREST getRemoteEndpoint(String url) {
