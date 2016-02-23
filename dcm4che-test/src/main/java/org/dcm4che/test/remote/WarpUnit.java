@@ -61,7 +61,10 @@ import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.function.Function;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.function.Supplier;
 
 
@@ -69,6 +72,22 @@ public class WarpUnit {
 
 
     public static String DEFAULT_REMOTE_ENDPOINT_URL = makeURL("localhost", "8080");
+
+    private static Executor executor;
+
+    private static Executor getExecutor() {
+
+        if (executor != null)
+            return executor;
+
+        synchronized (WarpUnit.class) {
+            if (executor == null)
+                executor = Executors.newCachedThreadPool();
+        }
+
+        return executor;
+    }
+
 
     public static String makeURL(String host, String port) {
         return "http://" + host + ":" + port + "/warpunit-insider";
@@ -181,9 +200,18 @@ public class WarpUnit {
             this.url = url;
         }
 
-        <T extends Supplier<R>,R> R warp(T warpable) {
+        <R> R warp(Supplier<R> warpable) {
             return WarpUnit.warp(warpable, clazz, url);
         }
+
+        <R> Future<R> warpAsync(Supplier<R> warpable) {
+
+            FutureTask<R> futureTask = new FutureTask<>(() -> WarpUnit.warp(warpable, clazz, url));
+            getExecutor().execute(futureTask);
+            return futureTask;
+        }
+          
+
     };
 
     public static <T> T warp(Object f, Class clazz, String url) {

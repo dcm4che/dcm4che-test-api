@@ -75,10 +75,10 @@ public class WaprUnitSampleTest {
         String res = gate.warp(() -> {
 
             System.out.println("I'm inside! and I can see stuff here: e.g. the device name is " + d.getDeviceName());
-            System.out.println("Guess what, I am able to see the closure from the client: "+ closure);
+            System.out.println("Guess what, I am able to see the closure from the client: " + closure);
 
 
-            System.out.println("I can do lots of stuff! Let's see how many of '"+entity+"' we have: "+ em.createNativeQuery("select count(*) from "+entity).getSingleResult());
+            System.out.println("I can do lots of stuff! Let's see how many of '" + entity + "' we have: " + em.createNativeQuery("select count(*) from " + entity).getSingleResult());
 
             return "And you can see this ret value in the client!";
 
