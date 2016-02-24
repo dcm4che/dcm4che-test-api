@@ -82,6 +82,34 @@ public class TestUtils {
 
     }
 
+    private static void addFilterExtraAttribute(String archiveDeviceName,
+            Entity entity, DicomConfiguration remoteConfig, String xpath)
+            throws ConfigurationException {
+
+        Device dev = remoteConfig.findDevice(archiveDeviceName);
+        ArchiveDeviceExtension arcDevExt = dev
+                .getDeviceExtension(ArchiveDeviceExtension.class);
+        AttributeFilter filter = arcDevExt.getAttributeFilter(entity);
+
+        filter.addExtraSelection(xpath);
+
+        remoteConfig.merge(dev);
+    }
+
+    private static void addFilterPrivateAttribute(String archiveDeviceName,
+            Entity entity, DicomConfiguration remoteConfig, String privateCreator, int tagToAdd)
+            throws ConfigurationException {
+
+        Device dev = remoteConfig.findDevice(archiveDeviceName);
+        ArchiveDeviceExtension arcDevExt = dev
+                .getDeviceExtension(ArchiveDeviceExtension.class);
+        AttributeFilter filter = arcDevExt.getAttributeFilter(entity);
+
+        filter.addPrivate(tagToAdd, privateCreator);
+
+        remoteConfig.merge(dev);
+    }
+
     public static void addDBCustomAttribute(String archiveDeviceName, Entity
             entity, DicomConfiguration remoteConfig
             , int tagToAdd, VR vr, int sequenceTag) throws
