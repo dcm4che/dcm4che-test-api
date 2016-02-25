@@ -194,6 +194,10 @@ public class WarpUnit {
         return new WarpGate0(clazz, url);
     }
 
+    public static WarpGate createGate(Class clazz) {
+        return new WarpGate0(clazz, WarpUnit.DEFAULT_REMOTE_ENDPOINT_URL);
+    }
+
     public static class WarpGate0 implements WarpGate {
 
         private Class clazz;
