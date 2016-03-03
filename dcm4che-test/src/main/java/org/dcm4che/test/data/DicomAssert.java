@@ -169,11 +169,28 @@ public class DicomAssert {
      *            value of tag to check for
      */
     public static void assertValueForTag(Attributes dataset, int tag, String value) {
-
-        String tagKeyword = appendParent(dataset, ElementDictionary.keywordOf(tag, null));
-        Assert.assertTrue("Dataset should contain tag " + tagKeyword, dataset.contains(tag));
-        Assert.assertEquals("Value of tag " + tagKeyword + " should be equal", value, dataset.getString(tag));
+        assertValueForTag(dataset,tag,value,ElementDictionary.getElementDictionary(null));
     }
+
+    /**
+     * Check that dataset contains the given private tag and the value is as expected.
+     *
+     * @param dataset
+     *            dataset
+     * @param tag
+     *            tag to check for
+     * @param value
+     *            value of tag to check for
+     * @param dictionary
+     *            private dictionary
+     */
+    public static void assertValueForTag(Attributes dataset, int tag, String value,ElementDictionary dictionary) {
+        String tagKeyword = appendParent(dataset, dictionary.keywordOf(tag, dictionary.getPrivateCreator()));
+        Assert.assertTrue("Dataset should contain tag " + tagKeyword, dataset.contains(dictionary.getPrivateCreator(),tag));
+        Assert.assertEquals("Value of tag " + tagKeyword + " should be equal", value,
+                dataset.getString(dictionary.getPrivateCreator(),tag,dictionary.vrOf(tag)));
+    }
+
 
     /**
      * Check that dataset contains the given tag and the value is not
