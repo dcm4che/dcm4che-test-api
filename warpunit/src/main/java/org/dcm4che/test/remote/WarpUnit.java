@@ -237,6 +237,38 @@ public class WarpUnit {
 
     };
 
+    public static class WarpGateMockRunsLocally implements WarpGate {
+
+        @Override
+        public <R> R warp(Supplier<R> warpable) {
+            return warpable.get();
+        }
+
+        @Override
+        public void warp(Runnable warpable) {
+            warpable.run();
+        }
+
+        @Override
+        public <R> Future<R> warpAsync(Supplier<R> warpable) {
+            FutureTask<R> futureTask = new FutureTask<>(() -> warpable.get());
+            getExecutor().execute(futureTask);
+            return futureTask;
+        }
+
+        @Override
+        public Future<Void> warpAsync(Runnable warpable) {
+            FutureTask<Void> futureTask = new FutureTask<>(() -> {
+                warpable.run();
+                return null;
+            });
+            getExecutor().execute(futureTask);
+            return futureTask;
+        }
+
+    }
+
+
     public static <T> T warp(Object f, Class clazz, String url) {
 
         try {
