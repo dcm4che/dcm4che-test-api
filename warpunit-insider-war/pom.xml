@@ -8,7 +8,7 @@
         <artifactId>dcm4che-test-api-parent</artifactId>
         <version>3.3.8-SNAPSHOT</version>
     </parent>
-    <artifactId>dcm4chee-arc-insider-war</artifactId>
+    <artifactId>warpunit-insider-war</artifactId>
     <packaging>war</packaging>
     <dependencies>
         <dependency>
@@ -35,9 +35,11 @@
         </dependency>
         <dependency>
             <groupId>org.dcm4che</groupId>
-            <artifactId>dcm4chee-arc-test-api</artifactId>
+            <artifactId>warpunit</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+	<!-- base64 tooling.. -->
         <dependency>
             <groupId>org.dcm4che</groupId>
             <artifactId>dcm4che-core</artifactId>
