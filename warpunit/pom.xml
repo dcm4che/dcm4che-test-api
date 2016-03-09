@@ -40,65 +40,73 @@
 
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <artifactId>dcm4che-test-api-parent</artifactId>
-        <groupId>org.dcm4che</groupId>
-        <version>3.3.8-SNAPSHOT</version>
-    </parent>
-    <artifactId>warpunit</artifactId>
-    <packaging>jar</packaging>
-    <name>WarpUnit</name>
-    <description>A lightweight framework for grey-box testing that allows to execute code on an application server from standalone JUnit tests</description>
-    <dependencies>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <artifactId>dcm4che-test-api-parent</artifactId>
+    <groupId>org.dcm4che</groupId>
+    <version>3.3.8-SNAPSHOT</version>
+  </parent>
+  <artifactId>warpunit</artifactId>
+  <packaging>jar</packaging>
+  <name>WarpUnit</name>
+  <description>A lightweight framework for grey-box testing that allows to execute code on an application server from
+    standalone JUnit tests
+  </description>
+  <dependencies>
 
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-        </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>provided</scope>
+    </dependency>
 
-        <!-- For remote configuration management -->
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-client</artifactId>
-            <version>3.0.10.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.resteasy</groupId>
-            <artifactId>resteasy-jackson-provider</artifactId>
-            <version>3.0.10.Final</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jboss.spec</groupId>
-            <artifactId>jboss-javaee-6.0</artifactId>
-            <type>pom</type>
-        </dependency>
+    <!-- For remote configuration management -->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <version>3.0.10.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson-provider</artifactId>
+      <version>3.0.10.Final</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.spec</groupId>
+      <artifactId>jboss-javaee-6.0</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
 
-        <!-- base64 tooling.. -->
-        <dependency>
-            <groupId>org.dcm4che</groupId>
-            <artifactId>dcm4che-core</artifactId>
-            <version>${dcm4che.version}</version>
-            <scope>provided</scope>
-        </dependency>
-    </dependencies>
-    <build>
-        <resources>
-            <resource>
-                <directory>src/main/resources</directory>
-                <filtering>false</filtering>
-                <includes>
-                    <include>*.*</include>
-                </includes>
-            </resource>
-        </resources>
-    </build>
+    <!-- base64 tooling.. -->
+    <dependency>
+      <groupId>org.dcm4che</groupId>
+      <artifactId>dcm4che-core</artifactId>
+      <version>${dcm4che.version}</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>false</filtering>
+        <includes>
+          <include>*.*</include>
+        </includes>
+      </resource>
+    </resources>
+  </build>
 </project>
