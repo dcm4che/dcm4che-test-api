@@ -1,4 +1,6 @@
-package org.dcm4che.test.remote;
+package org.dcm4che.test.remote.serverside;
+
+import org.dcm4che.test.remote.PhaserBean;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;
@@ -8,7 +10,7 @@ import java.util.concurrent.Phaser;
  * @author rawmahn
  */
 @ApplicationScoped
-public class PhaserProducer implements PhaserBean{
+public class PhaserProducer implements PhaserBean {
 
     private Phaser phaser;
 

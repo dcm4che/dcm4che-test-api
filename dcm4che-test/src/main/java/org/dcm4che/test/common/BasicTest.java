@@ -88,7 +88,7 @@ public abstract class BasicTest {
     private static Logger log = LoggerFactory.getLogger(TestToolFactory.class);
 
     @Rule
-    public TestParametersRule rule = new TestParametersRule(this);
+    public IntegrationTestingRule rule = new IntegrationTestingRule(this);
 
     /**
      * Name of the currently executing method within the test

@@ -40,8 +40,12 @@
  *
  */
 
-package org.dcm4che.test.remote;
+package org.dcm4che.test.remote.serverside;
 
+import org.dcm4che.test.remote.DeSerializer;
+import org.dcm4che.test.remote.RemoteExecutionException;
+import org.dcm4che.test.remote.RemoteRequestJSON;
+import org.dcm4che.test.remote.WarpUnitInsiderREST;
 import org.dcm4che3.util.Base64;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

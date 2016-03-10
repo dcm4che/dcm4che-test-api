@@ -40,7 +40,7 @@
  *
  */
 
-package org.dcm4che.test.remote;
+package org.dcm4che.test.remote.serverside;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;

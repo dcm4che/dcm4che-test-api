@@ -8,17 +8,12 @@
         <artifactId>dcm4che-test-api-parent</artifactId>
         <version>3.3.8-SNAPSHOT</version>
     </parent>
-    <artifactId>warpunit-insider-war</artifactId>
+    <artifactId>warpunit-insider-template-war</artifactId>
     <packaging>war</packaging>
     <dependencies>
         <dependency>
             <groupId>org.dcm4che</groupId>
             <artifactId>warpunit</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.dcm4che</groupId>
-            <artifactId>dcm4che-test</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>

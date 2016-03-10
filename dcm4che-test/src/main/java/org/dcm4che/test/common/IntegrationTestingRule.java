@@ -69,13 +69,13 @@ import java.util.Arrays;
  * @author Roman K
  */
 
-public class TestParametersRule implements TestRule {
+public class IntegrationTestingRule implements TestRule {
 
-    private static final Logger log = LoggerFactory.getLogger(TestParametersRule.class);
+    private static final Logger log = LoggerFactory.getLogger(IntegrationTestingRule.class);
 
     private final BasicTest parametrizedTest;
 
-    public TestParametersRule(BasicTest basicTest) {
+    public IntegrationTestingRule(BasicTest basicTest) {
         this.parametrizedTest = basicTest;
     }
 
