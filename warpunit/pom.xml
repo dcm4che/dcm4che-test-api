@@ -90,6 +90,14 @@
       <scope>provided</scope>
     </dependency>
 
+    <!-- All tools -->
+    <dependency>
+      <groupId>org.dcm4che.tool</groupId>
+      <artifactId>dcm4che-tool-all</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+
     <!-- base64 tooling.. -->
     <dependency>
       <groupId>org.dcm4che</groupId>

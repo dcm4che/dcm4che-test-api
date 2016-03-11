@@ -11,4 +11,12 @@ public interface WarpGate {
     <R> Future<R> warpAsync(Supplier<R> warpable);
 
     Future<Void> warpAsync(Runnable warpable);
+
+    /**
+     * Warp and execute method on the primary warp'd class
+     * @param methodName
+     * @param args
+     * @return result
+     */
+    Object warpAndRun(String methodName, Object[] args);
 }

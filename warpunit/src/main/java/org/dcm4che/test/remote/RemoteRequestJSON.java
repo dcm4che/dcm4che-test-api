@@ -48,7 +48,7 @@ import java.util.Map;
  */
 public class RemoteRequestJSON {
 
-    public String mainClassName;
+    public String primaryClassName;
     public String methodName;
     /**
      * Base64'ed Object[] of args

@@ -127,43 +127,46 @@ public class WarpUnit {
             @Override
             public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
 
-                Class iface = null;
+                Class[] classes;
                 if (warpInterface) {
-                    iface = insiderInterface;
+                    classes = new Class[]{insiderClass, insiderInterface};
+                } else {
+                    classes = new Class[]{insiderClass};
                 }
 
-                return warpAndRun(method.getName(), args, insiderClass, iface, url);
+                return warpAndRun(method.getName(), args, classes, url);
             }
         });
 
         return (T) o;
     }
 
-    private static <T> Object warpAndRun(String methodName, Object[] args, Class<? extends T> insiderClass, Class<T> insiderInterface, String url) throws RemoteExecutionException {
+    /**
+     * @param classes classes to warp. The [0]th class is considered primary - i.e. the once whose method will be called
+     */
+    private static Object warpAndRun(String methodName, Object[] args, Class[] classes, String url) throws RemoteExecutionException {
         RemoteRequestJSON requestJSON = new RemoteRequestJSON();
 
         requestJSON.methodName = methodName;
-        requestJSON.mainClassName = insiderClass.getName();
+        requestJSON.primaryClassName = classes[0].getName();
         requestJSON.args = Base64.toBase64(DeSerializer.serialize(args));
         requestJSON.classes = new HashMap<String, String>();
 
-        String insiderClassResourceName = getClassResourceName(insiderClass);
-        URL insiderClassResource = insiderClass.getResource(insiderClassResourceName);
-        requestJSON.classes.put(insiderClass.getName(), Base64.toBase64(getBytes(insiderClassResource)));
 
-        if (insiderInterface != null) {
-            String insiderInterfaceResourceName = getClassResourceName(insiderInterface);
-            URL insiderInterfaceResource = insiderInterface.getResource(insiderInterfaceResourceName);
-            requestJSON.classes.put(insiderInterface.getName(), Base64.toBase64(getBytes(insiderInterfaceResource)));
-        }
+        for (Class aClass : classes) {
 
-        // inner classes
-        for (Class<?> aClass : insiderClass.getDeclaredClasses()) {
+            String insiderClassResourceName = getClassResourceName(aClass);
+            URL insiderClassResource = aClass.getResource(insiderClassResourceName);
+            requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(insiderClassResource)));
 
-            String[] splitClassName = aClass.getName().split("\\.");
-            String classFileName = splitClassName[splitClassName.length - 1] + ".class";
-            URL resource = insiderClass.getResource(classFileName);
-            requestJSON.classes.put(aClass.getName(), Base64.toBase64(getBytes(resource)));
+            // inner classes
+            for (Class<?> innerClass : aClass.getDeclaredClasses()) {
+
+                String[] splitClassName = innerClass.getName().split("\\.");
+                String classFileName = splitClassName[splitClassName.length - 1] + ".class";
+                URL resource = innerClass.getResource(classFileName);
+                requestJSON.classes.put(innerClass.getName(), Base64.toBase64(getBytes(resource)));
+            }
         }
 
         String base64resp = getRemoteEndpoint(url).warpAndRun(requestJSON);
@@ -187,35 +190,35 @@ public class WarpUnit {
 
 
     public static <T> T warp(final Class<T> insiderInterface, final Class<? extends T> insiderClass) {
-        return warp(insiderInterface, insiderClass, false, null);
+       return warp(insiderInterface, insiderClass, false, null);
     }
 
-    public static WarpGate createGate(Class clazz, String url) {
-        return new WarpGate0(clazz, url);
+    public static WarpGate createGate(String url, Class ... classes) {
+        return new WarpGate0(url, classes);
     }
 
-    public static WarpGate createGate(Class clazz) {
-        return new WarpGate0(clazz, WarpUnit.DEFAULT_REMOTE_ENDPOINT_URL);
+    public static WarpGate createGate(Class ... classes) {
+        return new WarpGate0(WarpUnit.DEFAULT_REMOTE_ENDPOINT_URL, classes);
     }
 
     public static class WarpGate0 implements WarpGate {
 
-        private Class clazz;
+        private Class[] classes;
         private String url;
 
-        public WarpGate0(Class clazz, String url) {
-            this.clazz = clazz;
+        public WarpGate0(String url, Class... classes) {
+            this.classes = classes;
             this.url = url;
         }
 
         @Override
         public <R> R warp(Supplier<R> warpable) {
-            return WarpUnit.warp(warpable, clazz, url);
+            return WarpUnit.warp(warpable, classes, url);
         }
 
         @Override
         public void warp(Runnable warpable) {
-            WarpUnit.warp(warpable, clazz, url);
+            WarpUnit.warp(warpable, classes, url);
         }
 
         @Override
@@ -228,8 +231,13 @@ public class WarpUnit {
             return warpAndMakeFuture(warpable);
         }
 
+        @Override
+        public Object warpAndRun(String methodName, Object[] args) {
+            return WarpUnit.warpAndRun(methodName, args, classes, url);
+        }
+
         private <R> Future<R> warpAndMakeFuture(Object warpable) {
-            FutureTask futureTask = new FutureTask<>(() -> WarpUnit.warp(warpable, clazz, url));
+            FutureTask futureTask = new FutureTask<>(() -> WarpUnit.warp(warpable, classes, url));
             getExecutor().execute(futureTask);
             return futureTask;
         }
@@ -266,21 +274,26 @@ public class WarpUnit {
             return futureTask;
         }
 
+        @Override
+        public Object warpAndRun(String methodName, Object[] args) {
+            throw new RuntimeException("not implemented");
+        }
+
     }
 
 
-    public static <T> T warp(Object f, Class clazz, String url) {
+    public static <T> T warp(Object lambda, Class[] classes, String url) {
 
         try {
             List<Object> args = new ArrayList<>();
             // figure out closure-parameters
-            for (Field field : f.getClass().getDeclaredFields()) {
+            for (Field field : lambda.getClass().getDeclaredFields()) {
                 field.setAccessible(true);
 
-                Object o = field.get(f);
+                Object o = field.get(lambda);
 
-                // if it's the enclosing class then it's not interesting
-                if (clazz.equals(o.getClass())) continue;
+                // if it's the primary(i.e. enclosing for this lambda) class then it's not interesting
+                if (classes[0].equals(o.getClass())) continue;
 
                 args.add(o);
             }
@@ -288,7 +301,7 @@ public class WarpUnit {
             // get lambda's actual method name in parent class
             Method getConstantPool = Class.class.getDeclaredMethod("getConstantPool");
             getConstantPool.setAccessible(true);
-            ConstantPool constantPool = (ConstantPool) getConstantPool.invoke(f.getClass());
+            ConstantPool constantPool = (ConstantPool) getConstantPool.invoke(lambda.getClass());
 
             String[] methodRefInfo;
 
@@ -300,7 +313,7 @@ public class WarpUnit {
             }
 
 
-            return (T) warpAndRun(methodRefInfo[1], args.toArray(), clazz, null, url);
+            return (T) warpAndRun(methodRefInfo[1], args.toArray(), classes, url);
         } catch (Exception e) {
             throw new RuntimeException("Warp failed", e);
         }

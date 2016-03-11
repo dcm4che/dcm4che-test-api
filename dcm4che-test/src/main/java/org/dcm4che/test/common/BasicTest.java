@@ -83,7 +83,7 @@ import java.util.Properties;
  * @author Hesham elbadawi <bsdreko@gmail.com>
  * @author Roman K
  */
-public abstract class BasicTest {
+public class BasicTest {
 
     private static Logger log = LoggerFactory.getLogger(TestToolFactory.class);
 

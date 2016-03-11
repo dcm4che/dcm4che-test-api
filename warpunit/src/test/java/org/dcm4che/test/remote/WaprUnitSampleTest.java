@@ -56,7 +56,7 @@ public class WaprUnitSampleTest {
     @Ignore("To runt this test you need a running server with warpunit-insider deployed")
     public void testWarp() throws Exception {
 
-        WarpGate gate = WarpUnit.createGate(WaprUnitSampleTest.class, WarpUnit.makeURL("10.231.162.21", "8080"));
+        WarpGate gate = WarpUnit.createGate(WarpUnit.makeURL("10.231.162.21", "8080"), WaprUnitSampleTest.class);
 
         String closure = "BOOO!";
 

@@ -94,7 +94,7 @@ public class WarpUnitInsider implements WarpUnitInsiderREST {
         Object object = null;
         try {
             // classloading/reflection magic
-            myObjectClass = classLoader.loadClass(requestJSON.mainClassName);
+            myObjectClass = classLoader.loadClass(requestJSON.primaryClassName);
             object = myObjectClass.newInstance();
 
             // cdi magic
