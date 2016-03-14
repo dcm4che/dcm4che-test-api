@@ -58,6 +58,11 @@ import javax.transaction.UserTransaction;
 @Stateless
 public class CleanArchiveEJB implements CleanArchive{
 
+    private static final String[] DELETE_ARR_QUERIES = {
+        "DELETE FROM part_obj",
+        "DELETE FROM active_part",
+        "DELETE FROM audit_record"};
+    
     private static final String[] DELETE_QUERIES = {
         "DELETE FROM study_on_stg_sys",
         "DELETE FROM study_avail_on_system",
@@ -88,6 +93,13 @@ public class CleanArchiveEJB implements CleanArchive{
     public String clearDB() throws NotSupportedException, SystemException,
             SecurityException, IllegalStateException, RollbackException,
             HeuristicMixedException, HeuristicRollbackException {
+        try {
+            for (String queryStr : DELETE_ARR_QUERIES) {
+                Query query = em.createNativeQuery(queryStr);
+                query.executeUpdate();
+            }
+        } catch (Exception ignore) {}
+        
         for (String queryStr : DELETE_QUERIES) {
             Query query = em.createNativeQuery(queryStr);
             query.executeUpdate();
