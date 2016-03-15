@@ -49,6 +49,9 @@ import javax.transaction.RollbackException;
 import javax.transaction.SystemException;
 import javax.transaction.UserTransaction;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 /**
  * @author Hesham Elbadawi <bsdreko@gmail.com>
@@ -58,6 +61,8 @@ import javax.transaction.UserTransaction;
 @Stateless
 public class CleanArchiveEJB implements CleanArchive{
 
+    private static Logger LOG = LoggerFactory.getLogger(CleanArchiveEJB.class);
+    
     private static final String[] DELETE_ARR_QUERIES = {
         "DELETE FROM part_obj",
         "DELETE FROM active_part",
@@ -98,12 +103,15 @@ public class CleanArchiveEJB implements CleanArchive{
                 Query query = em.createNativeQuery(queryStr);
                 query.executeUpdate();
             }
-        } catch (Exception ignore) {}
+        } catch (Throwable ignore) {
+            LOG.warn("DELETION of ARR table failed!", ignore);
+        }
         
         for (String queryStr : DELETE_QUERIES) {
             Query query = em.createNativeQuery(queryStr);
             query.executeUpdate();
         }
+        LOG.info("Successfully Cleaned Database");
         return "Successfully Cleaned Database";
     }
 }

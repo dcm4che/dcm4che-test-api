@@ -45,22 +45,27 @@ import javax.ws.rs.core.Response;
 import org.dcm4che.test.annotations.RemoteConnectionParameters;
 import org.dcm4che.test.common.BasicTest;
 import org.jboss.resteasy.client.jaxrs.ResteasyWebTarget;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 /**
  * @author Hesham Elbadawi <bsdreko@gmail.com>
  * 
  */
 public class DBUtils {
+    
+    private static Logger LOG = LoggerFactory.getLogger(DBUtils.class);
 
     public static boolean cleanDB(BasicTest test) {
         RemoteConnectionParameters remoteParams = 
                 (RemoteConnectionParameters) test.getParams().get("RemoteConnectionParameters");
 
         String baseURL =  test.getProperties().getProperty("remoteConn.url");
+        LOG.info("BaseURL:{}", baseURL);
         Client client = ClientBuilder.newBuilder().build();
         WebTarget target = client.target(baseURL+"/dcm4chee-arc-test/clean");
         ResteasyWebTarget rtarget = (ResteasyWebTarget) target;
         Response rsp = rtarget.request().build("GET").invoke();
-        
+        LOG.info("REST call to {}/dcm4chee-arc-test/clean returned with {}",baseURL, rsp.getStatus());
         return rsp.getStatus() == 200;
     }
 }
