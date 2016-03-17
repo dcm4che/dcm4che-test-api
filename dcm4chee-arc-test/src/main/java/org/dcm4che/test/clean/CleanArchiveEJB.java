@@ -37,7 +37,6 @@
  * ***** END LICENSE BLOCK ***** */
 package org.dcm4che.test.clean;
 
-import javax.ejb.Stateless;
 import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -55,7 +54,6 @@ import javax.transaction.UserTransaction;
  * 
  */
 
-@Stateless
 public class CleanArchiveEJB implements CleanArchive{
 
     private static final String[] DELETE_ARR_QUERIES = {
@@ -94,17 +92,22 @@ public class CleanArchiveEJB implements CleanArchive{
     public String clearDB() throws NotSupportedException, SystemException,
             SecurityException, IllegalStateException, RollbackException,
             HeuristicMixedException, HeuristicRollbackException {
+        utx.begin();
         try {
             for (String queryStr : DELETE_ARR_QUERIES) {
                 Query query = em.createNativeQuery(queryStr);
                 query.executeUpdate();
             }
-        } catch (Throwable ignore) {}
-        
+            utx.commit();
+        } catch (Throwable ignore) {
+            utx.rollback();
+        }
+        utx.begin();
         for (String queryStr : DELETE_QUERIES) {
             Query query = em.createNativeQuery(queryStr);
             query.executeUpdate();
         }
+        utx.commit();
         return "Successfully Cleaned Database";
     }
 }
