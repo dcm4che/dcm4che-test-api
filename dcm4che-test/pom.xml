@@ -55,7 +55,7 @@
     <dependency>
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-all</artifactId>
-      <version>${project.version}</version>
+      <version>${dcm4che.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
