@@ -1,6 +1,6 @@
-package org.dcm4che.test.remote.serverside;
+package org.dcm4che.test.remote.serverside.tools;
 
-import org.dcm4che.test.remote.PhaserBean;
+import org.dcm4che.test.remote.tools.PhaserBean;
 
 import javax.annotation.PostConstruct;
 import javax.enterprise.context.ApplicationScoped;

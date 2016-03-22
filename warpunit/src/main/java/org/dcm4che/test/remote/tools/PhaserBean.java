@@ -1,4 +1,5 @@
-package org.dcm4che.test.remote;
+
+package org.dcm4che.test.remote.tools;
 
 import java.util.concurrent.Phaser;
 

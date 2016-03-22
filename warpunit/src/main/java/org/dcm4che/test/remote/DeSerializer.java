@@ -17,7 +17,7 @@
  *
  *  The Initial Developer of the Original Code is
  *  Agfa Healthcare.
- *  Portions created by the Initial Developer are Copyright (C) 2015
+ *  Portions created by the Initial Developer are Copyright (C) 2016
  *  the Initial Developer. All Rights Reserved.
  *
  *  Contributor(s):
@@ -48,50 +48,48 @@ import java.io.*;
 public class DeSerializer {
 
     public static Object deserialize(byte[] bytes) {
-        if (bytes == null) {
-            throw new IllegalArgumentException("The byte[] must not be null");
-        }
-        ByteArrayInputStream inputStream = new ByteArrayInputStream(bytes);
-        ObjectInputStream in = null;
-        try {
-            // stream closed in the finally
-            in = new ObjectInputStream(inputStream);
-            return in.readObject();
+        if (bytes == null)
+            throw new IllegalArgumentException("bytes must not be null");
 
-        } catch (ClassNotFoundException | IOException ex) {
-            throw new RuntimeException(ex);
+        ByteArrayInputStream byteArrayInputStream = new ByteArrayInputStream(bytes);
+        ObjectInputStream objectInputStream = null;
+        try {
+
+            objectInputStream = new ObjectInputStream(byteArrayInputStream);
+            return objectInputStream.readObject();
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while deserializing object", e);
         } finally {
             try {
-                if (in != null) {
-                    in.close();
+                if (objectInputStream != null) {
+                    objectInputStream.close();
                 }
-            } catch (IOException ex) {
-                // ignore close exception
+            } catch (Exception ignored) {
             }
         }
 
     }
 
     public static byte[] serialize(Object object) {
-        ByteArrayOutputStream baos = new ByteArrayOutputStream(512);
-        ObjectOutputStream out = null;
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream(512);
+        ObjectOutputStream objectOutputStream = null;
         try {
-            // stream closed in the finally
-            out = new ObjectOutputStream(baos);
-            out.writeObject(object);
 
-        } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            objectOutputStream = new ObjectOutputStream(byteArrayOutputStream);
+            objectOutputStream.writeObject(object);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Error while serializing object", e);
         } finally {
             try {
-                if (out != null) {
-                    out.close();
+                if (objectOutputStream != null) {
+                    objectOutputStream.close();
                 }
-            } catch (IOException ex) {
-                // ignore close exception
+            } catch (Exception ignored) {
             }
         }
-        return baos.toByteArray();
+        return byteArrayOutputStream.toByteArray();
     }
 
 }
