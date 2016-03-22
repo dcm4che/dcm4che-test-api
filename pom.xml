@@ -123,7 +123,7 @@
         <module>dcm4chee-arc-test-api</module>
         <module>dcm4chee-arc-test</module>
         <module>dcm4chee-arc-test-war</module>
-        <module>warpunit-insider-war</module>
+        <module>dcm4chee-arc-warpunit-insider-war</module>
         <module>warpunit</module>
 
     </modules>

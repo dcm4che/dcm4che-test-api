@@ -26,5 +26,7 @@
       <artifactId>dcm4chee-arc-conf</artifactId>
       <version>${dcm4chee-arc.version}</version>
     </dependency>
+
   </dependencies>
+
 </project>
