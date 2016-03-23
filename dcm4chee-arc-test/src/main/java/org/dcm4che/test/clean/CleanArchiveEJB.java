@@ -103,11 +103,17 @@ public class CleanArchiveEJB implements CleanArchive{
             utx.rollback();
         }
         utx.begin();
-        for (String queryStr : DELETE_QUERIES) {
-            Query query = em.createNativeQuery(queryStr);
-            query.executeUpdate();
+        try {
+            for (String queryStr : DELETE_QUERIES) {
+                Query query = em.createNativeQuery(queryStr);
+                query.executeUpdate();
+            }
+            utx.commit();
+            return "Successfully Cleaned Database";
+        } catch (Exception e) {
+            utx.rollback();
+            return "Error while cleaning the db";
         }
-        utx.commit();
-        return "Successfully Cleaned Database";
+
     }
 }
