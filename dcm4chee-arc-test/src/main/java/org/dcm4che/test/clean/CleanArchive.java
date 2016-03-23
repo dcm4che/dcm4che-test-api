@@ -49,7 +49,5 @@ import javax.transaction.SystemException;
  */
 
 public interface CleanArchive {
-    public String clearDB() throws NotSupportedException, SystemException,
-    SecurityException, IllegalStateException, RollbackException,
-    HeuristicMixedException, HeuristicRollbackException;
+    String clearDB() throws Exception;
 }

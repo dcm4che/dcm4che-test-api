@@ -72,10 +72,7 @@ public class CleanArchiveRest {
 
     @GET
     @Path("clean")
-    public Response clean() throws SecurityException
-            , IllegalStateException, NotSupportedException
-            , SystemException, RollbackException
-            , HeuristicMixedException, HeuristicRollbackException {
+    public Response clean() throws Exception {
 
         String o;
 

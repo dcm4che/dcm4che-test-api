@@ -51,47 +51,44 @@ import javax.transaction.UserTransaction;
 
 /**
  * @author Hesham Elbadawi <bsdreko@gmail.com>
- * 
  */
 
-public class CleanArchiveEJB implements CleanArchive{
+public class CleanArchiveEJB implements CleanArchive {
 
     private static final String[] DELETE_ARR_QUERIES = {
-        "DELETE FROM arr_part_obj",
-        "DELETE FROM arr_active_part",
-        "DELETE FROM arr_audit_record",
-        "DELETE FROM arr_code"};
-    
-    private static final String[] DELETE_QUERIES = {
-        "DELETE FROM study_on_stg_sys",
-        "DELETE FROM study_avail_on_system",
-        "DELETE FROM rel_instance_location", "DELETE FROM location",
-        "DELETE FROM content_item", "DELETE FROM verify_observer",
-        "DELETE FROM mpps", "DELETE FROM archiving_task",
-        "DELETE FROM sps_station_aet", "DELETE FROM mwl_item",
-        "DELETE FROM ext_retrieve_location",
-        "DELETE FROM ext_proxy_location",
-        "DELETE FROM instance", "DELETE FROM series_query_attrs",
-        "DELETE FROM series_req", "DELETE FROM series",
-        "DELETE FROM study_query_attrs", "DELETE FROM rel_study_pcode",
-        "DELETE FROM study", "DELETE FROM rel_linked_patient_id",
-        "DELETE FROM patient_id", "DELETE FROM id_issuer",
-        "DELETE FROM patient", "DELETE FROM soundex_code",
-        "DELETE FROM person_name", "DELETE FROM instance_history",
-        "DELETE FROM series_history", "DELETE FROM study_history",
-        "DELETE FROM action_history", "DELETE FROM update_history",
-        "DELETE FROM code", "DELETE FROM dicomattrs",
-        "DELETE FROM study_update_session"};
+            "DELETE FROM arr_part_obj",
+            "DELETE FROM arr_active_part",
+            "DELETE FROM arr_audit_record",
+            "DELETE FROM arr_code"};
 
-    @PersistenceContext(unitName="dcm4chee-arc-cleanup")
+    private static final String[] DELETE_QUERIES = {
+            "DELETE FROM study_on_stg_sys",
+            "DELETE FROM study_avail_on_system",
+            "DELETE FROM rel_instance_location", "DELETE FROM location",
+            "DELETE FROM content_item", "DELETE FROM verify_observer",
+            "DELETE FROM mpps", "DELETE FROM archiving_task",
+            "DELETE FROM sps_station_aet", "DELETE FROM mwl_item",
+            "DELETE FROM ext_retrieve_location",
+            "DELETE FROM ext_proxy_location",
+            "DELETE FROM instance", "DELETE FROM series_query_attrs",
+            "DELETE FROM series_req", "DELETE FROM series",
+            "DELETE FROM study_query_attrs", "DELETE FROM rel_study_pcode",
+            "DELETE FROM study", "DELETE FROM rel_linked_patient_id",
+            "DELETE FROM patient_id", "DELETE FROM id_issuer",
+            "DELETE FROM patient", "DELETE FROM soundex_code",
+            "DELETE FROM person_name", "DELETE FROM instance_history",
+            "DELETE FROM series_history", "DELETE FROM study_history",
+            "DELETE FROM action_history", "DELETE FROM update_history",
+            "DELETE FROM code", "DELETE FROM dicomattrs",
+            "DELETE FROM study_update_session"};
+
+    @PersistenceContext(unitName = "dcm4chee-arc-cleanup")
     EntityManager em;
 
     @Inject
     UserTransaction utx;
 
-    public String clearDB() throws NotSupportedException, SystemException,
-            SecurityException, IllegalStateException, RollbackException,
-            HeuristicMixedException, HeuristicRollbackException {
+    public String clearDB() throws Exception {
         utx.begin();
         try {
             for (String queryStr : DELETE_ARR_QUERIES) {
@@ -102,6 +99,7 @@ public class CleanArchiveEJB implements CleanArchive{
         } catch (Throwable ignore) {
             utx.rollback();
         }
+
         utx.begin();
         try {
             for (String queryStr : DELETE_QUERIES) {
@@ -112,7 +110,7 @@ public class CleanArchiveEJB implements CleanArchive{
             return "Successfully Cleaned Database";
         } catch (Exception e) {
             utx.rollback();
-            return "Error while cleaning the db";
+            throw e;
         }
 
     }
