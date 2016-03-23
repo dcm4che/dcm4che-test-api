@@ -13,13 +13,25 @@
   <dependencies>
     <dependency>
       <groupId>org.dcm4che</groupId>
-      <artifactId>warpunit</artifactId>
-      <version>${project.version}</version>
+      <artifactId>warpunit-core</artifactId>
+      <version>${warpunit.version}</version>
     </dependency>
     <dependency>
       <groupId>org.dcm4che</groupId>
       <artifactId>dcm4che-test</artifactId>
       <version>${project.version}</version>
+    </dependency>
+
+    <!-- override scope for jaxrs client to make sure those jars don't end up in the war-->
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-client</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.jboss.resteasy</groupId>
+      <artifactId>resteasy-jackson-provider</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- allow running Assert's etc -->
@@ -35,5 +47,19 @@
       <version>${dcm4che.version}</version>
       <type>pom</type>
     </dependency>
+
   </dependencies>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>org.dcm4che</groupId>
+        <artifactId>warpunit-parent</artifactId>
+        <version>${warpunit.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+
 </project>

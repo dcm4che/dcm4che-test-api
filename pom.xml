@@ -96,6 +96,7 @@
         <dcm4che.version>3.3.8-SNAPSHOT</dcm4che.version>
         <dcm4chee-arc.version>4.5.0-SNAPSHOT</dcm4chee-arc.version>
         <dcm4chee-storage.version>2.1.0-SNAPSHOT</dcm4chee-storage.version>
+        <warpunit.version>alpha-SNAPSHOT</warpunit.version>
     </properties>
     <build>
         <extensions>
@@ -124,7 +125,6 @@
         <module>dcm4chee-arc-test</module>
         <module>dcm4chee-arc-test-war</module>
         <module>dcm4chee-arc-warpunit-insider-war</module>
-        <module>warpunit</module>
 
     </modules>
     <distributionManagement>
