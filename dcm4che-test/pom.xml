@@ -62,8 +62,8 @@
 
     <dependency>
       <groupId>org.dcm4che</groupId>
-      <artifactId>warpunit</artifactId>
-      <version>${project.version}</version>
+      <artifactId>warpunit-core</artifactId>
+      <version>${warpunit.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
