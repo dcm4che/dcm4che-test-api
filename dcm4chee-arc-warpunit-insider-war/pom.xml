@@ -26,11 +26,13 @@
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-client</artifactId>
+      <version>3.0.10.Final</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.jboss.resteasy</groupId>
       <artifactId>resteasy-jackson-provider</artifactId>
+      <version>3.0.10.Final</version>
       <scope>provided</scope>
     </dependency>
 
@@ -49,17 +51,5 @@
     </dependency>
 
   </dependencies>
-
-  <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.dcm4che</groupId>
-        <artifactId>warpunit-parent</artifactId>
-        <version>${warpunit.version}</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
-  </dependencyManagement>
 
 </project>
