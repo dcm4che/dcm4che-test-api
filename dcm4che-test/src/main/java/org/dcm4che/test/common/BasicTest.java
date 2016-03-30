@@ -38,33 +38,12 @@
 package org.dcm4che.test.common;
 
 
-import org.apache.commons.cli.MissingArgumentException;
 import org.dcm4che.test.annotations.TestLocalConfig;
 import org.dcm4che.test.annotations.TestParamDefaults;
-import org.dcm4che.test.common.TestToolFactory.TestToolType;
-import org.dcm4che.test.utils.RemoteDicomConfigFactory;
 import org.dcm4che.test.utils.TestingProperties;
 import org.dcm4che3.conf.api.DicomConfiguration;
-import org.dcm4che3.conf.api.internal.DicomConfigurationManager;
-import org.dcm4che3.conf.core.api.Configuration;
 import org.dcm4che3.conf.core.api.ConfigurationException;
-import org.dcm4che3.conf.core.storage.InMemoryConfiguration;
-import org.dcm4che3.conf.dicom.CommonDicomConfigurationWithHL7;
-import org.dcm4che3.data.Attributes;
-import org.dcm4che3.tool.common.test.TestResult;
-import org.dcm4che3.tool.common.test.TestTool;
-import org.dcm4che3.tool.dcmgen.test.DcmGenResult;
-import org.dcm4che3.tool.dcmgen.test.DcmGenTool;
-import org.dcm4che3.tool.findscu.test.QueryTool;
-import org.dcm4che3.tool.getscu.test.RetrieveTool;
-import org.dcm4che3.tool.movescu.test.MoveResult;
-import org.dcm4che3.tool.movescu.test.MoveTool;
-import org.dcm4che3.tool.mppsscu.test.MppsTool;
-import org.dcm4che3.tool.storescu.test.StoreResult;
-import org.dcm4che3.tool.storescu.test.StoreTool;
-import org.dcm4chee.archive.conf.defaults.DefaultArchiveConfigurationFactory;
-import org.dcm4chee.archive.conf.defaults.DefaultDicomConfigInitializer;
-import org.junit.Assert;
+import org.dcm4che3.conf.dicom.DicomConfigurationBuilder;
 import org.junit.Rule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -75,6 +54,7 @@ import java.lang.annotation.Annotation;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -85,7 +65,11 @@ import java.util.Properties;
  */
 public class BasicTest {
 
-    private static Logger log = LoggerFactory.getLogger(TestToolFactory.class);
+    private static Logger log = LoggerFactory.getLogger(BasicTest.class);
+
+    public DicomConfiguration localConfig;
+
+    private Boolean isRunningInIDE;
 
     @Rule
     public IntegrationTestingRule rule = new IntegrationTestingRule(this);
@@ -93,19 +77,60 @@ public class BasicTest {
     /**
      * Name of the currently executing method within the test
      */
-    private String currentMethodName = "none";
+    public String currentMethodName = "none";
+    /**
+     * Use this method to differentiate between tests running on a CI and test being debugged/implemented by devs/testers,
+     * to auto-set things like timeouts, enabling all tests (e.g. heavy tests) by default, etc.
+     *
+     * @return true if running a test inside an IDE like eclipse or IDEA
+     */
+    public boolean isRunningInsideIDE() {
+        if (isRunningInIDE == null)
+            try {
+                throw new RuntimeException();
+            } catch (RuntimeException e) {
+                String firstStackElemClassName = e.getStackTrace()[e.getStackTrace().length - 1].getClassName();
+                isRunningInIDE = firstStackElemClassName.contains("intellij") || firstStackElemClassName.contains("eclipse");
 
-    private DicomConfiguration localConfig;
+                if (isRunningInIDE)
+                    System.out.println(" **************************************************************" +
+                            "\n Detected that the test started from within an IDE. DEV mode activated: " +
+                            "\n - all filters disabled (e.g. reported issue, heavy, etc)" +
+                            "\n - unlimited timeouts " +
+                            "\n **************************************************************");
+                else
+                    System.out.println("Detected that the test is started as standalone (DEV mode is NOT active)");
+            }
+        return isRunningInIDE;
+    }
 
-    private DicomConfigurationManager remoteConfig = null;
-    private Boolean isRunningInIDE;
+    public void setLocalConfig(String defaultLocalConfigSystemProperty) throws ConfigurationException {
+        File LocalConfigFile = null;
+        if(defaultLocalConfigSystemProperty == null) {
+            try {
+                LocalConfigFile = Files.createTempFile("tempdefaultconfig", "json").toFile();
 
-    public DicomConfigurationManager getRemoteConfig() {
-        if (remoteConfig == null) {
-            String baseURL = getProperties().getProperty("remoteConn.url") + "/config/data";
-            remoteConfig = RemoteDicomConfigFactory.createRemoteDicomConfiguration(baseURL);
+                Files.copy(BasicTest.class.getClassLoader()
+                        .getResourceAsStream("defaultConfig.json")
+                        , LocalConfigFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+                LocalConfigFile.deleteOnExit();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        return remoteConfig;
+        else {
+            LocalConfigFile = new File (defaultLocalConfigSystemProperty);
+        }
+        this.localConfig = DicomConfigurationBuilder.newJsonConfigurationBuilder(LocalConfigFile.getPath()).build();
+    }
+
+    public DicomConfiguration getLocalConfig() {
+        return localConfig;
+    }
+
+
+    public void resetConfigAndDB() {
+
     }
 
     private static Map<String, Annotation> params = new HashMap<String, Annotation>();
@@ -139,174 +164,14 @@ public class BasicTest {
                     && this.getParams().get("defaultLocalConfig") != null)
                 System.setProperty("defaultLocalConfig", ((TestLocalConfig)
                         this.getParams().get("defaultLocalConfig")).configFile());
-
+            this.setLocalConfig(System.getProperty("defaultLocalConfig"));
         } catch (ConfigurationException e) {
             throw new TestToolException(e);
         }
     }
 
-    /**
-     * Use this method to differentiate between tests running on a CI and test being debugged/implemented by devs/testers,
-     * to auto-set things like timeouts, enabling all tests (e.g. heavy tests) by default, etc.
-     *
-     * @return true if running a test inside an IDE like eclipse or IDEA
-     */
-    public boolean isRunningInsideIDE() {
-        if (isRunningInIDE == null)
-            try {
-                throw new RuntimeException();
-            } catch (RuntimeException e) {
-                String firstStackElemClassName = e.getStackTrace()[e.getStackTrace().length - 1].getClassName();
-                isRunningInIDE = firstStackElemClassName.contains("intellij") || firstStackElemClassName.contains("eclipse");
-
-                if (isRunningInIDE)
-                    System.out.println(" **************************************************************" +
-                            "\n Detected that the test started from within an IDE. DEV mode activated: " +
-                            "\n - all filters disabled (e.g. reported issue, heavy, etc)" +
-                            "\n - unlimited timeouts " +
-                            "\n **************************************************************");
-                else
-                    System.out.println("Detected that the test is started as standalone (DEV mode is NOT active)");
-            }
-        return isRunningInIDE;
-    }
 
 
-    public StoreResult store(String description, String fileName) {
-        StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
-        try {
-            storeTool.store(description, fileName);
-        } catch (Exception e) {
-            throw new TestToolException(e);
-        }
-        StoreResult storeResult = storeTool.getResult();
-        Assert.assertTrue("Store", storeResult.getFilesSent() > 0 && storeResult.getFailures() == 0);
-        return storeResult;
-    }
-
-    public TestResult storeResource(String description, String fileName) throws MissingArgumentException {
-        StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
-        File f = new File(fileName);
-        storeTool.setbaseDir(f.getParent() == null ? "target/test-classes/" : f.getParent());
-        try {
-            storeTool.store(description, fileName);
-        } catch (Exception e) {
-            throw new TestToolException(e);
-        }
-        StoreResult storeResult = storeTool.getResult();
-        Assert.assertTrue("Store", storeResult.getFilesSent() > 0 && storeResult.getFailures() == 0);
-        return storeResult;
-    }
-
-    public TestResult query(String description, Attributes keys, boolean fuzzy
-            , boolean datatimeCombine, int expectedMatches) throws MissingArgumentException {
-        QueryTool queryTool = (QueryTool) TestToolFactory.createToolForTest(TestToolType.QueryTool, this);
-        if (expectedMatches > -1)
-            queryTool.setExpectedMatches(expectedMatches);
-        queryTool.addAll(keys);
-        try {
-            queryTool.query(description, fuzzy, datatimeCombine);
-        } catch (Exception e) {
-            throw new TestToolException(e);
-        }
-        return queryTool.getResult();
-    }
-
-    public TestResult move(String description, Attributes moveAttrs, int expectedMatches) throws MissingArgumentException {
-        MoveTool tool = (MoveTool) TestToolFactory.createToolForTest(TestToolType.MoveTool, this);
-        tool.setExpectedMatches(expectedMatches);
-        tool.addAll(moveAttrs);
-        try {
-            tool.move(description);
-        } catch (Exception e) {
-            throw new TestToolException(e);
-        }
-        MoveResult result = (MoveResult) tool.getResult();
-        return result;
-    }
-
-    public TestResult mpps(String description, String fileName) throws MissingArgumentException {
-        MppsTool mppsTool = (MppsTool) TestToolFactory.createToolForTest(TestToolType.MppsTool, this);
-        try {
-            mppsTool.mppsscu(description, fileName);
-        } catch (Exception e) {
-            throw new TestToolException(e);
-        }
-        return mppsTool.getResult();
-    }
-
-    private TestResult storeGenerated(String description, File file) throws MissingArgumentException {
-        StoreTool storeTool = (StoreTool) TestToolFactory.createToolForTest(TestToolType.StoreTool, this);
-
-        try {
-            //get whole study
-            storeTool.store(description, file.getAbsolutePath());
-            deleteDirectory(file);
-        } catch (Exception e) {
-            throw new TestToolException(e);
-        }
-        return storeTool.getResult();
-    }
-
-    private void deleteDirectory(File file) {
-
-        if (file.isDirectory()) {
-            for (int i = 0; i < file.listFiles().length; i++) {
-                deleteDirectory(file.listFiles()[i]);
-            }
-        } else {
-            file.delete();
-        }
-
-    }
-
-    public TestResult generateAndSend(String description, Attributes overrideAttributes) throws MissingArgumentException {
-        DcmGenTool dcmGenTool = (DcmGenTool) TestToolFactory.createToolForTest(TestToolType.DcmGenTool, this);
-        TestResult storeResult;
-        dcmGenTool.generateFiles(description, overrideAttributes);
-        DcmGenResult result = (DcmGenResult) dcmGenTool.getResult();
-        storeResult = storeGenerated(description, dcmGenTool.getOutputDir());
-        return storeResult;
-    }
-
-    public TestResult generateAndSend(String description, Attributes overrideAttributes, File otherSeedFile) throws MissingArgumentException {
-        DcmGenTool dcmGenTool = (DcmGenTool) TestToolFactory.createToolForTest(TestToolType.DcmGenTool, this);
-        TestResult storeResult;
-        dcmGenTool.generateFiles(description, overrideAttributes, otherSeedFile);
-        DcmGenResult result = (DcmGenResult) dcmGenTool.getResult();
-        storeResult = storeGenerated(description, dcmGenTool.getOutputDir());
-        return storeResult;
-    }
-
-    public DicomConfiguration getLocalConfig() {
-        if (localConfig == null) {
-
-            Configuration configuration = new InMemoryConfiguration();
-            HashMap extensionsByClass = new HashMap();
-
-            CommonDicomConfigurationWithHL7 dicomConfig = new CommonDicomConfigurationWithHL7(configuration, extensionsByClass);
-
-            DefaultArchiveConfigurationFactory.FactoryParams params = new DefaultArchiveConfigurationFactory.FactoryParams();
-
-            params.useGroupBasedTCConfig = false;
-
-            // unlimited timeout for tools for easy debugging if inside IDE
-            if (isRunningInsideIDE())
-                params.socketTimeout = 0;
-
-            new DefaultDicomConfigInitializer().persistDefaultConfig(
-                    dicomConfig,
-                    dicomConfig,
-                    params
-            );
-
-
-            localConfig = dicomConfig;
-
-        }
-
-        return localConfig;
-    }
 
     /**
      * @return Directory containing test data (mesa).
@@ -358,15 +223,5 @@ public class BasicTest {
         return subTempDirectory;
     }
 
-    public <T extends TestTool> T createTool(Class<T> clazz) {
-
-        TestToolType type = null;
-        if (clazz.isAssignableFrom(RetrieveTool.class))
-            type = TestToolType.GetTool;
-
-        //TODO: finish
-
-        return (T) TestToolFactory.createToolForTest(type, this);
-    }
 
 }
