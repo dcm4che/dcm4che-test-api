@@ -43,6 +43,8 @@ import org.dcm4che.test.annotations.TestParamDefaults;
 import org.dcm4che.test.annotations.markers.Heavy;
 import org.dcm4che.test.annotations.markers.ReportedIssue;
 import org.dcm4che.test.image.ImageAssert;
+import org.dcm4che.test.utils.ConfigUtils;
+import org.dcm4che.test.utils.DBUtils;
 import org.junit.Assert;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.rules.TestRule;
@@ -161,7 +163,11 @@ public class IntegrationTestingRule implements TestRule {
 
                 notifyServerOfNewtest(description.getMethodName() + "(" + description.getTestClass().getName() + ")");
 
+                // Clean DB before each test
+                Assert.assertTrue("Database could not be cleaned successfully.", DBUtils.cleanDB(getInstance()));
 
+                // Reset config before each test
+                ConfigUtils.restoreConfig(getInstance());
 
                 base.evaluate();
             }
