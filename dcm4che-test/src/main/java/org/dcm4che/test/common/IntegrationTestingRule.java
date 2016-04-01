@@ -184,7 +184,7 @@ public class IntegrationTestingRule implements TestRule {
             throw new RuntimeException(e); // will not happen
         }
 
-        WebTarget target = client.target(baseURL + "/dcm4chee-arc-test/beginTest/" + testNameEncoded);
+        WebTarget target = client.target(baseURL + "/csp-test/beginTest/" + testNameEncoded);
         Response rsp = target.request().build("GET").invoke();
         Assert.assertEquals(Response.Status.OK.getStatusCode(), rsp.getStatus());
     }
