@@ -39,7 +39,6 @@
 
 package org.dcm4che.test.image;
 
-import org.dcm4che.test.common.BasicTest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
