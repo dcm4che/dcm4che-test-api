@@ -121,8 +121,6 @@
     </build>
     <modules>
         <module>dcm4che-test</module>
-        <module>dcm4chee-arc-warpunit-insider-war</module>
-
     </modules>
     <distributionManagement>
         <repository>
