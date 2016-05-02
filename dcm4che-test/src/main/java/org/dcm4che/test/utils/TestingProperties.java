@@ -38,6 +38,8 @@
 
 package org.dcm4che.test.utils;
 
+import org.dcm4che.test.remote.WarpUnit;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -64,6 +66,8 @@ public class TestingProperties {
                 } catch (IOException e) {
                     throw new RuntimeException("Failed to load properties from file", e);
                 }
+
+            WarpUnit.DEFAULT_REMOTE_ENDPOINT_URL = props.getProperty("remoteConn.url")+"/warpunit-insider";
         }
 
         return props;
