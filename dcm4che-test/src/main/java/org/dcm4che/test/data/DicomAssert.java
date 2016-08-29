@@ -49,6 +49,7 @@ import org.dcm4che3.data.Attributes;
 import org.dcm4che3.data.ElementDictionary;
 import org.dcm4che3.data.Tag;
 import org.dcm4che3.io.DicomInputStream.IncludeBulkData;
+import org.dcm4che3.util.TagUtils;
 import org.junit.Assert;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -91,16 +92,31 @@ public class DicomAssert {
      *            tags to ignore (e.g. {@link Tag#ImplementationVersionName})
      */
     public static void assertEqualsIgnoringTags(Attributes dataset, Attributes referenceDataset, int... tagsToIgnore) {
+    	assertEqualsIgnoringTags(dataset, referenceDataset, null, tagsToIgnore);
+    }
+    /**
+     * Check that the content of the given DICOM dataset is equal to the given
+     * reference dataset ignoring some tags.
+     * 
+     * @param dataset
+     *            dataset
+     * @param referenceDataset
+     *            reference dataset
+     * @param privateTagsToIgnore
+     *            private tags to ignore
+     * @param tagsToIgnore
+     *            tags to ignore (e.g. {@link Tag#ImplementationVersionName})
+     */
+    public static void assertEqualsIgnoringTags(Attributes dataset, Attributes referenceDataset, PrivateTag[] privateTagsToIgnore, int... tagsToIgnore) {
 
-        if (tagsToIgnore != null && tagsToIgnore.length > 0) {
-            Arrays.sort(tagsToIgnore);
-            
-            Attributes filteredDataset = new Attributes(dataset.size());
-            filteredDataset.addNotSelected(dataset, tagsToIgnore);
+    	int[] allTagsToIgnoreForDataset = getAllTagsToIgnore(tagsToIgnore, privateTagsToIgnore, dataset);
+        if (allTagsToIgnoreForDataset != null && allTagsToIgnoreForDataset.length > 0) {
+        	int[] allTagsToIgnoreForReferenceDataset = getAllTagsToIgnore(tagsToIgnore, privateTagsToIgnore, referenceDataset);
+            Attributes filteredDataset = new Attributes(dataset.bigEndian(), dataset.size());
+            Attributes filteredReferenceDataset = new Attributes(dataset.bigEndian(), dataset.size());
+            filteredDataset.addNotSelected(dataset, allTagsToIgnoreForDataset);
+            filteredReferenceDataset.addNotSelected(referenceDataset, allTagsToIgnoreForReferenceDataset);
             dataset = filteredDataset;
-
-            Attributes filteredReferenceDataset = new Attributes(dataset.size());
-            filteredReferenceDataset.addNotSelected(referenceDataset, tagsToIgnore);
             referenceDataset = filteredReferenceDataset;
         }
 
@@ -115,6 +131,44 @@ public class DicomAssert {
 
             Assert.fail("The dicom objects are not equal");
         }
+    }
+    
+    private static int[] getAllTagsToIgnore(int[] tagsToIgnore, PrivateTag[] privateTagsToIgnore, Attributes attrs) {
+    	int[] toIgnore;
+    	if (privateTagsToIgnore == null || privateTagsToIgnore.length == 0) {
+    		toIgnore = tagsToIgnore;
+    	} else {
+	    	int privateTag, privateCreatorTag;
+	    	int[] additionalToIgnore = new int[privateTagsToIgnore.length << 1];
+	    	int idx = 0;
+	    	for (PrivateTag privTag : privateTagsToIgnore) {
+	    		privateTag = attrs.tagOf(privTag.creator, privTag.tag);
+	    		additionalToIgnore[idx++] = privateTag;
+	    		privateCreatorTag = TagUtils.creatorTagOf(privateTag);
+	    		if (containsNot(additionalToIgnore, privateCreatorTag, idx)) {
+	    			additionalToIgnore[idx++] = privateCreatorTag;
+	    		}
+	    	}
+	    	if (tagsToIgnore != null && tagsToIgnore.length > 0) {
+	    		toIgnore = new int[tagsToIgnore.length + idx];
+	    		System.arraycopy(tagsToIgnore, 0, toIgnore, 0, tagsToIgnore.length);
+	    		System.arraycopy(additionalToIgnore, 0, toIgnore, tagsToIgnore.length, idx);
+	    	} else if (idx < additionalToIgnore.length) {
+	    		toIgnore = Arrays.copyOf(additionalToIgnore, idx);
+	    	} else {
+	    		toIgnore = additionalToIgnore;
+	    	}
+    	}
+    	Arrays.sort(toIgnore);
+    	return toIgnore;
+    }
+    
+    private static boolean containsNot(int[] ia, int value, int idx) {
+    	for (int i=0; i < idx; i++) {
+    		if (ia[i] == value)
+    			return false;
+    	}
+    	return true;
     }
 
     /**
@@ -155,6 +209,10 @@ public class DicomAssert {
      * @throws IOException
      */
     public static void assertEqualsIgnoringTags(Path dicomFile, Path dicomReferenceFile, int... tagsToIgnore) throws IOException {
+    	assertEqualsIgnoringTags(dicomFile, dicomReferenceFile, null, tagsToIgnore);
+    }
+    
+    public static void assertEqualsIgnoringTags(Path dicomFile, Path dicomReferenceFile, PrivateTag[] privateTagsToIgnore, int... tagsToIgnore) throws IOException {
         assertEqualsIgnoringTags(DicomUtils.read(dicomFile), DicomUtils.read(dicomReferenceFile), tagsToIgnore);
     }
 
@@ -185,7 +243,7 @@ public class DicomAssert {
      *            private dictionary
      */
     public static void assertValueForTag(Attributes dataset, int tag, String value,ElementDictionary dictionary) {
-        String tagKeyword = appendParent(dataset, dictionary.keywordOf(tag, dictionary.getPrivateCreator()));
+        String tagKeyword = appendParent(dataset, ElementDictionary.keywordOf(tag, dictionary.getPrivateCreator()));
         Assert.assertTrue("Dataset should contain tag " + tagKeyword, dataset.contains(dictionary.getPrivateCreator(),tag));
         Assert.assertEquals("Value of tag " + tagKeyword + " should be equal", value,
                 dataset.getString(dictionary.getPrivateCreator(),tag,dictionary.vrOf(tag)));
@@ -301,4 +359,15 @@ public class DicomAssert {
         return "/"+str;
     }
 
+    public static class PrivateTag {
+    	public final String creator;
+    	public final int tag;
+    	public PrivateTag(String privateCreator, int privateTag) {
+    		if (!TagUtils.isPrivateGroup(privateTag)) {
+    			throw new IllegalArgumentException("Not a private tag! tag:"+privateTag);
+    		}
+    		creator = privateCreator;
+    		tag = privateTag;
+    	}
+    }
 }
